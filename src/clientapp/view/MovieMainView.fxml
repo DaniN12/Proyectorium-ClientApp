@@ -5,12 +5,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
+        <fx:include source="Menu.fxml">
+            <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
+        </fx:include>
         <TableView fx:id="moviesTbv" layoutX="126.0" layoutY="129.0" prefHeight="390.0" prefWidth="804.0">
             <columns>
                 <TableColumn prefWidth="108.79998779296875" text="Billboard image" />
@@ -25,11 +27,7 @@
         </TableView>
         <Button fx:id="helpBtn" layoutX="827.0" layoutY="40.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0">
             <graphic>
-                <ImageView fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
-                    </image>
-                </ImageView>
+                <ImageView fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true" />
             </graphic>
         </Button>
         <Button fx:id="addMovieBtn" layoutX="597.0" layoutY="531.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="110.0" text="ADD MOVIE" />
