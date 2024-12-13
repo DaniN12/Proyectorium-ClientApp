@@ -18,7 +18,7 @@
 
 <SplitPane fx:id="infoViewpanel" dividerPositions="0.048494983277591976" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" 
            minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="1000.0" stylesheets="@../../resources/styles.css" 
-           xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+           xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1"fx:controller = "clientapp.controller.InfoViewController">
     <items>
         <AnchorPane fx:id="anchorPaneTop" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
@@ -58,7 +58,7 @@
                   <TableColumn fx:id="priceColumn" prefWidth="86.39990234375" text="Price" />
               </columns>
             </TableView>
-                <ImageView fx:id="profileImageRigby" fitHeight="175.0" fitWidth="195.0" layoutX="39.0" layoutY="14.0" onMouseClicked="#showContextMenu" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="profileImageRigby" fitHeight="175.0" fitWidth="195.0" layoutX="39.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../../resources/rigby.png" />
                     </image>

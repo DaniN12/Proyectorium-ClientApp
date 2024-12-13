@@ -6,11 +6,12 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
-<SplitPane fx:id="signInpane" dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" >
+<SplitPane fx:id="signInpane" dividerPositions="0.29797979797979796" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.SignInController">
     <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -19,20 +20,30 @@
                 <Label fx:id="lblPassword" layoutX="55.0" layoutY="282.0" text="Password:" />
             
                 <TextField fx:id="txtFieldEmail" layoutX="55.0" layoutY="251.0" promptText="Enter your email" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
-                <TextField fx:id="txtFieldPassword" layoutX="54.0" layoutY="311.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your password" />
-                <PasswordField fx:id="PasswordField" layoutX="54.0" layoutY="312.0" prefWidth="201.0" promptText="Enter your password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
+                <TextField fx:id="txtFieldPassword" layoutX="54.0" layoutY="312.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your password" />
+                <PasswordField fx:id="PasswordField" layoutX="54.0" layoutY="312.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
             
                 <Line endX="100.0" layoutX="155.0" layoutY="272.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
                 <Line endX="100.0" layoutX="155.0" layoutY="334.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
                 
-                <Button fx:id="btnShowPasswd" layoutX="255.0" layoutY="305.0" mnemonicParsing="false"  prefHeight="22.0" prefWidth="32.0" styleClass="btnShowPasswd">
+                <Button fx:id="btnShowPasswd" layoutX="255.0" layoutY="305.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="32.0" styleClass="btnShowPasswd">
                     <graphic>
                         <ImageView fx:id="ImageViewEye" fitHeight="31.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true" />
                     </graphic>
                 </Button>
                 
-                <Button fx:id="btnSignIn" layoutX="108.0" layoutY="373.0" mnemonicParsing="false"  prefHeight="47.0" prefWidth="102.0" styleClass="minimal-button" text="Sign In" />
-                <Hyperlink fx:id="HyperLinkRegistered" layoutX="44.0" layoutY="421.0" text="You are not Registered yet? Click here!" />
+                <Button fx:id="btnSignIn" layoutX="108.0" layoutY="373.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="102.0" styleClass="minimal-button" text="Sign In" />
+                <Hyperlink fx:id="HyperLinkRegistered" layoutX="55.0" layoutY="420.0" text="You are not Registered yet? Click here!" />
+            <Hyperlink fx:id="HyperLinkRegistered1" layoutX="54.0" layoutY="344.0" text="Did you forget your password?" />
+            <Button layoutX="380.0" layoutY="33.0" mnemonicParsing="false">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
                 
             </children>
         </AnchorPane>
