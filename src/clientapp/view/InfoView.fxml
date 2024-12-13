@@ -16,11 +16,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Circle?>
 
-<SplitPane fx:id="infoViewpanel" dividerPositions="0.048494983277591976" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="768" prefWidth="1366.0" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane fx:id="infoViewpanel" dividerPositions="0.048494983277591976" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" 
+           minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="1000.0" stylesheets="@../../resources/styles.css" 
+           xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <items>
         <AnchorPane fx:id="anchorPaneTop" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
-            <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="1366.0">
+            <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="998.0">
               <menus>
                 <Menu mnemonicParsing="false" text="User">
                   <items>
@@ -46,24 +48,15 @@
                 <Label fx:id="userNameLbl" layoutX="29.0" layoutY="349.0" prefHeight="18.0" prefWidth="195.0" text="User name:" />
                 <Label fx:id="emailLbl" layoutX="29.0" layoutY="237.0" prefHeight="16.0" prefWidth="100.0" text="Email:" />
                 <Label fx:id="cityLbl" layoutX="29.0" layoutY="442.0" prefHeight="16.0" prefWidth="100.0" text="City:" />
-            <TableView fx:id="ticketTableView" editable="true" layoutX="243.0" layoutY="11.0" prefHeight="665.0" prefWidth="1000.0">
+            <TableView fx:id="ticketTableView" editable="true" layoutX="241.0" layoutY="47.0" prefHeight="497.0" prefWidth="625.0">
               <columns>
-                <TableColumn fx:id="movieImageColumn" prefWidth="228.7999725341797" text="Movie Image" />
-                <TableColumn fx:id="movieTitleColumn" minWidth="0.0" prefWidth="215.199951171875" text="Movie Title" />
-                  <TableColumn fx:id="dateColumn" prefWidth="203.20001220703125" text="Date" />
-                  <TableColumn fx:id="hourColumn" prefWidth="116.0" text="Hour" />
-                  <TableColumn fx:id="durationColumn" minWidth="0.0" prefWidth="99.99993896484375" text="Duration" />
-                  <TableColumn fx:id="dateColumn1" prefWidth="52.79998779296875" text="People" />
-                  <TableColumn fx:id="priceColumn" prefWidth="85.5999755859375" text="Price" />
+                <TableColumn fx:id="movieImageColumn" prefWidth="109.5999755859375" text="Movie Image" />
+                <TableColumn fx:id="movieTitleColumn" minWidth="0.0" prefWidth="115.20001220703125" text="Movie Title" />
+                  <TableColumn fx:id="dateColumn" prefWidth="129.60003662109375" text="Date" />
+                  <TableColumn fx:id="hourColumn" prefWidth="86.4000244140625" text="Hour" />
+                  <TableColumn fx:id="durationColumn" minWidth="0.0" prefWidth="96.00006103515625" text="Duration" />
+                  <TableColumn fx:id="priceColumn" prefWidth="86.39990234375" text="Price" />
               </columns>
-               <contextMenu>
-                  <ContextMenu fx:id="tableContextMenu">
-                    <items>
-                        <MenuItem fx:id="printMenuItem" mnemonicParsing="false" text="Print" />
-                      <MenuItem fx:id="removeMenuItem" mnemonicParsing="false" text="Remove" />
-                    </items>
-                  </ContextMenu>
-               </contextMenu>
             </TableView>
                 <ImageView fx:id="profileImageRigby" fitHeight="175.0" fitWidth="195.0" layoutX="39.0" layoutY="14.0" onMouseClicked="#showContextMenu" pickOnBounds="true" preserveRatio="true">
                     <image>
@@ -73,12 +66,14 @@
                         <Circle centerX="87" centerY="87" radius="85" />
                     </clip>
                 </ImageView>
-            <Button fx:id="addTicketButton" layoutX="1259.0" layoutY="514.0" mnemonicParsing="false" text="Add Ticket" />
-            <MenuButton fx:id="FilterMenuButton" layoutX="1256.0" layoutY="42.0" mnemonicParsing="false" text=" Filter by">
+            <Button fx:id="addTicketButton" layoutX="897.0" layoutY="519.0" mnemonicParsing="false" text="Add Ticket" />
+            <MenuButton fx:id="FilterMenuButton" layoutX="894.0" layoutY="47.0" mnemonicParsing="false" text=" Filter by">
               <items>
-                <MenuItem mnemonicParsing="false" text="Title" />
-                <MenuItem mnemonicParsing="false" text="Buy date" />
-                  <MenuItem mnemonicParsing="false" text="Price" />
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
               </items>
             </MenuButton>
             </children>
