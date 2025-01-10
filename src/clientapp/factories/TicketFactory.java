@@ -6,6 +6,7 @@
 package clientapp.factories;
 
 import clientapp.client.TicketClient;
+import clientapp.interfaces.ITicket;
 
 /**
  *
@@ -13,7 +14,7 @@ import clientapp.client.TicketClient;
  */
 public class TicketFactory {
     
-    public static TicketClient getTicketFactory() {
+    public static ITicket getTicketFactory() {
         
         return new TicketClient();
         

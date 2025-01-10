@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:TicketEntityFacadeREST
@@ -38,17 +39,17 @@ public class TicketClient implements ITicket {
     }
 
     @Override
-    public List<Ticket> listByMovieASC() throws ClientErrorException {
+    public List<Ticket> listByMovieASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("by-movie");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(List.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public List<Ticket> listByBuyDateASC() throws ClientErrorException {
+    public List<Ticket> listByBuyDateASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("by-buy-date");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(List.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
@@ -78,16 +79,16 @@ public class TicketClient implements ITicket {
     }
 
     @Override
-    public List<Ticket> listByPriceASC() throws ClientErrorException {
+    public List<Ticket> listByPriceASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("by-price");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(List.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public List<Ticket> findAll() throws ClientErrorException {
+    public List<Ticket> findAll(GenericType<List<Ticket>> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(List.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override

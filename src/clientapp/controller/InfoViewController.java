@@ -1,5 +1,6 @@
 package clientapp.controller;
 
+import clientapp.model.User;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -18,11 +19,13 @@ import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import clientapp.model.User;
 
 /**
  * FXML Controller class
@@ -32,22 +35,10 @@ import clientapp.model.User;
 public class InfoViewController {
 
     /**
-     * Button used to log out user sesion Button to log out of the application
-     */
-    @FXML
-    private Button logOutBtn;
-
-    /**
      * TextField to show user email
      */
     @FXML
     private TextField emailTextF;
-
-    /**
-     * TextField to show user street
-     */
-    @FXML
-    private TextField streetTextF;
 
     /**
      * TextField to show user name
@@ -62,12 +53,6 @@ public class InfoViewController {
     private TextField cityTextF;
 
     /**
-     * TextField to show user zip
-     */
-    @FXML
-    private TextField zipTextF;
-
-    /**
      * ImageView for the profile photo
      */
     @FXML
@@ -78,6 +63,12 @@ public class InfoViewController {
      */
     @FXML
     private ContextMenu contextMenu;
+
+    /**
+     * ContextMenu for the menu
+     */
+    @FXML
+    private ContextMenu tableContextMenu;
 
     /**
      * MenuItm for Mordecay option
@@ -98,23 +89,16 @@ public class InfoViewController {
     private MenuItem optionRigby;
 
     /**
-     * logger to show the steps of the application by console ImageView for
-     * Mordecay image
-     */
-    @FXML
-    private ImageView profileImageMordecay;
-
-    /**
-     * ImageView for Cj image
-     */
-    @FXML
-    private ImageView profileImageCj;
-
-    /**
      * ImageView for Rigby image
      */
     @FXML
     private ImageView profileImageRigby;
+
+    @FXML
+    private TableView tableView;
+    
+    @FXML
+    private TableColumn tableColumn;
 
     private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
@@ -133,24 +117,15 @@ public class InfoViewController {
         stage.setTitle("User info");
         stage.getIcons().add(icon);
         stage.setResizable(false);
-        emailTextF.setText(user.getEmail());
-        streetTextF.setText(user.getStreet());
-        userNameTextF.setText(user.getFullName());
-        cityTextF.setText(Optional.ofNullable(user.getCity()).orElse("City not available"));
-        zipTextF.setText(user.getZip() != null ? String.valueOf(user.getZip()) : "ZIP not available");
-
-        profileImageMordecay.setVisible(false);
-        profileImageCj.setVisible(false);
-        profileImageRigby.setVisible(true);
-
-        optionMordecay.setOnAction(this::onOptionMordecay);
-        optionCj.setOnAction(this::onOptionCj);
-        optionRigby.setOnAction(this::onOptionRigby);
 
         profileImageView.setOnMouseClicked(this::showContextMenu);
         stage.addEventHandler(WindowEvent.WINDOW_SHOWN, this::handleWindowShowing);
         stage.setOnCloseRequest(this::onCloseRequest);
+
+        tableColumn.setCellValueFactory(new PropertyValueFactory("title"));
+        
         stage.show();
+
     }
 
     /**
@@ -161,10 +136,13 @@ public class InfoViewController {
     public void handleWindowShowing(WindowEvent event) {
         User user = fetchUserData();
         emailTextF.setText(user.getEmail());
-        streetTextF.setText(user.getStreet());
         userNameTextF.setText(user.getFullName());
         cityTextF.setText(user.getCity());
-        zipTextF.setText(String.valueOf(user.getZip()));
+
+        optionMordecay.setOnAction(this::onOptionMordecay);
+        optionCj.setOnAction(this::onOptionCj);
+        optionRigby.setOnAction(this::onOptionRigby);
+
     }
 
     /**
@@ -176,7 +154,7 @@ public class InfoViewController {
      */
     @FXML
     private void onOptionMordecay(ActionEvent event) {
-        showImage(profileImageMordecay);
+         profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/mordecay.png")));
     }
 
     /**
@@ -188,7 +166,7 @@ public class InfoViewController {
      */
     @FXML
     private void onOptionCj(ActionEvent event) {
-        showImage(profileImageCj);
+        profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/cj.png")));
     }
 
     /**
@@ -200,20 +178,7 @@ public class InfoViewController {
      */
     @FXML
     private void onOptionRigby(ActionEvent event) {
-        showImage(profileImageRigby);
-    }
-
-    /**
-     * Displays the selected profile image and hides the others.
-     *
-     * @param selectedImage
-     */
-    private void showImage(ImageView selectedImage) {
-        profileImageMordecay.setVisible(false);
-        profileImageCj.setVisible(false);
-        profileImageRigby.setVisible(false);
-
-        selectedImage.setVisible(true);
+        profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/rigby.png")));
     }
 
     /**
@@ -225,7 +190,11 @@ public class InfoViewController {
     @FXML
     private void showContextMenu(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            contextMenu.show(profileImageView, event.getScreenX(), event.getScreenY());
+            if (!tableView.contains(event.getScreenX(), event.getScreenY())) {
+                contextMenu.show(profileImageView, event.getScreenX(), event.getScreenY());
+            } else {
+                tableContextMenu.show(tableView,event.getScreenX(),event.getScreenY());
+            }
         }
     }
 
