@@ -7,7 +7,9 @@ package clientapp.interfaces;
 
 import clientapp.model.ProviderEntity;
 import java.util.List;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -16,21 +18,27 @@ import javax.ws.rs.ClientErrorException;
 public interface IProvider {
 
 
-    public List<ProviderEntity> listByContractEnd() throws ClientErrorException;
+    public <T> T listByContractEnd(Class<T> responseType) throws WebApplicationException;
 
-    public List<ProviderEntity> listByContractInit() throws ClientErrorException;
+    public <T> T listByContractInit(Class<T> responseType) throws WebApplicationException;
 
-    public void edit(ProviderEntity provider, String id) throws ClientErrorException;
+    public String countREST() throws WebApplicationException;
 
-    public ProviderEntity find(String id) throws ClientErrorException;
+    public void edit(Object requestEntity, String id) throws WebApplicationException;
 
-    public List<ProviderEntity> listByPrice() throws ClientErrorException;
+    public <T> T find(Class<T> responseType, String id) throws WebApplicationException;
 
-    public void create(ProviderEntity provider) throws ClientErrorException;
+    public <T> T findRange(Class<T> responseType, String from, String to) throws WebApplicationException;
 
-    public List<ProviderEntity> findAll() throws ClientErrorException;
+    public <T> T listByPrice(Class<T> responseType) throws WebApplicationException;
 
-    public void remove(String id) throws ClientErrorException;
+    public void create(Object requestEntity) throws WebApplicationException;
+
+    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException;
+
+    public void remove(String id) throws WebApplicationException;
+
+    public void close();
 
     
 }

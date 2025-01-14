@@ -5,41 +5,45 @@
  */
 package clientapp.model;
 
+import java.io.Serializable;
 import java.util.Date;
-
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author 2dam
  */
-public class ProviderEntity {
+@XmlRootElement
+public class ProviderEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     private Long id;
 
     private String email;
 
-    private  String name;
+    private String name;
 
-    private  Integer phone;
-    
-    private  Date contractIni;
+    private Integer phone;
 
-    private  Date contractEnd;
+    private Date contractIni;
 
-    private  Float price;
+    private Date contractEnd;
 
-    
-   // private List<MovieEntity> movies;
+    private Float price;
 
-     // Constructor to initialize final fields
+    // Constructor to initialize final fields
     public ProviderEntity(String email, String name, Integer phone, Date contractIni, Date contractEnd, Float price) {
-        this.email = new String (email);
-        this.name = new String (name);
-        this.phone = new Integer (phone);
-        this.contractIni = new Date (contractIni.getTime());
-        this.contractEnd = new Date (contractEnd.getTime());
-        this.price = new Float (price);
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
+        this.contractIni = contractIni;
+        this.contractEnd = contractEnd;
+        this.price = price;
+    }
+
+    public ProviderEntity() {
+
     }
 
     public String getEmail() {
@@ -70,16 +74,16 @@ public class ProviderEntity {
         return contractIni;
     }
 
-    public void setContractIni(Date contactIni) {
-        this.contractIni = contactIni;
+    public void setContractIni(Date contractIni) {
+        this.contractIni = contractIni;
     }
 
     public Date getContractEnd() {
         return contractEnd;
     }
 
-    public void setContractEnd(Date contactEnd) {
-        this.contractEnd = contactEnd;
+    public void setContractEnd(Date contractEnd) {
+        this.contractEnd = contractEnd;
     }
 
     public Float getPrice() {
@@ -98,14 +102,6 @@ public class ProviderEntity {
         this.id = id;
     }
 
-    /*public List<MovieEntity> getMovies() {
-        return movies;
-    }
-
-    public void setMovies(List<MovieEntity> movies) {
-        this.movies = movies;
-    }*/
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -113,7 +109,7 @@ public class ProviderEntity {
         return hash;
     }
 
-   /* @Override
+    @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof CategoryEntity)) {
@@ -124,7 +120,7 @@ public class ProviderEntity {
             return false;
         }
         return true;
-    }*/
+    }
 
     @Override
     public String toString() {
@@ -132,4 +128,3 @@ public class ProviderEntity {
     }
 
 }
-

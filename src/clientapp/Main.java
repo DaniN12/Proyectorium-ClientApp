@@ -5,13 +5,17 @@
  */
 package clientapp;
 
-import clientapp.controller.SignInController;
+import clientapp.controller.ProviderController;
+import clientapp.factories.ProviderManagerFactory;
+import clientapp.model.ProviderEntity;
+import java.util.List;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -30,10 +34,10 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/clientapp/view/SignInView.fxml"));
+                getClass().getResource("/clientapp/view/MainProviders.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        SignInController controller = (SignInController) loader.getController();
+        ProviderController  controller = (ProviderController) loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
         controller.initialize(root);
@@ -47,5 +51,6 @@ public class Main extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        
     }
 }
