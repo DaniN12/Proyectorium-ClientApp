@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @XmlRootElement
-public class CategoryEntity implements Serializable{
+public class CategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,60 +43,20 @@ public class CategoryEntity implements Serializable{
     private Pegi pegi;
 
     public CategoryEntity(Integer id, byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
-        this.id= id;
-        this.icon= icon;
-        this.name= name;
-        this.description= description;
-        this.creationDate= creationDate;
-        this.pegi= pegi;
+        this.id = id;
+        this.icon = icon;
+        this.name = name;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.pegi = pegi;
     }
-    
-    public CategoryEntity(){
-        
+
+    public CategoryEntity() {
+
     }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
- * @author Ruth
- */
-
-
-@NamedQueries({
-    @NamedQuery(
-            name = "listCategoriesbyPegi",
-            query = "SELECT c FROM CategoryEntity c ORDER BY c.pegi ASC"
-    )
-    ,
-    @NamedQuery(
-            name = "listCategoriesbyCreationDate",
-            query = "SELECT c FROM CategoryEntity c ORDER BY c.creationDate DESC"
-    )
-})
-
-@Entity
-@Table(schema = "proyectorium", name = "Category")
-@XmlRootElement
-public class CategoryEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-
-    @Lob
-    private byte[] icon;
-    private String name;
-    private String description;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    @Enumerated(EnumType.STRING)
-    private Pegi pegi;
-
-    public CategoryEntity() {
-
     }
 
     public Integer getId() {
@@ -146,13 +106,6 @@ public class CategoryEntity implements Serializable {
     public void setPegi(Pegi pegi) {
         this.pegi = pegi;
     }
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
 
     @Override
     public int hashCode() {
@@ -173,13 +126,11 @@ public class CategoryEntity implements Serializable {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return name;
-    @Override
-    public String toString() {
-        return "proyectorium.crud.entities.CategoryEntity[ id=" + id + " ]";
     }
 
 }
+
