@@ -5,6 +5,10 @@
  */
 package clientapp;
 
+import clientapp.controller.MovieController;
+import clientapp.controller.SignInController;
+import clientapp.factories.MovieFactory;
+import clientapp.model.MovieEntity;
 import clientapp.controller.ProviderController;
 import clientapp.factories.ProviderManagerFactory;
 import clientapp.model.ProviderEntity;
@@ -34,6 +38,10 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
+               /* getClass().getResource("/clientapp/view/MovieMainView.fxml"));
+        Parent root = (Parent) loader.load();
+        // Retrieve the controller associated with the view
+        MovieController controller = (MovieController) loader.getController();*/
                 getClass().getResource("/clientapp/view/MainProviders.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
