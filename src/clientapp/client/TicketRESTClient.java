@@ -1,9 +1,10 @@
 package clientapp.client;
 
 import clientapp.interfaces.ITicket;
-import clientapp.model.Ticket;
+import clientapp.model.TicketEntity;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -13,21 +14,21 @@ import javax.ws.rs.core.GenericType;
  * [proyectorium.crud.entities.ticket]
  * USAGE:
  * <pre>
- *        TicketClient client = new TicketClient();
- *        Object response = client.XXX(...);
- *        // do whatever with response
- *        client.close();
- * </pre>
+        TicketRESTClient client = new TicketRESTClient();
+        Object response = client.XXX(...);
+        // do whatever with response
+        client.close();
+ </pre>
  *
  * @author kbilb
  */
-public class TicketClient implements ITicket {
+public class TicketRESTClient implements ITicket {
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
 
-    public TicketClient() {
+    public TicketRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.ticket");
     }
@@ -39,62 +40,62 @@ public class TicketClient implements ITicket {
     }
 
     @Override
-    public List<Ticket> listByMovieASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
+    public List<TicketEntity> listByMovieASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("by-movie");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public List<Ticket> listByBuyDateASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
+    public List<TicketEntity> listByBuyDateASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("by-buy-date");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public void edit(Ticket ticket, String id) throws ClientErrorException {
+    public void edit(TicketEntity ticket, String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML));
+                .put(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML), TicketEntity.class);
     }
 
     @Override
-    public Ticket find(String id) throws ClientErrorException {
+    public TicketEntity find(String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(Ticket.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(TicketEntity.class);
     }
 
-    public <T> T findRange(Class<T> responseType, String from, String to) throws ClientErrorException {
+    public <T> T findRange(Class<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public void create(Ticket ticket) throws ClientErrorException {
+    public void create(TicketEntity ticket) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML));
+                .post(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML), TicketEntity.class);
     }
 
     @Override
-    public List<Ticket> listByPriceASC(GenericType<List<Ticket>> responseType) throws ClientErrorException {
+    public List<TicketEntity> listByPriceASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("by-price");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public List<Ticket> findAll(GenericType<List<Ticket>> responseType) throws ClientErrorException {
+    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public void remove(String id) throws ClientErrorException {
+    public void remove(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                .request().delete();
+                .request().delete(TicketEntity.class);
     }
 
     public void close() {

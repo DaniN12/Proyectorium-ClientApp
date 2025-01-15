@@ -1,11 +1,18 @@
 package clientapp.controller;
 
+import clientapp.factories.TicketFactory;
+import clientapp.interfaces.ITicket;
+import clientapp.model.TicketEntity;
 import clientapp.model.User;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javax.ws.rs.core.GenericType;
 
 /**
  * FXML Controller class
@@ -95,10 +103,27 @@ public class InfoViewController {
     private ImageView profileImageRigby;
 
     @FXML
-    private TableView tableView;
-    
+    private TableView ticketTableView;
+
     @FXML
-    private TableColumn tableColumn;
+    private TableColumn movieImageColumn;
+
+    @FXML
+    private TableColumn movieTitleColumn;
+
+    @FXML
+    private TableColumn dateHourColumn;
+
+    @FXML
+    private TableColumn durationColumn;
+
+    @FXML
+    private TableColumn priceColumn;
+
+    @FXML
+    private TableColumn peopleColumn;
+
+    ObservableList<TicketEntity> listTickets;
 
     private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
@@ -109,23 +134,33 @@ public class InfoViewController {
     /**
      * Method that initializes the controller class.
      */
-    public void initialize(Parent root, User user) {
-        logger.info("Initializing InfoView stage.");
+    public void initialize(Parent root/*, User user*/) {
+        try {
+            logger.info("Initializing InfoView stage.");
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("User info");
-        stage.getIcons().add(icon);
-        stage.setResizable(false);
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("User info");
+            stage.getIcons().add(icon);
+            stage.setResizable(false);
 
-        profileImageView.setOnMouseClicked(this::showContextMenu);
-        stage.addEventHandler(WindowEvent.WINDOW_SHOWN, this::handleWindowShowing);
-        stage.setOnCloseRequest(this::onCloseRequest);
+            profileImageView.setOnMouseClicked(this::showContextMenu);
+            stage.addEventHandler(WindowEvent.WINDOW_SHOWN, this::handleWindowShowing);
+            stage.setOnCloseRequest(this::onCloseRequest);
+            
+            //movieImageColumn.setCellValueFactory(new PropertyValueFactory<>("movie.image"));
+            //movieTitleColumn.setCellValueFactory(new PropertyValueFactory<>("movie.title"));
+            dateHourColumn.setCellValueFactory(new PropertyValueFactory<>("buyDate"));
+            //durationColumn.setCellValueFactory(new PropertyValueFactory<>("movie.duration"));
+            priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+            peopleColumn.setCellValueFactory(new PropertyValueFactory<>("people"));
 
-        tableColumn.setCellValueFactory(new PropertyValueFactory("title"));
-        
-        stage.show();
+            ticketTableView.setItems(FXCollections.observableArrayList(TicketFactory.getITicket().findAll(new GenericType<List<TicketEntity>>() {})));
 
+            stage.show();
+        } catch (Exception e) {
+            e.getLocalizedMessage();
+        }
     }
 
     /**
@@ -134,10 +169,10 @@ public class InfoViewController {
      * @param event triggers an action, in this case a window opening
      */
     public void handleWindowShowing(WindowEvent event) {
-        User user = fetchUserData();
+        /* User user = fetchUserData();
         emailTextF.setText(user.getEmail());
         userNameTextF.setText(user.getFullName());
-        cityTextF.setText(user.getCity());
+        cityTextF.setText(user.getCity());*/
 
         optionMordecay.setOnAction(this::onOptionMordecay);
         optionCj.setOnAction(this::onOptionCj);
@@ -154,7 +189,7 @@ public class InfoViewController {
      */
     @FXML
     private void onOptionMordecay(ActionEvent event) {
-         profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/mordecay.png")));
+        profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/mordecay.png")));
     }
 
     /**
@@ -190,10 +225,10 @@ public class InfoViewController {
     @FXML
     private void showContextMenu(MouseEvent event) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            if (!tableView.contains(event.getScreenX(), event.getScreenY())) {
+            if (!ticketTableView.contains(event.getScreenX(), event.getScreenY())) {
                 contextMenu.show(profileImageView, event.getScreenX(), event.getScreenY());
             } else {
-                tableContextMenu.show(tableView,event.getScreenX(),event.getScreenY());
+                tableContextMenu.show(ticketTableView, event.getScreenX(), event.getScreenY());
             }
         }
     }
