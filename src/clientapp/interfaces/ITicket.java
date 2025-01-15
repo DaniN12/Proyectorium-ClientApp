@@ -5,10 +5,12 @@
  */
 package clientapp.interfaces;
 
-import clientapp.model.Ticket;
+import clientapp.model.TicketEntity;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -16,20 +18,20 @@ import javax.ws.rs.client.WebTarget;
  */
 public interface ITicket {
     
-    public List<Ticket> listByMovieASC() throws ClientErrorException;
+    public List<TicketEntity> listByMovieASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
     
-    public List<Ticket> listByBuyDateASC() throws ClientErrorException;
+    public List<TicketEntity> listByBuyDateASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
 
-    public void edit(Ticket ticket, String id) throws ClientErrorException;
+    public void edit(TicketEntity ticket, String id) throws WebApplicationException;
 
-    public Ticket find(String id) throws ClientErrorException;
+    public TicketEntity find(String id) throws WebApplicationException;
 
-    public void create(Ticket ticket) throws ClientErrorException;
+    public void create(TicketEntity ticket) throws WebApplicationException;
 
-    public List<Ticket> listByPriceASC() throws ClientErrorException;
+    public List<TicketEntity> listByPriceASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
 
-    public List<Ticket> findAll() throws ClientErrorException;
+    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException;
 
-    public void remove(String id) throws ClientErrorException;
+    public void remove(String id) throws WebApplicationException;
     
 }
