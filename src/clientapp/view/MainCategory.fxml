@@ -10,17 +10,18 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" fx:id="categoryPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" fx:id="categoryPane" fx:controller="clientapp.controller.CategoryController" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
        <fx:include fx:id="menuHBox" source="Menu.fxml">
         <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
     </fx:include>
-      <TableView fx:id="viewTable" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
+      <TableView fx:id="tbcategory" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
         <columns>
-          <TableColumn fx:id="iconColum" prefWidth="203.2000274658203" text="Icon" />
-           <TableColumn fx:id="nameColum" prefWidth="268.7999572753906" text="Name" />
-           <TableColumn fx:id="descriptionColum" prefWidth="564.0" text="Description" />
-           <TableColumn fx:id="pegiColum" prefWidth="164.0001220703125" text="Pegi" />
+          <TableColumn fx:id="tbcolIcon" prefWidth="159.99996948242188" text="Icon" />
+           <TableColumn fx:id="tbcolName" prefWidth="150.39996337890625" text="Name" />
+           <TableColumn fx:id="tbcolDescription" minWidth="0.0" prefWidth="447.20001220703125" text="Description" />
+            <TableColumn fx:id="tbcolCreationDate" prefWidth="251.20001220703125" text="Creation Date" />
+           <TableColumn fx:id="tbcolPegi" prefWidth="193.60009765625" text="Pegi" />
            
         </columns>
          <contextMenu>

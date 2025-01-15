@@ -5,13 +5,16 @@
  */
 package clientapp.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author 2dam
  */
-public class CategoryEntity {
+@XmlRootElement
+public class CategoryEntity implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
@@ -29,6 +32,10 @@ public class CategoryEntity {
         this.description= description;
         this.creationDate= creationDate;
         this.pegi= pegi;
+    }
+    
+    public CategoryEntity(){
+        
     }
 
     public static long getSerialVersionUID() {
@@ -93,7 +100,7 @@ public class CategoryEntity {
         return hash;
     }
 
-    /*
+    
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -106,11 +113,11 @@ public class CategoryEntity {
         }
         return true;
     }
-*/
+
     
     @Override
     public String toString() {
-        return "proyectorium.crud.entities.CategoryEntity[ id=" + id + " ]";
+        return name;
     }
 
 }
