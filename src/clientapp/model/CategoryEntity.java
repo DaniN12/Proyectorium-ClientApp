@@ -7,6 +7,23 @@ package clientapp.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -40,6 +57,46 @@ public class CategoryEntity implements Serializable{
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+ * @author Ruth
+ */
+
+
+@NamedQueries({
+    @NamedQuery(
+            name = "listCategoriesbyPegi",
+            query = "SELECT c FROM CategoryEntity c ORDER BY c.pegi ASC"
+    )
+    ,
+    @NamedQuery(
+            name = "listCategoriesbyCreationDate",
+            query = "SELECT c FROM CategoryEntity c ORDER BY c.creationDate DESC"
+    )
+})
+
+@Entity
+@Table(schema = "proyectorium", name = "Category")
+@XmlRootElement
+public class CategoryEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
+
+    @Lob
+    private byte[] icon;
+    private String name;
+    private String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationDate;
+
+    @Enumerated(EnumType.STRING)
+    private Pegi pegi;
+
+    public CategoryEntity() {
+
     }
 
     public Integer getId() {
@@ -89,9 +146,13 @@ public class CategoryEntity implements Serializable{
     public void setPegi(Pegi pegi) {
         this.pegi = pegi;
     }
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-
-  
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
     @Override
     public int hashCode() {
@@ -100,7 +161,6 @@ public class CategoryEntity implements Serializable{
         return hash;
     }
 
-    
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -113,11 +173,13 @@ public class CategoryEntity implements Serializable{
         }
         return true;
     }
-
     
     @Override
     public String toString() {
         return name;
+    @Override
+    public String toString() {
+        return "proyectorium.crud.entities.CategoryEntity[ id=" + id + " ]";
     }
 
 }
