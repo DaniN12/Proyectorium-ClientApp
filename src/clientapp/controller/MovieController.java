@@ -8,6 +8,7 @@ package clientapp.controller;
 import clientapp.factories.MovieFactory;
 import clientapp.interfaces.IMovie;
 import clientapp.model.MovieEntity;
+import clientapp.model.UserEntity;
 import java.util.List;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -58,12 +59,23 @@ public class MovieController {
     @FXML
     private TableView moviesTbv;
 
-    public void initialize(Parent root) {
+    public void initialize(Parent root, UserEntity user) {
 
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
         stage.setTitle("Movie");
+        stage.setResizable(false);
+        moviesTbv.setEditable(true);
+        titleColumn.setEditable(true);
+        durationColumn.setEditable(true);
+        durationColumn.setEditable(true);
+        titleColumn.setEditable(true);
+        rDateColumn.setEditable(true);
+        movieHourClolumn.setEditable(true);
+        providerColumn.setEditable(true);
+        categoriesColumn.setEditable(true);
+        
 
         movieManager = MovieFactory.getIMovie();
 
@@ -73,11 +85,11 @@ public class MovieController {
             
             titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
             durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
-            sinopsisColumn.setCellValueFactory(new PropertyValueFactory<>("sinopsis"));
+            durationColumn.setCellValueFactory(new PropertyValueFactory<>("sinopsis"));
             rDateColumn.setCellValueFactory(new PropertyValueFactory<>("releaseDate"));
             movieHourClolumn.setCellValueFactory(new PropertyValueFactory<>("movieHour"));
-            // providerColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
-            // categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("categories"));
+            providerColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
+            categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("categories"));
 
             moviesTbv.setItems(movies);
 

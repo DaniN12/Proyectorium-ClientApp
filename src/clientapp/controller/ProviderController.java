@@ -8,6 +8,7 @@ package clientapp.controller;
 import clientapp.factories.ProviderManagerFactory;
 import clientapp.interfaces.IProvider;
 import clientapp.model.ProviderEntity;
+import clientapp.model.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ public class ProviderController {
 
     private IProvider iProvider;
 
-    public void initialize(Parent root) {
+    public void initialize(Parent root, UserEntity user) {
         logger.info("Initializing Provider stage.");
         Scene scene = new Scene(root);
         stage.setScene(scene);
