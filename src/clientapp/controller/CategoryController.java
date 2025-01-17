@@ -8,6 +8,7 @@ package clientapp.controller;
 import clientapp.factories.CategoryFactory;
 import clientapp.interfaces.ICategory;
 import clientapp.model.CategoryEntity;
+import clientapp.model.Pegi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -71,8 +73,11 @@ public class CategoryController {
             tbcolDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tbcolCreationDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
             tbcolPegi.setCellValueFactory(new PropertyValueFactory<>("pegi"));
+            // tbcolPegi.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(Pegi.values())));
 
+            
             tbcategory.setItems(category);
+            
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No se ha podido abrir la ventana: " + e.getMessage(), ButtonType.OK);

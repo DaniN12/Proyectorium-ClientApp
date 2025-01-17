@@ -90,7 +90,6 @@ public class CategoryEntity implements Serializable{
         this.pegi = pegi;
     }
 
-
   
 
     @Override
