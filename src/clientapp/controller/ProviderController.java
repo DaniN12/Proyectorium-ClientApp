@@ -65,7 +65,7 @@ public class ProviderController {
 
     private IProvider iProvider;
 
-    public void initialize(Parent root, UserEntity user) {
+    public void initialize(Parent root) {
         logger.info("Initializing Provider stage.");
         Scene scene = new Scene(root);
         stage.setScene(scene);

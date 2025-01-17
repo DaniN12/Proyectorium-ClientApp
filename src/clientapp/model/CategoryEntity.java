@@ -140,7 +140,7 @@ public class CategoryEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "proyectorium.crud.entities.CategoryEntity[ id=" + id + " ]";
+        return name;
     }
 
 }

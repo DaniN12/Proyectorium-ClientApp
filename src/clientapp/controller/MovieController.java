@@ -9,17 +9,25 @@ import clientapp.factories.MovieFactory;
 import clientapp.interfaces.IMovie;
 import clientapp.model.MovieEntity;
 import clientapp.model.UserEntity;
+import java.io.ByteArrayInputStream;
 import java.util.List;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -59,7 +67,10 @@ public class MovieController {
     @FXML
     private TableView moviesTbv;
 
-    public void initialize(Parent root, UserEntity user) {
+    @FXML
+    private Button removeMovieBtn;
+
+    public void initialize(Parent root) {
 
         Scene scene = new Scene(root);
 
@@ -67,22 +78,32 @@ public class MovieController {
         stage.setTitle("Movie");
         stage.setResizable(false);
         moviesTbv.setEditable(true);
-        titleColumn.setEditable(true);
-        durationColumn.setEditable(true);
-        durationColumn.setEditable(true);
-        titleColumn.setEditable(true);
-        rDateColumn.setEditable(true);
-        movieHourClolumn.setEditable(true);
-        providerColumn.setEditable(true);
-        categoriesColumn.setEditable(true);
-        
+        imgColumn.setEditable(false);
+        removeMovieBtn.setOnAction(this::handleRemoveAction);
 
         movieManager = MovieFactory.getIMovie();
 
         try {
             ObservableList<MovieEntity> movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
             }));
-            
+
+            imgColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<MovieEntity, ImageView>, ObservableValue<ImageView>>() {
+                @Override
+                public ObservableValue<ImageView> call(CellDataFeatures<MovieEntity, ImageView> param) {
+                    MovieEntity ticket = param.getValue();
+                    byte[] movieImageBytes = ticket.getMovieImage();
+
+                    // Convertir el array de bytes a una imagen
+                    Image image = new Image(new ByteArrayInputStream(movieImageBytes));
+
+                    // Crear un ImageView y establecer la imagen
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(50);  // Ajustar el tamaño de la imagen
+                    imageView.setFitHeight(50); // Ajustar el tamaño de la imagen
+                    return new SimpleObjectProperty<>(imageView);
+                }
+            });
+
             titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
             durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
             durationColumn.setCellValueFactory(new PropertyValueFactory<>("sinopsis"));
@@ -99,13 +120,11 @@ public class MovieController {
 
         stage.show();
     }
-    
-    public void handleUsersTableSelectionChange(ObservableValue observable, Object oldValue, Object newValue){
-        
-        if(newValue!= null){
-            MovieEntity movie = (MovieEntity) newValue;
-            
-        }
+
+    public void handleRemoveAction(ActionEvent event) {
+
+        moviesTbv.getItems().remove(moviesTbv.getSelectionModel().getSelectedItem());
+        moviesTbv.refresh();
     }
 
     public TableColumn getTitleColumn() {
@@ -194,6 +213,14 @@ public class MovieController {
 
     public void setMoviesTbv(TableView moviesTbv) {
         this.moviesTbv = moviesTbv;
+    }
+
+    public Button getRemoveMovieBtn() {
+        return removeMovieBtn;
+    }
+
+    public void setRemoveMovieBtn(Button removeMovieBtn) {
+        this.removeMovieBtn = removeMovieBtn;
     }
 
 }

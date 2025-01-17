@@ -124,7 +124,7 @@ public class ProviderEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "proyectorium.crud.entities.ProviderEntity[ id=" + id + " ]";
+        return name;
     }
 
 }

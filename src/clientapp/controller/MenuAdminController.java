@@ -44,12 +44,13 @@ public class MenuAdminController {
         stage.setScene(scene);
         stage.setTitle("Movie");
         stage.setResizable(false);
+        moviesBtn.setOnAction(this::openMoviesWindow);
 
         stage.show();
     }
 
     @FXML
-    public void openMoviesWindow(ActionEvent event, UserEntity user) {
+    public void openMoviesWindow(ActionEvent event) {
         try {
             // Load DOM form FXML view
             FXMLLoader loader = new FXMLLoader(
@@ -67,7 +68,7 @@ public class MenuAdminController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root, user);
+            controller.initialize(root);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage
@@ -81,7 +82,7 @@ public class MenuAdminController {
     }
 
     @FXML
-    public void openProvidersWindow(ActionEvent event, UserEntity user) {
+    public void openProvidersWindow(ActionEvent event) {
         try {
             // Load DOM form FXML view
             FXMLLoader loader = new FXMLLoader(
@@ -99,7 +100,7 @@ public class MenuAdminController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root, user);
+            controller.initialize(root);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage
@@ -114,7 +115,7 @@ public class MenuAdminController {
 
     /* 
      @FXML
-    public void openCategoriesWindow(ActionEvent event, UserEntity user) {
+    public void openCategoriesWindow(ActionEvent event) {
         try {
             // Load DOM form FXML view
             FXMLLoader loader = new FXMLLoader(
@@ -132,7 +133,7 @@ public class MenuAdminController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root, user);
+            controller.initialize(root);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage

@@ -24,6 +24,7 @@ import clientapp.exceptions.IncorrectPasswordException;
 import clientapp.exceptions.IncorrectPatternException;
 import clientapp.factories.SignableFactory;
 import clientapp.interfaces.Signable;
+import clientapp.model.Customer;
 //import exceptions.ConnectionErrorException;
 //import exceptions.UserAlreadyExistException;
 import java.io.IOException;

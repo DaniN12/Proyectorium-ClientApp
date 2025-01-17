@@ -5,6 +5,7 @@ package clientapp.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -28,9 +29,10 @@ public class MovieEntity implements Serializable {
 
     private byte[] movieImage;
 
-    //private List<TicketEntity> tickets;
-    //private ProviderEntity provider;
-    // private List<CategoryEntity> categories;
+    private List<TicketEntity> tickets;
+    private ProviderEntity provider;
+    private List<CategoryEntity> categories;
+
     public MovieEntity() {
 
     }
@@ -102,7 +104,7 @@ public class MovieEntity implements Serializable {
         this.movieImage = movieImage;
     }
 
-    /*  public List<TicketEntity> getTickets() {
+    public List<TicketEntity> getTickets() {
         return tickets;
     }
 
@@ -125,7 +127,7 @@ public class MovieEntity implements Serializable {
     public void setCategories(List<CategoryEntity> categories) {
         this.categories = categories;
     }
-     */
+
     @Override
     public int hashCode() {
         int hash = 0;
