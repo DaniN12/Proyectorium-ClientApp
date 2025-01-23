@@ -7,6 +7,23 @@ package clientapp.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -14,32 +31,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @XmlRootElement
-public class CategoryEntity implements Serializable{
+public class CategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
+
+    @Lob
     private byte[] icon;
     private String name;
     private String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
+
+    @Enumerated(EnumType.STRING)
     private Pegi pegi;
 
-    public CategoryEntity(Integer id, byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
-        this.id= id;
-        this.icon= icon;
-        this.name= name;
-        this.description= description;
-        this.creationDate= creationDate;
-        this.pegi= pegi;
-    }
-    
-    public CategoryEntity(){
-        
-    }
+    public CategoryEntity() {
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public Integer getId() {
@@ -90,7 +102,7 @@ public class CategoryEntity implements Serializable{
         this.pegi = pegi;
     }
 
-  
+
 
     @Override
     public int hashCode() {
@@ -99,7 +111,6 @@ public class CategoryEntity implements Serializable{
         return hash;
     }
 
-    
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -112,7 +123,6 @@ public class CategoryEntity implements Serializable{
         }
         return true;
     }
-
     
     @Override
     public String toString() {
