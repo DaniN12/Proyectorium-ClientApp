@@ -1,49 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package clientapp.model;
 
-import java.io.Serializable;
-import java.util.Date;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-/**
- *
- * @author kbilb
- */
 @XmlRootElement
 public class TicketEntity implements Serializable {
 
     private Integer id;
-
-    private Date buyDate;
-
+    private String buyDate;  // Usamos String para almacenar la fecha en formato ISO sin zona horaria
     private Float price;
-
     private Integer numPeople;
-
     private MovieEntity movie;
-
     private UserEntity user;
 
-    private byte[] movieImage;
-
+    // Constructor vacío
     public TicketEntity() {
-
     }
 
-    public TicketEntity(Integer id, Date buyDate, Float price, Integer numPeople, MovieEntity movie, UserEntity user, byte[] movieImage) {
+    // Constructor con parámetros
+    public TicketEntity(Integer id, String buyDate, Float price, Integer numPeople, MovieEntity movie, UserEntity user) {
         this.id = id;
         this.buyDate = buyDate;
         this.price = price;
         this.numPeople = numPeople;
-        /*this.movie = movie;
+        this.movie = movie;
         this.user = user;
-        this.movieImage = movieImage;*/
     }
 
+    @XmlElement
     public Integer getId() {
         return id;
     }
@@ -52,14 +40,28 @@ public class TicketEntity implements Serializable {
         this.id = id;
     }
 
-    public Date getBuyDate() {
+    @XmlElement
+    public String getBuyDate() {
         return buyDate;
     }
 
-    public void setBuyDate(Date buyDate) {
+    public void setBuyDate(String buyDate) {
         this.buyDate = buyDate;
     }
 
+    // Convertir el buyDate de String a LocalDateTime (ignorando el offset)
+    public LocalDateTime getBuyDateAsLocalDateTime() {
+        // Eliminar el offset (parte que sigue al '+') antes de convertir a LocalDateTime
+        String dateWithoutOffset = buyDate.split("\\+")[0];
+        return LocalDateTime.parse(dateWithoutOffset, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    // Convertir el LocalDateTime a String
+    public void setBuyDateFromLocalDateTime(LocalDateTime buyDate) {
+        this.buyDate = buyDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    @XmlElement
     public Float getPrice() {
         return price;
     }
@@ -68,6 +70,7 @@ public class TicketEntity implements Serializable {
         this.price = price;
     }
 
+    @XmlElement
     public Integer getNumPeople() {
         return numPeople;
     }
@@ -76,6 +79,7 @@ public class TicketEntity implements Serializable {
         this.numPeople = numPeople;
     }
 
+    @XmlElement
     public MovieEntity getMovie() {
         return movie;
     }
@@ -84,6 +88,7 @@ public class TicketEntity implements Serializable {
         this.movie = movie;
     }
 
+    @XmlElement
     public UserEntity getUser() {
         return user;
     }
@@ -92,36 +97,30 @@ public class TicketEntity implements Serializable {
         this.user = user;
     }
 
-    public byte[] getMovieImage() {
-        return movieImage;
-    }
-
-    public void setMovieImage(byte[] movieImage) {
-        this.movieImage = movieImage;
-    }
-
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return (id != null ? id.hashCode() : 0);
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof TicketEntity)) {
             return false;
         }
         TicketEntity other = (TicketEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return this.id != null && this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "proyectorium.crud.entities.TicketEntity[ id = " + id + " ]";
+        return "TicketEntity[id=" + id + "]";
+    }
+
+    public String getCalculatedPrice() {
+        return (numPeople * price) + "€";
+    }
+
+    public String getMovieDuration() {
+        return movie.getDuration() + "min";
     }
 }
