@@ -24,17 +24,17 @@ public class TicketEntity implements Serializable {
 
     private Integer numPeople;
 
-    //private Movie movie;
+    private MovieEntity movie;
 
-    //private User user;
+    private UserEntity user;
 
-    //private byte[] movieImage;
+    private byte[] movieImage;
 
     public TicketEntity() {
 
     }
 
-    public TicketEntity(Integer id, Date buyDate, Float price, Integer numPeople, Movie movie, User user, byte[] movieImage) {
+    public TicketEntity(Integer id, Date buyDate, Float price, Integer numPeople, MovieEntity movie, UserEntity user, byte[] movieImage) {
         this.id = id;
         this.buyDate = buyDate;
         this.price = price;
@@ -76,19 +76,19 @@ public class TicketEntity implements Serializable {
         this.numPeople = numPeople;
     }
 
-   /* public Movie getMovie() {
+    public MovieEntity getMovie() {
         return movie;
     }
 
-    public void setMovie(Movie movie) {
+    public void setMovie(MovieEntity movie) {
         this.movie = movie;
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 
@@ -98,7 +98,7 @@ public class TicketEntity implements Serializable {
 
     public void setMovieImage(byte[] movieImage) {
         this.movieImage = movieImage;
-    }*/
+    }
 
     @Override
     public int hashCode() {
@@ -125,4 +125,3 @@ public class TicketEntity implements Serializable {
         return "proyectorium.crud.entities.TicketEntity[ id = " + id + " ]";
     }
 }
-

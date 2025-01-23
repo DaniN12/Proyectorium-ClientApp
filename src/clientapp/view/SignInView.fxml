@@ -26,13 +26,13 @@
                 <Line endX="100.0" layoutX="155.0" layoutY="272.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
                 <Line endX="100.0" layoutX="155.0" layoutY="334.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
                 
-                <Button fx:id="btnShowPasswd" layoutX="255.0" layoutY="305.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="32.0" styleClass="btnShowPasswd">
+                <Button fx:id="btnShowPasswd" layoutX="255.0" layoutY="305.0" mnemonicParsing="false" prefHeight="22.0"  prefWidth="32.0" styleClass="btnShowPasswd">
                     <graphic>
                         <ImageView fx:id="ImageViewEye" fitHeight="31.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true" />
                     </graphic>
                 </Button>
                 
-                <Button fx:id="btnSignIn" layoutX="108.0" layoutY="373.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="102.0" styleClass="minimal-button" text="Sign In" />
+                <Button fx:id="btnSignIn" layoutX="108.0" layoutY="373.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="102.0" styleClass="minimal-button" text="Sign In" onAction="#handleSignIn"/>
                 <Hyperlink fx:id="HyperLinkRegistered" layoutX="55.0" layoutY="420.0" text="You are not Registered yet? Click here!" />
             <Hyperlink fx:id="HyperLinkRegistered1" layoutX="54.0" layoutY="344.0" text="Did you forget your password?" />
             <Button layoutX="380.0" layoutY="33.0" mnemonicParsing="false">

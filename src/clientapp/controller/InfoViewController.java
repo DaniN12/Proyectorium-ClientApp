@@ -3,7 +3,7 @@ package clientapp.controller;
 import clientapp.factories.TicketFactory;
 import clientapp.interfaces.ITicket;
 import clientapp.model.TicketEntity;
-import clientapp.model.User;
+import clientapp.model.UserEntity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +134,7 @@ public class InfoViewController {
     /**
      * Method that initializes the controller class.
      */
-    public void initialize(Parent root/*, User user*/) {
+    public void initialize(Parent root, UserEntity user) {
         try {
             logger.info("Initializing InfoView stage.");
 
@@ -147,7 +147,7 @@ public class InfoViewController {
             profileImageView.setOnMouseClicked(this::showContextMenu);
             stage.addEventHandler(WindowEvent.WINDOW_SHOWN, this::handleWindowShowing);
             stage.setOnCloseRequest(this::onCloseRequest);
-            
+
             //movieImageColumn.setCellValueFactory(new PropertyValueFactory<>("movie.image"));
             //movieTitleColumn.setCellValueFactory(new PropertyValueFactory<>("movie.title"));
             dateHourColumn.setCellValueFactory(new PropertyValueFactory<>("buyDate"));
@@ -155,7 +155,8 @@ public class InfoViewController {
             priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
             peopleColumn.setCellValueFactory(new PropertyValueFactory<>("people"));
 
-            ticketTableView.setItems(FXCollections.observableArrayList(TicketFactory.getITicket().findAll(new GenericType<List<TicketEntity>>() {})));
+            ticketTableView.setItems(FXCollections.observableArrayList(TicketFactory.getITicket().findAll(new GenericType<List<TicketEntity>>() {
+            })));
 
             stage.show();
         } catch (Exception e) {
@@ -169,11 +170,10 @@ public class InfoViewController {
      * @param event triggers an action, in this case a window opening
      */
     public void handleWindowShowing(WindowEvent event) {
-        /* User user = fetchUserData();
+        UserEntity user = fetchUserData();
         emailTextF.setText(user.getEmail());
         userNameTextF.setText(user.getFullName());
-        cityTextF.setText(user.getCity());*/
-
+        cityTextF.setText(user.getCity());
         optionMordecay.setOnAction(this::onOptionMordecay);
         optionCj.setOnAction(this::onOptionCj);
         optionRigby.setOnAction(this::onOptionRigby);
@@ -305,7 +305,7 @@ public class InfoViewController {
      *
      * @return A User object containing the user data. This will be an empty
      */
-    private User fetchUserData() {
-        return new User();
+    private UserEntity fetchUserData() {
+        return new UserEntity();
     }
 }

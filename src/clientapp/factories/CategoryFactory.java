@@ -5,22 +5,23 @@
  */
 package clientapp.factories;
 
-import clientapp.client.CategoryClient;
+import clientapp.client.CategoryRESTClient;
 import clientapp.interfaces.ICategory;
+
 
 /**
  *
  * @author 2dam
  */
 public class CategoryFactory {
-    
+
     private static ICategory categoryEntity;
-    
-    public static ICategory getICategory(){
-        if(categoryEntity==null)
-            categoryEntity= new CategoryClient();
-        
+
+    public static ICategory getICategory() {
+        if (categoryEntity == null) {
+            categoryEntity = new CategoryRESTClient();
+        }
+
         return categoryEntity;
-        
     }
 }

@@ -9,6 +9,9 @@ package clientapp.model;
  *
  * @author kbilb
  */
-public class Movie {
+public enum UserType {
+    
+    ADMIN,
+    CUSTOMER
     
 }

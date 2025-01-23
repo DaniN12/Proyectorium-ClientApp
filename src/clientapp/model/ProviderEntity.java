@@ -45,6 +45,10 @@ public class ProviderEntity implements Serializable {
     public ProviderEntity() {
 
     }
+    
+    public ProviderEntity(String name){
+        this.name = name;
+    }
 
     public String getEmail() {
         return email;
@@ -124,7 +128,7 @@ public class ProviderEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "proyectorium.crud.entities.ProviderEntity[ id=" + id + " ]";
+        return name;
     }
 
 }

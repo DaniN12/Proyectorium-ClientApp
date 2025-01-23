@@ -4,7 +4,9 @@
 package clientapp.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -28,22 +30,27 @@ public class MovieEntity implements Serializable {
 
     private byte[] movieImage;
 
-    //private List<TicketEntity> tickets;
-    //private ProviderEntity provider;
-    // private List<CategoryEntity> categories;
+    private List<TicketEntity> tickets;
+    private ProviderEntity provider;
+    private List<CategoryEntity> categories;
+
     public MovieEntity() {
 
+        this.title = "";
+        this.duration = 0;
+        this.sinopsis = "";
+        this.releaseDate = null;
+        this.movieHour = MovieHour.HOUR_16;
+        this.provider = new ProviderEntity();
     }
 
-    public MovieEntity(Integer id, String title, Integer duration, String sinopsis,
-            Date releaseDate, MovieHour movieHour, byte[] movieImage) {
-        this.id = id;
+    public MovieEntity(String title, Integer duration, String sinopsis, Date releaseDate, MovieHour movieHour, ProviderEntity provider) {
         this.title = title;
         this.duration = duration;
         this.sinopsis = sinopsis;
         this.releaseDate = releaseDate;
         this.movieHour = movieHour;
-        this.movieImage = movieImage;
+        this.provider = provider;
     }
 
     public Integer getId() {
@@ -102,7 +109,7 @@ public class MovieEntity implements Serializable {
         this.movieImage = movieImage;
     }
 
-    /*  public List<TicketEntity> getTickets() {
+    public List<TicketEntity> getTickets() {
         return tickets;
     }
 
@@ -125,7 +132,7 @@ public class MovieEntity implements Serializable {
     public void setCategories(List<CategoryEntity> categories) {
         this.categories = categories;
     }
-     */
+
     @Override
     public int hashCode() {
         int hash = 0;
