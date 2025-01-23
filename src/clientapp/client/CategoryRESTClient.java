@@ -17,21 +17,21 @@ import javax.ws.rs.core.GenericType;
  * [proyectorium.crud.entities.categoryentity]<br>
  * USAGE:
  * <pre>
- *        CategoryClient client = new CategoryClient();
- *        Object response = client.XXX(...);
- *        // do whatever with response
- *        client.close();
- * </pre>
+        CategoryRESTClient client = new CategoryRESTClient();
+        Object response = client.XXX(...);
+        // do whatever with response
+        client.close();
+ </pre>
  *
  * @author 2dam
  */
-public class CategoryClient implements ICategory{
+public class CategoryRESTClient implements ICategory{
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
 
-    public CategoryClient() {
+    public CategoryRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.categoryentity");
     }

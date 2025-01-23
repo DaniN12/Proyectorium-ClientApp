@@ -150,4 +150,8 @@ public class CategoryController {
         this.categoryManager = categoryManager;
     }
 
+    public void removeCategory(){
+        tbcategory.getItems().remove(tbcategory.getSelectionModel().getSelectedItem());
+        tbcategory.refresh();
+    }
 }

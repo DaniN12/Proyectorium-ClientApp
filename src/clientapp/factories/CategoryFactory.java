@@ -5,7 +5,7 @@
  */
 package clientapp.factories;
 
-import clientapp.client.CategoryClient;
+import clientapp.client.CategoryRESTClient;
 import clientapp.interfaces.ICategory;
 
 /**
@@ -18,7 +18,7 @@ public class CategoryFactory {
     
     public static ICategory getICategory(){
         if(categoryEntity==null)
-            categoryEntity= new CategoryClient();
+            categoryEntity= new CategoryRESTClient();
         
         return categoryEntity;
         
