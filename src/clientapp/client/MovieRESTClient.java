@@ -76,7 +76,8 @@ public class MovieRESTClient implements IMovie {
     }
 
     public void create(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
     }
 
     public <T> T listByMovieHour(Class<T> responseType, String movieHour) throws WebApplicationException {

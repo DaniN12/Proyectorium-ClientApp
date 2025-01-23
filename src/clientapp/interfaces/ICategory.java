@@ -5,9 +5,6 @@
  */
 package clientapp.interfaces;
 
-import clientapp.model.CategoryEntity;
-import java.util.List;
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
@@ -27,4 +24,6 @@ public interface ICategory {
      public <T> T findAll(GenericType<T> responseType) throws WebApplicationException;
      public void remove(String id) throws WebApplicationException;
      public void close();
+    public <T> T listCategoriesByDescriptionAndPegi18(Class<T> responseType) throws WebApplicationException;
+
 }

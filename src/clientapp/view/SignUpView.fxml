@@ -43,7 +43,7 @@
                 <Label fx:id="streetLabel" layoutX="401.0" layoutY="227.0" prefHeight="18.0" prefWidth="68.0" text="Street:" />
                 <Label fx:id="passwordLabel" layoutX="19.0" layoutY="333.0" prefHeight="18.0" prefWidth="202.0" text="Password: " />
                 <Label fx:id="repeatPasswdLabel" layoutX="19.0" layoutY="412.0" prefHeight="18.0" prefWidth="202.0" text="Repeat password: " />
-                <Button fx:id="singUpButton" defaultButton="true" layoutX="482.0" layoutY="502.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" styleClass="minimal-button" text="SignUp" />
+                <Button fx:id="singUpButton" defaultButton="true" layoutX="482.0" layoutY="502.0" onAction = "#handleButtonAction" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" styleClass="minimal-button" text="SignUp" />
                 <Label fx:id="cityLabel" layoutX="405.0" layoutY="305.0" prefHeight="18.0" prefWidth="68.0" text="City:" />
                 <Label fx:id="zipLabel" layoutX="402.0" layoutY="388.0" prefHeight="18.0" prefWidth="68.0" text="Zip:" />
                 

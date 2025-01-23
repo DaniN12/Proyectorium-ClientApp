@@ -6,6 +6,7 @@
 package clientapp.client;
 
 import clientapp.interfaces.ICategory;
+import clientapp.model.CategoryEntity;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -17,11 +18,11 @@ import javax.ws.rs.core.GenericType;
  * [proyectorium.crud.entities.categoryentity]<br>
  * USAGE:
  * <pre>
-        CategoryRESTClient client = new CategoryRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ *        CategoryRESTClient client = new CategoryRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
+ * </pre>
  *
  * @author 2dam
  */
@@ -43,10 +44,12 @@ public class CategoryRESTClient implements ICategory{
     }
 
     public void edit(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), CategoryEntity.class);
     }
 
-    public <T> T find(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T find(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -65,10 +68,11 @@ public class CategoryRESTClient implements ICategory{
     }
 
     public void create(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), CategoryEntity.class);
     }
 
-    public <T> T listCategoriesbyPegi(Class<T> responseType) throws WebApplicationException {
+    public <T> T listCategoriesbyPegi(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("listCategoriesbyPegi");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -80,11 +84,21 @@ public class CategoryRESTClient implements ICategory{
     }
 
     public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(CategoryEntity.class);
+    }
+
+    public <T> T listCategoriesByDescriptionAndPegi18(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("listCategoriesByDescriptionAndPegi18");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void close() {
         client.close();
     }
-    
+
+    @Override
+    public <T> T find(Class<T> responseType, String id) throws WebApplicationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

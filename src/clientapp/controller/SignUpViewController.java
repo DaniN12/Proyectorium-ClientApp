@@ -22,6 +22,9 @@ import javafx.stage.WindowEvent;
 import clientapp.exceptions.EmptyFieldException;
 import clientapp.exceptions.IncorrectPasswordException;
 import clientapp.exceptions.IncorrectPatternException;
+import clientapp.factories.SignableFactory;
+import clientapp.interfaces.Signable;
+import clientapp.model.Customer;
 //import exceptions.ConnectionErrorException;
 //import exceptions.UserAlreadyExistException;
 import java.io.IOException;
@@ -36,7 +39,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.ContextMenuEvent;
 //import clientapp.model.Signable;
-import clientapp.model.User;
+import clientapp.model.UserEntity;
+import clientapp.model.UserType;
 
 /**
  * FXML Controller class of the signUp window
@@ -166,7 +170,7 @@ public class SignUpViewController {
     /**
      * Interface of the application
      */
-   // private Signable signable;
+    private Signable signable;
 
     /**
      * Context menu of the window
@@ -246,6 +250,7 @@ public class SignUpViewController {
 //        repeatbuttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/SinVerContraseña.png")));
         //Context menu
         contextMenu.getItems().addAll(itemResetFields, itemBack);
+        signable = SignableFactory.getSignable();
     }
 
     /**
@@ -257,9 +262,8 @@ public class SignUpViewController {
      * @throws ConnectionErrorException checks if there was an error while
      * connecting with the server
      */
-    /*
     @FXML
-    public void handleButtonAction(ActionEvent event) throws UserAlreadyExistException, ConnectionErrorException {
+    public void handleButtonAction(ActionEvent event) {
         try {
             // Check if the fields are empty and throws an exception if they are
             if (emailTxf.getText().isEmpty() || fullNameTxf.getText().isEmpty() || passwordTxf.getText().isEmpty()
@@ -283,7 +287,7 @@ public class SignUpViewController {
                 // if all the credentials are ok creates a user with the written credentials
             } else {
                 // Create a new user
-                User user = new User();
+                UserEntity user = new UserEntity();
                 // Set the credentials to the new user
                 user.setEmail(emailTxf.getText());
                 user.setFullName(fullNameTxf.getText());
@@ -291,28 +295,28 @@ public class SignUpViewController {
                 user.setStreet(streetTxf.getText());
                 user.setCity(cityTxf.getText());
                 user.setZip(Integer.parseInt(zipTxf.getText()));
-                user.setActive(checkActive.isSelected());
+                user.setUserType(UserType.CUSTOMER);
                 // Generates a signable to get the register method
-                signable = SocketFactory.getSignable();
-                // Execute the register method
-                User signedUpUser = signable.signUp(user);
 
-                if (signedUpUser != null) {
+                signable.create(user);
+
+                /*if (signedUpUser != null) {
                     // if the method is well executed returns to the signIn window
                     backButtonAction(event);
                 }
-
+                 */
             }
 
         } catch (IncorrectPasswordException | IncorrectPatternException
-                | EmptyFieldException | UserAlreadyExistException | ConnectionErrorException ex) {
+                | EmptyFieldException ex) {
             // Logs the error and displays an alert messsage
             Logger.getLogger(SignUpViewController.class.getName()).log(Level.WARNING, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, ex.getLocalizedMessage(), ButtonType.OK).showAndWait();
         }
 
     }
-/*
+
+    /*
     /**
      * This method handles the event that occur when the button to go back to
      * the signIn window is pressed

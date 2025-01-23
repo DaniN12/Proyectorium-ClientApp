@@ -8,21 +8,26 @@ package clientapp.controller;
 import clientapp.factories.CategoryFactory;
 import clientapp.interfaces.ICategory;
 import clientapp.model.CategoryEntity;
+import clientapp.model.MovieEntity;
 import clientapp.model.Pegi;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -41,11 +46,11 @@ public class CategoryController {
     @FXML
     private TableColumn tbcolIcon;
     @FXML
-    private TableColumn tbcolName;
+    private TableColumn <CategoryEntity, String> tbcolName;
     @FXML
-    private TableColumn tbcolDescription;
+    private TableColumn <CategoryEntity, String> tbcolDescription;
     @FXML
-    private TableColumn tbcolCreationDate;
+    private TableColumn <CategoryEntity, Date> tbcolCreationDate;
     @FXML
     private TableColumn tbcolPegi;
 
@@ -53,15 +58,17 @@ public class CategoryController {
 
     @FXML
     private TableView tbcategory;
+    
 
     public void initialize(Parent root) {
         logger.info("Initializing InfoView stage.");
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("User info");
+        stage.setTitle("Category");
         stage.setResizable(false);
-
+        tbcategory.setEditable(true);
+        
         categoryManager = CategoryFactory.getICategory();
         try {
 
@@ -73,16 +80,33 @@ public class CategoryController {
             tbcolDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tbcolCreationDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
             tbcolPegi.setCellValueFactory(new PropertyValueFactory<>("pegi"));
-            // tbcolPegi.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(Pegi.values())));
+           
+             // Configurar la ComboBox para la columna "pegi"
+            ObservableList<Pegi> pegiOptions = FXCollections.observableArrayList(Pegi.values());
+            tbcolPegi.setCellFactory(ComboBoxTableCell.forTableColumn(pegiOptions));
 
-            
             tbcategory.setItems(category);
-            
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No se ha podido abrir la ventana: " + e.getMessage(), ButtonType.OK);
         }
-        ;
+        
+         tbcolName.setCellFactory(TextFieldTableCell.<CategoryEntity>forTableColumn());
+         tbcolName.setOnEditCommit((CellEditEvent<CategoryEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setName(t.getNewValue());
+        });
+         
+         tbcolDescription.setCellFactory(TextFieldTableCell.<CategoryEntity>forTableColumn());
+         tbcolDescription.setOnEditCommit((CellEditEvent<CategoryEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setDescription(t.getNewValue());
+        });
+         
+        tbcolCreationDate.setCellFactory(column -> new DatePickerCellEditer());
+        tbcolCreationDate.setOnEditCommit(event -> {
+            CategoryEntity category = event.getRowValue();
+            category.setCreationDate(event.getNewValue());
+        });
+        
         stage.show();
     }
 
@@ -150,8 +174,16 @@ public class CategoryController {
         this.categoryManager = categoryManager;
     }
 
-    public void removeCategory(){
+    public void removeCategory() {
         tbcategory.getItems().remove(tbcategory.getSelectionModel().getSelectedItem());
         tbcategory.refresh();
     }
+    public void handleRemoveAction(ActionEvent event) {
+
+        CategoryEntity removeCategory = (CategoryEntity) tbcategory.getSelectionModel().getSelectedItem();
+        categoryManager.remove(String.valueOf(removeCategory.getId()));
+        tbcategory.getItems().remove(removeCategory);
+        tbcategory.refresh();
+    }
+
 }
