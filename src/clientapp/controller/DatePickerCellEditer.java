@@ -14,7 +14,7 @@ import javafx.util.Callback;
 /**
  * A custom TableCell implementation for editing Date values with a DatePicker.
  */
-public class DatePickerCellEditer extends TableCell<MovieEntity, Date> {
+public class DatePickerCellEditer<S> extends TableCell<S, Date> {
 
     private DatePicker datePicker;
     private TableView<MovieEntity> tableMovies;
