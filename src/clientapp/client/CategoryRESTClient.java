@@ -5,8 +5,8 @@
  */
 package clientapp.client;
 
-import clientapp.interfaces.IMovie;
-import clientapp.model.MovieEntity;
+import clientapp.interfaces.ICategory;
+import clientapp.model.CategoryEntity;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -14,27 +14,27 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Jersey REST client generated for REST resource:MovieEntityFacadeREST
- * [proyectorium.crud.entities.movie]<br>
+ * Jersey REST client generated for REST resource:CategoryEntityFacadeREST
+ * [proyectorium.crud.entities.categoryentity]<br>
  * USAGE:
  * <pre>
- * MovieRESTClient client = new MovieRESTClient();
- * Object response = client.XXX(...);
- * // do whatever with response
- * client.close();
+ *        CategoryRESTClient client = new CategoryRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
  * </pre>
  *
  * @author 2dam
  */
-public class MovieRESTClient implements IMovie {
+public class CategoryRESTClient implements ICategory{
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
 
-    public MovieRESTClient() {
+    public CategoryRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.movie");
+        webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.categoryentity");
     }
 
     public String countREST() throws WebApplicationException {
@@ -44,17 +44,12 @@ public class MovieRESTClient implements IMovie {
     }
 
     public void edit(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), CategoryEntity.class);
     }
 
-    public <T> T listByProvider(Class<T> responseType, String provider) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("provider/{0}", new Object[]{provider}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public <T> T find(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T find(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -66,23 +61,20 @@ public class MovieRESTClient implements IMovie {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T listByReleaseDate(Class<T> responseType, String releaseDate) throws WebApplicationException {
+    public <T> T listCategoriesbyCreationDate(Class<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
-        if (releaseDate != null) {
-            resource = resource.queryParam("releaseDate", releaseDate);
-        }
-        resource = resource.path("releaseDate");
+        resource = resource.path("listCategoriesbyCreationDate");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void create(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), CategoryEntity.class);
     }
 
-    public <T> T listByMovieHour(Class<T> responseType, String movieHour) throws WebApplicationException {
+    public <T> T listCategoriesbyPegi(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("movieHour/{0}", new Object[]{movieHour}));
+        resource = resource.path("listCategoriesbyPegi");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -92,7 +84,13 @@ public class MovieRESTClient implements IMovie {
     }
 
     public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(MovieEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(CategoryEntity.class);
+    }
+
+    public <T> T listCategoriesByDescriptionAndPegi18(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("listCategoriesByDescriptionAndPegi18");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void close() {

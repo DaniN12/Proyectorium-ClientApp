@@ -44,10 +44,10 @@ public class Main extends Application {
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
         MovieController controller = (MovieController) loader.getController();*/
-                getClass().getResource("/clientapp/view/SignInView.fxml"));
+                getClass().getResource("/clientapp/view/MovieMainView.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        SignInController controller = (SignInController) loader.getController();
+        MovieController controller = (MovieController) loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
         controller.initialize(root);
