@@ -10,7 +10,6 @@ import clientapp.model.TicketEntity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -22,7 +21,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -50,8 +48,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
+
 import javax.ws.rs.core.GenericType;
 
+/**
+ * FXML Controller class
+ */
 public class InfoViewController {
 
     @FXML
@@ -94,11 +96,13 @@ public class InfoViewController {
     private ITicket iTicket;
     private ObservableList<TicketEntity> listTickets;
     private ObservableList<MovieEntity> listMovies;
-    private ObservableMap<Integer, String> movieMap;
     private final Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
     private final Logger logger = Logger.getLogger(InfoViewController.class.getName());
     private Stage stage;
 
+    /**
+     * Initializes the controller class.
+     */
     public void initialize(Parent root) {
         try {
             logger.info("Initializing InfoView stage.");
@@ -130,9 +134,9 @@ public class InfoViewController {
 
     private void loadTickets() {
         try {
-            iTicket = TicketFactory.getITicket();
-            listTickets = FXCollections.observableArrayList(iTicket.findAll(new GenericType<List<TicketEntity>>() {
-            }));
+            iTicket = TicketFactory.getITicket(); // Obtener la implementación de ITicket
+            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {}));
+            listTickets = FXCollections.observableArrayList(iTicket.findAll(new GenericType<List<TicketEntity>>() {}));
             setupTicketTable();
             ticketTableView.setItems(listTickets);
         } catch (Exception e) {
@@ -141,58 +145,80 @@ public class InfoViewController {
     }
 
     private void setupTicketTable() {
+        // Configurar columna de imagen de la película
         movieImageColumn.setCellValueFactory(param -> {
             TicketEntity ticket = param.getValue();
-            if (ticket.getMovie() != null && ticket.getMovie().getMovieImage() != null) {
-                Image image = new Image(new ByteArrayInputStream(ticket.getMovie().getMovieImage()));
-                ImageView imageView = new ImageView(image);
-                imageView.setFitWidth(50);
-                imageView.setFitHeight(50);
-                return new SimpleObjectProperty<>(imageView);
+            if (ticket.getMovie().getId() != null) {
+                MovieEntity movie = listMovies.stream()
+                        .filter(m -> m.getId().equals(ticket.getMovie().getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (movie != null && movie.getMovieImage() != null) {
+                    Image image = new Image(new ByteArrayInputStream(movie.getMovieImage()));
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(50);
+                    return new SimpleObjectProperty<>(imageView);
+                }
             }
             return null;
         });
 
-        movieTitleColumn.setCellValueFactory(new PropertyValueFactory<>("movie.title"));
+        movieTitleColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getMovie().getTitle()));
+
+        movieTitleColumn.setCellFactory(ComboBoxTableCell.forTableColumn(/*
+                new StringConverter<String>() {
+                    @Override
+                    public String toString(String movieId) {
+                        MovieEntity movie = listMovies.stream()
+                                .filter(m -> m.getId().equals(movieId))
+                                .findFirst()
+                                .orElse(null);
+                        return movie != null ? movie.getTitle() : "";
+                    }
+
+                    @Override
+                    public String fromString(String title) {
+                        MovieEntity movie = listMovies.stream()
+                                .filter(m -> m.getTitle().equals(title))
+                                .findFirst()
+                                .orElse(null);
+                        return movie != null ? String.valueOf(movie.getId()) : null;
+                    }
+                },
+                FXCollections.observableArrayList(listMovies.stream()
+                        .map(MovieEntity::getId)
+                        .collect(Collectors.toList()))
+      */  ));
+
+        movieTitleColumn.setOnEditCommit(event -> {
+            TicketEntity ticket = event.getRowValue();
+            String newMovieId = event.getNewValue();
+
+            if (newMovieId != null) {
+                ticket.getMovie().setId(Integer.parseInt(newMovieId));
+
+                try {
+                    iTicket.edit(ticket, String.valueOf(ticket.getMovie().getId()));
+                    refreshTickets();
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error updating ticket via REST: {0}", e.getMessage());
+                }
+            }
+        });
+
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("movieDuration"));
         dateHourColumn.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getBuyDateAsLocalDateTime()));
         peopleColumn.setCellValueFactory(new PropertyValueFactory<>("numPeople"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("calculatedPrice"));
-
-        // Configurar ComboBoxTableCell para la columna movieTitleColumn
-        listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
-        }));
-        for (int i = 0; i < listMovies.size(); i++) {
-            movieMap.put(listMovies.get(i).getId(), listMovies.get(i).getTitle());
-        }
-        movieTitleColumn.setCellFactory(ComboBoxTableCell.forTableColumn(/*String, listMovies*/));
-
-        movieTitleColumn.setOnEditCommit(event -> {
-            TicketEntity ticket = event.getRowValue();  // Obtener el ticket de la fila editada
-            String selectedMovieTitle = event.getNewValue(); // Obtener la película seleccionada del ComboBox
-
-            Optional<MovieEntity> selectedMovie = listMovies.stream()
-                    .filter(movie -> movie.getTitle().equalsIgnoreCase(selectedMovieTitle))
-                    .findFirst();
-
-            selectedMovie.ifPresent(movie -> ticket.setMovie(movie));  // Actualizar la película en el TicketEntity
-
-            try {
-                Integer ticketId = ticket.getId();  // Obtener el ID del ticket
-                iTicket.edit(ticket, String.valueOf(ticketId));  // Actualizar el ticket en la base de datos mediante el servicio REST
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error saving ticket changes via REST: {0}", e.getMessage());
-            }
-        });
-
         dateHourColumn.setCellFactory(column -> new DateTimePickerTableCell());
         peopleColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
     }
 
-    public ObservableList<MovieEntity> getAvailableMovies() {
-        List<MovieEntity> movies = MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
-        });
-        return FXCollections.observableArrayList(movies);
+    private void refreshTickets() {
+        listTickets.clear();
+        listTickets.addAll(iTicket.findAll(new GenericType<List<TicketEntity>>() {}));
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
