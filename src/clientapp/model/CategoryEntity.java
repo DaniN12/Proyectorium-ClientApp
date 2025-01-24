@@ -44,6 +44,14 @@ public class CategoryEntity implements Serializable {
     public CategoryEntity() {
 
     }
+    
+    public CategoryEntity(byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
+    this.icon = icon;
+    this.name = name;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.pegi = pegi;
+}
 
     public Integer getId() {
         return id;
@@ -93,8 +101,6 @@ public class CategoryEntity implements Serializable {
         this.pegi = pegi;
     }
 
-
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -114,7 +120,7 @@ public class CategoryEntity implements Serializable {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return name;

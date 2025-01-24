@@ -209,7 +209,6 @@ public class MovieController {
     }
 
     public void handleRemoveAction(ActionEvent event) {
-
         MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
         movieManager.remove(String.valueOf(RmMovie.getId()));
         moviesTbv.getItems().remove(RmMovie);

@@ -42,8 +42,8 @@
                </image>
             </ImageView>
          </graphic></Button>
-      <Button fx:id="addBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" />
-      <Button fx:id="removeBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" />
+      <Button fx:id="addBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" onAction="#handleCreateAction"/>
+      <Button fx:id="removeBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" onAction="#handleRemoveAction"/>
       <MenuButton fx:id="filterBtn" layoutX="36.0" layoutY="125.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="90.0" text="Filters">
         <items>
           <MenuItem fx:id="filterPegi" mnemonicParsing="false" text="Pegi" />
