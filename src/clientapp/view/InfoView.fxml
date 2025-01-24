@@ -54,12 +54,13 @@
                 <!-- TableView -->
                 <TableView fx:id="ticketTableView" editable="true" layoutX="241.0" layoutY="47.0" prefHeight="598.0" prefWidth="1109.0">
                     <columns>
-                        <TableColumn fx:id="movieImageColumn" prefWidth="176.79998779296875" text="Movie Image" />
-                        <TableColumn fx:id="movieTitleColumn" prefWidth="362.3999938964844" text="Movie Title" />
-                        <TableColumn fx:id="dateHourColumn" prefWidth="274.39990234375" text="Date" />
-                        <TableColumn fx:id="durationColumn" prefWidth="107.20001220703125" text="Duration" />
-                        <TableColumn fx:id="peopleColumn" prefWidth="93.60003662109375" text="People" />
-                        <TableColumn fx:id="priceColumn" prefWidth="95.199951171875" text="Price" />
+                        <TableColumn fx:id="movieImageColumn" prefWidth="237.59999084472656" text="Movie Image" />
+                        <TableColumn fx:id="movieTitleColumn" prefWidth="391.9999694824219" text="Movie Title" />
+                        <TableColumn fx:id="dateColumn" prefWidth="172.79986572265625" text="Date" />
+                  <TableColumn fx:id="hourColumn" prefWidth="98.4000244140625" text="Hour" />
+                        <TableColumn fx:id="durationColumn" prefWidth="82.4000244140625" text="Duration" />
+                        <TableColumn fx:id="peopleColumn" prefWidth="60.800048828125" text="People" />
+                        <TableColumn fx:id="priceColumn" maxWidth="80.7999267578125" prefWidth="65.5999755859375" text="Price" />
                     </columns>
                 </TableView>
 

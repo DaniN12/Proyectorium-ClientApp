@@ -4,14 +4,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 @XmlRootElement
 public class TicketEntity implements Serializable {
 
     private Integer id;
-    private String buyDate;  // Usamos String para almacenar la fecha en formato ISO sin zona horaria
+    private Date buyDate;  // Usamos Date para almacenar la fecha y hora
     private Float price;
     private Integer numPeople;
     private MovieEntity movie;
@@ -22,7 +22,7 @@ public class TicketEntity implements Serializable {
     }
 
     // Constructor con parámetros
-    public TicketEntity(Integer id, String buyDate, Float price, Integer numPeople, MovieEntity movie, UserEntity user) {
+    public TicketEntity(Integer id, Date buyDate, Float price, Integer numPeople, MovieEntity movie, UserEntity user) {
         this.id = id;
         this.buyDate = buyDate;
         this.price = price;
@@ -41,24 +41,12 @@ public class TicketEntity implements Serializable {
     }
 
     @XmlElement
-    public String getBuyDate() {
+    public Date getBuyDate() {
         return buyDate;
     }
 
-    public void setBuyDate(String buyDate) {
+    public void setBuyDate(Date buyDate) {
         this.buyDate = buyDate;
-    }
-
-    // Convertir el buyDate de String a LocalDateTime (ignorando el offset)
-    public LocalDateTime getBuyDateAsLocalDateTime() {
-        // Eliminar el offset (parte que sigue al '+') antes de convertir a LocalDateTime
-        String dateWithoutOffset = buyDate.split("\\+")[0];
-        return LocalDateTime.parse(dateWithoutOffset, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-    }
-
-    // Convertir el LocalDateTime a String
-    public void setBuyDateFromLocalDateTime(LocalDateTime buyDate) {
-        this.buyDate = buyDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     @XmlElement
@@ -123,4 +111,5 @@ public class TicketEntity implements Serializable {
     public String getMovieDuration() {
         return movie.getDuration() + "min";
     }
+
 }

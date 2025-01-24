@@ -1,15 +1,17 @@
 package clientapp.controller;
 
-import clientapp.factories.DateTimePickerTableCell;
 import clientapp.factories.MovieFactory;
+import clientapp.factories.TicketDatePickerTableCell;
 import clientapp.factories.TicketFactory;
 import clientapp.interfaces.ITicket;
 import clientapp.model.MovieEntity;
+import clientapp.model.MovieHour;
 import clientapp.model.TicketEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -36,7 +38,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -83,7 +84,9 @@ public class InfoViewController {
     @FXML
     private TableColumn<TicketEntity, String> movieTitleColumn;
     @FXML
-    private TableColumn<TicketEntity, LocalDateTime> dateHourColumn;
+    private TableColumn<TicketEntity, Date> dateColumn;
+    @FXML
+    private TableColumn<TicketEntity, String> hourColumn;
     @FXML
     private TableColumn<TicketEntity, String> durationColumn;
     @FXML
@@ -103,7 +106,7 @@ public class InfoViewController {
     /**
      * Initializes the controller class.
      */
-    public void initialize(Parent root) {
+    public void initialize(Parent root/*, UserEntity user*/) {
         try {
             logger.info("Initializing InfoView stage.");
 
@@ -134,10 +137,15 @@ public class InfoViewController {
 
     private void loadTickets() {
         try {
-            iTicket = TicketFactory.getITicket(); // Obtener la implementación de ITicket
+            iTicket = TicketFactory.getITicket();
+            listTickets = FXCollections.observableArrayList(
+                    iTicket.findAll(new GenericType<List<TicketEntity>>() {
+                    }));/*
+                            .stream()
+                            .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                            .collect(Collectors.toList()) // Recoger en una lista estándar
+            );*/
             listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
-            }));
-            listTickets = FXCollections.observableArrayList(iTicket.findAll(new GenericType<List<TicketEntity>>() {
             }));
             setupTicketTable();
             ticketTableView.setItems(listTickets);
@@ -166,8 +174,12 @@ public class InfoViewController {
             }
             return null;
         });
-
         movieTitleColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getMovie().getTitle()));
+        durationColumn.setCellValueFactory(new PropertyValueFactory<>("movieDuration"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("buyDate"));
+        hourColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getMovie().getMovieHour().getHour()));
+        peopleColumn.setCellValueFactory(new PropertyValueFactory<>("numPeople"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("calculatedPrice"));
 
         movieTitleColumn.setCellFactory(column -> {
             // Crear una instancia de ComboBoxTableCell con los títulos de las películas
@@ -194,8 +206,9 @@ public class InfoViewController {
 
             return cell;
         });
+        dateColumn.setCellFactory(column -> new TicketDatePickerTableCell());
+        peopleColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
-        // Manejar el evento de edición en la columna
         movieTitleColumn.setOnEditCommit(event -> {
             TicketEntity ticket = event.getRowValue();
             String selectedTitle = event.getNewValue();
@@ -217,19 +230,44 @@ public class InfoViewController {
                 }
             }
         });
+        dateColumn.setOnEditCommit(event -> {
+            TicketEntity ticket = event.getRowValue();
+            ticket.setBuyDate(event.getNewValue());
+        });
+        peopleColumn.setOnEditCommit(event -> {
+            // Aquí puedes implementar la lógica para editar la columna de personas
+            // Ejemplo:
+            Integer newValue = event.getNewValue(); // Obtener el nuevo valor de la celda
+            TicketEntity ticket = event.getRowValue();  // Obtener el ticket editado
 
-        durationColumn.setCellValueFactory(new PropertyValueFactory<>("movieDuration"));
-        dateHourColumn.setCellValueFactory(cellData -> Bindings.createObjectBinding(() -> cellData.getValue().getBuyDateAsLocalDateTime()));
-        peopleColumn.setCellValueFactory(new PropertyValueFactory<>("numPeople"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("calculatedPrice"));
-        dateHourColumn.setCellFactory(column -> new DateTimePickerTableCell());
-        peopleColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+            // Actualizar la propiedad correspondiente del ticket
+            ticket.setNumPeople(newValue);
+
+            try {
+                // Llamar al servicio REST para actualizar el ticket
+                iTicket.edit(ticket, String.valueOf(ticket.getId()));
+                refreshTickets(); // Actualizar la tabla después de realizar cambios
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
+            }
+        });
+
     }
 
     private void refreshTickets() {
+        // Limpiar la lista actual de tickets
         listTickets.clear();
-        listTickets.addAll(iTicket.findAll(new GenericType<List<TicketEntity>>() {
-        }));
+
+        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
+        listTickets.addAll(
+                iTicket.findAll(new GenericType<List<TicketEntity>>() {
+                }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        
+        ticketTableView.setItems(listTickets);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
