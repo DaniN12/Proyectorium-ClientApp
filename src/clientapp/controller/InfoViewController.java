@@ -135,8 +135,10 @@ public class InfoViewController {
     private void loadTickets() {
         try {
             iTicket = TicketFactory.getITicket(); // Obtener la implementación de ITicket
-            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {}));
-            listTickets = FXCollections.observableArrayList(iTicket.findAll(new GenericType<List<TicketEntity>>() {}));
+            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
+            }));
+            listTickets = FXCollections.observableArrayList(iTicket.findAll(new GenericType<List<TicketEntity>>() {
+            }));
             setupTicketTable();
             ticketTableView.setItems(listTickets);
         } catch (Exception e) {
@@ -167,43 +169,51 @@ public class InfoViewController {
 
         movieTitleColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getMovie().getTitle()));
 
-        movieTitleColumn.setCellFactory(ComboBoxTableCell.forTableColumn(/*
-                new StringConverter<String>() {
-                    @Override
-                    public String toString(String movieId) {
-                        MovieEntity movie = listMovies.stream()
-                                .filter(m -> m.getId().equals(movieId))
-                                .findFirst()
-                                .orElse(null);
-                        return movie != null ? movie.getTitle() : "";
-                    }
+        movieTitleColumn.setCellFactory(column -> {
+            // Crear una instancia de ComboBoxTableCell con los títulos de las películas
+            ComboBoxTableCell<TicketEntity, String> cell = new ComboBoxTableCell<>(
+                    FXCollections.observableArrayList(
+                            listMovies.stream()
+                                    .map(MovieEntity::getTitle) // Obtener la lista de títulos
+                                    .collect(Collectors.toList())
+                    )
+            );
 
-                    @Override
-                    public String fromString(String title) {
-                        MovieEntity movie = listMovies.stream()
-                                .filter(m -> m.getTitle().equals(title))
-                                .findFirst()
-                                .orElse(null);
-                        return movie != null ? String.valueOf(movie.getId()) : null;
-                    }
-                },
-                FXCollections.observableArrayList(listMovies.stream()
-                        .map(MovieEntity::getId)
-                        .collect(Collectors.toList()))
-      */  ));
+            // Configurar el convertidor manualmente para que funcione con Java 8
+            cell.setConverter(new StringConverter<String>() {
+                @Override
+                public String toString(String movieTitle) {
+                    return movieTitle != null ? movieTitle : ""; // Devuelve el título directamente
+                }
 
+                @Override
+                public String fromString(String title) {
+                    return title; // Devuelve el título directamente (ya que trabajamos con títulos)
+                }
+            });
+
+            return cell;
+        });
+
+        // Manejar el evento de edición en la columna
         movieTitleColumn.setOnEditCommit(event -> {
             TicketEntity ticket = event.getRowValue();
-            String newMovieId = event.getNewValue();
+            String selectedTitle = event.getNewValue();
 
-            if (newMovieId != null) {
-                ticket.getMovie().setId(Integer.parseInt(newMovieId));
+            // Buscar la película seleccionada basada en el título
+            MovieEntity selectedMovie = listMovies.stream()
+                    .filter(movie -> movie.getTitle().equals(selectedTitle))
+                    .findFirst()
+                    .orElse(null);
 
+            if (selectedMovie != null) {
+                ticket.setMovie(selectedMovie); // Asignar la película al ticket
                 try {
-                    iTicket.edit(ticket, String.valueOf(ticket.getMovie().getId()));
-                    refreshTickets();
+                    // Llamar al servicio REST para actualizar el ticket
+                    iTicket.edit(ticket, String.valueOf(ticket.getId()));
+                    refreshTickets(); // Actualizar la tabla después de realizar cambios
                 } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error updating ticket via REST: {0}", e.getMessage());
+                    logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
                 }
             }
         });
@@ -218,7 +228,8 @@ public class InfoViewController {
 
     private void refreshTickets() {
         listTickets.clear();
-        listTickets.addAll(iTicket.findAll(new GenericType<List<TicketEntity>>() {}));
+        listTickets.addAll(iTicket.findAll(new GenericType<List<TicketEntity>>() {
+        }));
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
