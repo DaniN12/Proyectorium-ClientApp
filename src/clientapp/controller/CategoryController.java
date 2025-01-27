@@ -8,9 +8,7 @@ package clientapp.controller;
 import clientapp.factories.CategoryFactory;
 import clientapp.interfaces.ICategory;
 import clientapp.model.CategoryEntity;
-import clientapp.model.MovieEntity;
 import clientapp.model.Pegi;
-import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -35,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -56,7 +55,7 @@ public class CategoryController {
     @FXML
     private TableColumn<CategoryEntity, Date> tbcolCreationDate;
     @FXML
-    private TableColumn tbcolPegi;
+    private TableColumn<CategoryEntity, Pegi> tbcolPegi;
 
     private ICategory categoryManager;
 
@@ -64,6 +63,9 @@ public class CategoryController {
 
     @FXML
     private TableView tbcategory;
+    
+    @FXML
+    private Button removebtn;
 
     public void initialize(Parent root) {
         logger.info("Initializing InfoView stage.");
@@ -73,6 +75,7 @@ public class CategoryController {
         stage.setTitle("Category");
         stage.setResizable(false);
         tbcategory.setEditable(true);
+        
 
         categoryManager = CategoryFactory.getICategory();
         try {
@@ -129,6 +132,54 @@ public class CategoryController {
         });
 
         stage.show();
+
+        tbcolName.setCellFactory(TextFieldTableCell.<CategoryEntity>forTableColumn());
+        tbcolName.setOnEditCommit((CellEditEvent<CategoryEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setName(t.getNewValue());
+            CategoryEntity name = t.getRowValue();
+            name.setName(t.getNewValue());
+            categoryManager.edit(name, String.valueOf(name.getId()));
+        });
+
+        tbcolDescription.setCellFactory(TextFieldTableCell.<CategoryEntity>forTableColumn());
+        tbcolDescription.setOnEditCommit((CellEditEvent<CategoryEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setDescription(t.getNewValue());
+            CategoryEntity description = t.getRowValue();
+            description.setDescription(t.getNewValue());
+            categoryManager.edit(description, String.valueOf(description.getId()));
+        });
+
+        tbcolCreationDate.setCellFactory(column -> new DatePickerCellEditer());
+        tbcolCreationDate.setOnEditCommit(event -> {
+            CategoryEntity creationDate = event.getRowValue();
+            creationDate.setCreationDate(event.getNewValue());
+            categoryManager.edit(creationDate, String.valueOf(creationDate.getId()));
+        });
+
+        ObservableList<Pegi> pegiOptions = FXCollections.observableArrayList(Pegi.values());
+
+        tbcolPegi.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPegi()));
+
+        tbcolPegi.setCellFactory(column -> {
+            return new ComboBoxTableCell<>(new StringConverter<Pegi>() {
+                @Override
+                public String toString(Pegi age) {
+                    return age != null ? age.toString() : "";
+                }
+
+                @Override
+                public Pegi fromString(String string) {
+                    return Pegi.valueOf(string);
+                }
+            }, pegiOptions);
+        });
+
+        tbcolPegi.setOnEditCommit(event -> {
+            CategoryEntity pegiAge = event.getRowValue();
+            pegiAge.setPegi(event.getNewValue()); // Guarda la hora seleccionada
+            categoryManager.edit(pegiAge, String.valueOf(pegiAge.getId()));
+        });
+
     }
 
     public Stage getStage() {
@@ -202,17 +253,29 @@ public class CategoryController {
 
     public void handleRemoveAction(ActionEvent event) {
         CategoryEntity removeCategory = (CategoryEntity) tbcategory.getSelectionModel().getSelectedItem();
-        categoryManager.remove(String.valueOf(removeCategory.getId()));
-        tbcategory.getItems().remove(removeCategory);
-        tbcategory.refresh();
+
+        if (removeCategory != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Remove confirmation");
+            alert.setHeaderText("¿Are you sure you want to remove this category?");
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    categoryManager.remove(String.valueOf(removeCategory.getId()));
+                    tbcategory.getItems().remove(removeCategory);
+                    tbcategory.refresh();
+                }
+            });
+        }
     }
 
     public void handleCreateAction(ActionEvent event) {
         CategoryEntity newCategory = new CategoryEntity();
         categoryManager.create(newCategory);
-        categories.add(newCategory);
+        categories = FXCollections.observableArrayList(categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+        }));
         tbcategory.setItems(categories);
-        tbcategory.refresh();
+
     }
 
 }
