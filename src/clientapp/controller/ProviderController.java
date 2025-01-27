@@ -5,11 +5,13 @@
  */
 package clientapp.controller;
 
-import static clientapp.controller.MovieController.introducirCadena;
 import clientapp.factories.ProviderManagerFactory;
 import clientapp.interfaces.IProvider;
 import clientapp.model.ProviderEntity;
 import clientapp.model.UserEntity;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -114,14 +116,14 @@ public class ProviderController {
 
         tbcolumnConInit.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConInit.setOnEditCommit(event -> {
-            ProviderEntity movie = event.getRowValue();
-            movie.setContractIni(event.getNewValue());
+            ProviderEntity provider = event.getRowValue();
+            provider.setContractIni(event.getNewValue());
         });
 
         tbcolumnConEnd.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConEnd.setOnEditCommit(event -> {
-            ProviderEntity movie = event.getRowValue();
-            movie.setContractEnd(event.getNewValue());
+            ProviderEntity provider = event.getRowValue();
+            provider.setContractEnd(event.getNewValue());
         });
 
         tbcolumnPhone.setCellFactory(TextFieldTableCell.<ProviderEntity, Integer>forTableColumn(new StringConverter<Integer>() {
@@ -171,27 +173,63 @@ public class ProviderController {
         tableProviders.setItems(provider);
 
         stage.show();
+        
+        tbcolumnName.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
+        tbcolumnName.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setName(t.getNewValue());
+            ProviderEntity name = t.getRowValue();
+            name.setName(t.getNewValue());
+            iProvider.edit(name, String.valueOf(name.getId()));
+        });
+        
+        tbcolumnEmail.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
+        tbcolumnEmail.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setEmail(t.getNewValue());
+            ProviderEntity email = t.getRowValue();
+            email.setEmail(t.getNewValue());
+            iProvider.edit(email, String.valueOf(email.getId()));
+        });
+        
     }
 
     public void handleRemoveAction(ActionEvent event) {
-
-        ProviderEntity RmMovie = (ProviderEntity) tableProviders.getSelectionModel().getSelectedItem();
-        iProvider.remove(String.valueOf(RmMovie.getId()));
-        tableProviders.getItems().remove(RmMovie);
-        tableProviders.refresh();
+        ProviderEntity RmProvider = (ProviderEntity) tableProviders.getSelectionModel().getSelectedItem();
+        if (RmProvider != null && RmProvider.getId() != null) {
+            System.out.println("ID de la película a eliminar: " + RmProvider.getId());
+            iProvider.remove(String.valueOf(RmProvider.getId()));
+            tableProviders.getItems().remove(RmProvider);
+            tableProviders.refresh();
+        } else {
+            System.out.println("No se puede eliminar un proveedor sin ID.");
+        }
     }
 
     public void handleCreateAction(ActionEvent event) {
-        // Crear una nueva instancia de MovieEntity
         ProviderEntity newProvider = new ProviderEntity();
 
         iProvider.create(newProvider);
-
         provider.add(newProvider);
         tableProviders.setItems(provider);
         tableProviders.refresh();
     }
-    
+
+    public static String introducirCadena() {
+        String cadena = "";
+        boolean error;
+        InputStreamReader entrada = new InputStreamReader(System.in);
+        BufferedReader teclado = new BufferedReader(entrada);
+        do {
+            error = false;
+            try {
+                cadena = teclado.readLine();
+            } catch (IOException e) {
+                System.out.println("Error en la entrada de datos");
+                error = true;
+            }
+        } while (error);
+        return cadena;
+    }
+
     public static String fechaToString(Date fecha) {
         SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
         return formateador.format(fecha);
