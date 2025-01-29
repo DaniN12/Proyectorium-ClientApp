@@ -12,6 +12,7 @@ import clientapp.exceptions.EmptyFieldException;
 import java.util.Optional;
 
 import clientapp.exceptions.IncorrectPatternException;
+import clientapp.factories.SignableFactory;
 import javafx.scene.image.Image;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -33,8 +34,9 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import clientapp.model.UserEntity;
-//import clientapp.model.SignableFactory;
-//import clientapp.model.Signable;
+import clientapp.interfaces.Signable;
+import clientapp.model.UserType;
+import javax.ws.rs.core.GenericType;
 
 public class SignInController {
 
@@ -87,7 +89,7 @@ public class SignInController {
     @FXML
     private Label errorLabel;
 
-   // private Signable signable;
+    private Signable signable;
 
     private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
@@ -115,6 +117,8 @@ public class SignInController {
 
         HyperLinkRegistered.setOnAction(this::handleHyperLinkAction);
 
+        signable = SignableFactory.getSignable();
+
         stage.show();
     }
 
@@ -125,40 +129,40 @@ public class SignInController {
      * @throws ConnectionErrorException If there is a connection error.
      * @throws UserDoesntExistExeption If the user does not exist.
      */
-   /*
     @FXML
-    protected void handleSignIn(ActionEvent event) throws ConnectionErrorException, UserDoesntExistExeption, UserNotActiveException, IncorrectCredentialsException {
+    protected void handleSignIn(ActionEvent event) {
         String email = txtFieldEmail.getText();
         String password = txtFieldPassword.getText();
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
+
+        UserEntity credentials = new UserEntity();
+        credentials.setEmail(email);
+        credentials.setPassword(password);
 
         try {
             if (email.isEmpty() || password.isEmpty() || txtFieldPassword.getText().isEmpty()) {
                 throw new EmptyFieldException("Fields are empty, all fields need to be filled");
-            } else if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
-                throw new IncorrectPatternException("The email is not well written or is incorrect");
-            } else {
-
-                SocketFactory socket = new SocketFactory();
-                Signable signable = socket.getSignable();
-                User signedInUser = signable.signIn(user);
-
-                if (signedInUser.getActive() != false) {
-                    throw new UserNotActiveException("The user is not active");
-                }
-
-                openMainWindow(event, signedInUser);
-
             }
+
+            if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+                throw new IncorrectPatternException("The email is not well written or is incorrect");
+            }
+
+            UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {
+            });
+
+            if (signedInUser.getUserType() != UserType.ADMIN) {
+                openMainWindow(event, signedInUser);
+            } else {
+                openAdminWindow(event, signedInUser);
+            }
+
         } catch (EmptyFieldException ex) {
             logger.log(Level.SEVERE, ex.getLocalizedMessage());
             showAlert("Error", "Please fill in all fields.", Alert.AlertType.ERROR);
         } catch (IncorrectPatternException ex) {
             logger.log(Level.SEVERE, ex.getLocalizedMessage());
             showAlert("Error", "The email has to have a email format, don't forget the @.", Alert.AlertType.ERROR);
-        } catch (UserNotActiveException ex) {
+            /*  } catch (UserNotActiveException ex) {
             Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             showAlert("Error", "This user is not active.", Alert.AlertType.ERROR);
         } catch (ConnectionErrorException ex) {
@@ -167,9 +171,10 @@ public class SignInController {
         } catch (IncorrectCredentialsException ex) {
             Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             showAlert("Error", ex.getLocalizedMessage(), Alert.AlertType.ERROR);
+        }*/
         }
     }
-*/
+
     @FXML
     public void openMainWindow(ActionEvent event, UserEntity user) {
         try {
@@ -189,7 +194,39 @@ public class SignInController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root/*, user*/);
+            controller.initialize(root, user);
+
+        } catch (IOException ex) {
+            // Logs the error and displays an alert messsage
+            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error loading InfoView.fxml", ButtonType.OK).showAndWait();
+        } catch (RuntimeException ex) {
+            // Logs the error and displays an alert messsage
+            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, "Exception occurred", ex);
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+
+    @FXML
+    public void openAdminWindow(ActionEvent event, UserEntity user) {
+        try {
+            // Load DOM form FXML view
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/clientapp/view/MainAdmin.fxml"));
+            Parent root = (Parent) loader.load();
+            // Retrieve the controller associated with the view
+            MenuAdminController controller = (MenuAdminController) loader.getController();
+            //Check if there is a RuntimeException while opening the view
+            if (controller == null) {
+                throw new RuntimeException("Failed to load InfoViewController");
+            }
+
+            if (stage == null) {
+                throw new RuntimeException("Stage is not initialized");
+            }
+            controller.setStage(stage);
+            //Initializes the controller with the loaded view
+            controller.initialize(root, user);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage

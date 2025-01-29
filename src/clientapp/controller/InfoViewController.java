@@ -7,6 +7,7 @@ import clientapp.interfaces.ITicket;
 import clientapp.model.MovieEntity;
 import clientapp.model.MovieHour;
 import clientapp.model.TicketEntity;
+import clientapp.model.UserEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -120,7 +121,7 @@ public class InfoViewController {
     /**
      * Initializes the controller class.
      */
-    public void initialize(Parent root/*, UserEntity user*/) {
+    public void initialize(Parent root, UserEntity user) {
         try {
             logger.info("Initializing InfoView stage.");
 
