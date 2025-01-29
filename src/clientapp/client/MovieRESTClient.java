@@ -18,10 +18,10 @@ import javax.ws.rs.core.GenericType;
  * [proyectorium.crud.entities.movie]<br>
  * USAGE:
  * <pre>
- * MovieRESTClient client = new MovieRESTClient();
- * Object response = client.XXX(...);
- * // do whatever with response
- * client.close();
+ *        MovieRESTClient client = new MovieRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
  * </pre>
  *
  * @author 2dam
@@ -37,36 +37,36 @@ public class MovieRESTClient implements IMovie {
         webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.movie");
     }
 
-    public String countREST() throws WebApplicationException {
+    public String countREST() throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("count");
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
     public void edit(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
     }
 
-    public <T> T listByProvider(Class<T> responseType, String provider) throws WebApplicationException {
+    public <T> T listByProvider(GenericType<T> responseType, String provider) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("provider/{0}", new Object[]{provider}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T find(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T find(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findRange(Class<T> responseType, String from, String to) throws WebApplicationException {
+    public <T> T findRange(GenericType<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T listByReleaseDate(Class<T> responseType, String releaseDate) throws WebApplicationException {
+    public <T> T listByReleaseDate(GenericType<T> responseType, String releaseDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (releaseDate != null) {
             resource = resource.queryParam("releaseDate", releaseDate);
@@ -75,12 +75,23 @@ public class MovieRESTClient implements IMovie {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void create(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+    public <T> T listMoviesByCategories(GenericType<T> responseType, String categoryCount, String categories) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (categoryCount != null) {
+            resource = resource.queryParam("categoryCount", categoryCount);
+        }
+        if (categories != null) {
+            resource = resource.queryParam("categories", categories);
+        }
+        resource = resource.path("moviesByCategories");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T listByMovieHour(Class<T> responseType, String movieHour) throws WebApplicationException {
+    public void create(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+    }
+
+    public <T> T listByMovieHour(GenericType<T> responseType, String movieHour) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("movieHour/{0}", new Object[]{movieHour}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
