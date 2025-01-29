@@ -23,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -63,7 +64,7 @@ public class CategoryController {
 
     @FXML
     private TableView tbcategory;
-    
+
     @FXML
     private Button removebtn;
 
@@ -75,7 +76,6 @@ public class CategoryController {
         stage.setTitle("Category");
         stage.setResizable(false);
         tbcategory.setEditable(true);
-        
 
         categoryManager = CategoryFactory.getICategory();
         try {
@@ -180,6 +180,7 @@ public class CategoryController {
             categoryManager.edit(pegiAge, String.valueOf(pegiAge.getId()));
         });
 
+        tbcategory.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     public Stage getStage() {
@@ -251,19 +252,38 @@ public class CategoryController {
         tbcategory.refresh();
     }
 
-    public void handleRemoveAction(ActionEvent event) {
-        CategoryEntity removeCategory = (CategoryEntity) tbcategory.getSelectionModel().getSelectedItem();
+    private void refreshTable() {
+        // Limpiar la lista actual de tickets
+        categories.clear();
 
+        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
+        categories.addAll(
+                categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+                }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+    }
+
+    public void handleRemoveAction(ActionEvent event) {
+        List<CategoryEntity> removeCategory = tbcategory.getSelectionModel().getSelectedItems();
         if (removeCategory != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Remove confirmation");
             alert.setHeaderText("¿Are you sure you want to remove this category?");
-
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    categoryManager.remove(String.valueOf(removeCategory.getId()));
-                    tbcategory.getItems().remove(removeCategory);
-                    tbcategory.refresh();
+                    if (removeCategory.size() > 1) {
+                        for (CategoryEntity categ : removeCategory) {
+                            categoryManager.remove(String.valueOf(categ.getId()));
+                            tbcategory.getItems().remove(removeCategory);
+                        }
+                    } else {
+                        categoryManager.remove(String.valueOf(removeCategory.get(0).getId()));
+                        tbcategory.getItems().remove(removeCategory);
+                    }
+                    refreshTable();
                 }
             });
         }
