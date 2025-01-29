@@ -2,23 +2,32 @@ package clientapp.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import javafx.collections.ObservableList;
 
 @XmlRootElement
 public class TicketEntity implements Serializable {
 
     private Integer id;
-    private Date buyDate;  // Usamos Date para almacenar la fecha y hora
+    private Date buyDate;
     private Float price;
     private Integer numPeople;
     private MovieEntity movie;
     private UserEntity user;
 
-    // Constructor vacío
+    //constructor vacio
     public TicketEntity() {
+    }
+    
+    // Constructor predeterminado
+    public TicketEntity( ObservableList<MovieEntity> listMovies ) {
+        this.buyDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        this.numPeople = 0;
+        this.price = 7.5f;
+        this.movie = listMovies.get(0);
     }
 
     // Constructor con parámetros

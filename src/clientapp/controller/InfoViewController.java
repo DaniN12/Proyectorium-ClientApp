@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -37,7 +38,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -46,6 +49,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
@@ -77,6 +81,16 @@ public class InfoViewController {
     private MenuItem optionCj;
     @FXML
     private MenuItem optionRigby;
+    @FXML
+    private MenuItem addMenuItem;
+    @FXML
+    private MenuItem removeMenuItem;
+    @FXML
+    private MenuItem movieFilter;
+    @FXML
+    private MenuItem priceFilter;
+    @FXML
+    private MenuItem buyDateFilter;
     @FXML
     private TableView<TicketEntity> ticketTableView;
     @FXML
@@ -125,6 +139,12 @@ public class InfoViewController {
             optionMordecay.setOnAction(this::onOptionMordecay);
             optionCj.setOnAction(this::onOptionCj);
             optionRigby.setOnAction(this::onOptionRigby);
+            addMenuItem.setOnAction(this::handleCreateAction);
+            removeMenuItem.setOnAction(this::handleRemoveAction);
+            addTicketButton.setOnAction(this::handleCreateAction);
+            priceFilter.setOnAction(this::handleFilterByPriceAction);
+            buyDateFilter.setOnAction(this::handleFilterByBuyDateAction);
+            movieFilter.setOnAction(this::handleFilterByMovieAction);
 
             loadTickets();
 
@@ -155,24 +175,24 @@ public class InfoViewController {
     }
 
     private void setupTicketTable() {
-        // Configurar columna de imagen de la película
-        movieImageColumn.setCellValueFactory(param -> {
-            TicketEntity ticket = param.getValue();
-            if (ticket.getMovie().getId() != null) {
-                MovieEntity movie = listMovies.stream()
-                        .filter(m -> m.getId().equals(ticket.getMovie().getId()))
-                        .findFirst()
-                        .orElse(null);
+        movieImageColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<TicketEntity, ImageView>, ObservableValue<ImageView>>() {
+            @Override
+            public ObservableValue<ImageView> call(CellDataFeatures<TicketEntity, ImageView> param) {
+                TicketEntity ticket = param.getValue();
+                byte[] movieImageBytes = ticket.getMovie().getMovieImage();
 
-                if (movie != null && movie.getMovieImage() != null) {
-                    Image image = new Image(new ByteArrayInputStream(movie.getMovieImage()));
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitWidth(50);
-                    imageView.setFitHeight(50);
-                    return new SimpleObjectProperty<>(imageView);
-                }
+                // Si la imagen es nula o vacía, usar una imagen predeterminada
+                // Cargar la imagen predeterminada o la imagen desde los bytes del BLOB
+                Image image = (movieImageBytes == null || movieImageBytes.length == 0)
+                        ? new Image(getClass().getResource("/resources/icon.png").toExternalForm()) // Predeterminada
+                        : new Image(new ByteArrayInputStream(movieImageBytes)); // Desde los bytes
+
+                // Crear un ImageView y establecer la imagen
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(100);  // Ajustar el tamaño de la imagen
+                imageView.setFitHeight(100); // Ajustar el tamaño de la imagen
+                return new SimpleObjectProperty<>(imageView);
             }
-            return null;
         });
         movieTitleColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getMovie().getTitle()));
         durationColumn.setCellValueFactory(new PropertyValueFactory<>("movieDuration"));
@@ -235,8 +255,6 @@ public class InfoViewController {
             ticket.setBuyDate(event.getNewValue());
         });
         peopleColumn.setOnEditCommit(event -> {
-            // Aquí puedes implementar la lógica para editar la columna de personas
-            // Ejemplo:
             Integer newValue = event.getNewValue(); // Obtener el nuevo valor de la celda
             TicketEntity ticket = event.getRowValue();  // Obtener el ticket editado
 
@@ -251,7 +269,7 @@ public class InfoViewController {
                 logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
             }
         });
-
+        ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     private void refreshTickets() {
@@ -266,8 +284,6 @@ public class InfoViewController {
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                         .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
         );*/
-        
-        ticketTableView.setItems(listTickets);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
@@ -277,30 +293,71 @@ public class InfoViewController {
         alert.showAndWait();
     }
 
-    @FXML
     private void onOptionMordecay(ActionEvent event) {
         profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/mordecay.png")));
     }
 
-    @FXML
     private void onOptionCj(ActionEvent event) {
         profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/cj.png")));
     }
 
-    @FXML
     private void onOptionRigby(ActionEvent event) {
         profileImageView.setImage(new Image(getClass().getResourceAsStream("/resources/rigby.png")));
     }
 
-    @FXML
-    private void showContextMenu(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
-            if (ticketTableView.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())) {
-                tableContextMenu.show(ticketTableView, event.getSceneX(), event.getSceneY());
-            } else {
-                contextMenu.show(profileImageView, event.getSceneX(), event.getSceneY());
+    public void handleRemoveAction(ActionEvent event) {
+        List<TicketEntity> removeTicket = ticketTableView.getSelectionModel().getSelectedItems();
+        if (removeTicket.size() > 1) {
+            for (TicketEntity ticket : removeTicket) {
+                iTicket.remove(String.valueOf(ticket.getId()));
+                ticketTableView.getItems().remove(removeTicket);
             }
+        } else {
+            iTicket.remove(String.valueOf(removeTicket.get(0).getId()));
+            ticketTableView.getItems().remove(removeTicket);
         }
+        refreshTickets();
+    }
+
+    public void handleCreateAction(ActionEvent event) {
+        TicketEntity newTicket = new TicketEntity(listMovies);
+        iTicket.create(newTicket);
+        listTickets.add(newTicket);
+        ticketTableView.setItems(listTickets);
+        refreshTickets();
+    }
+
+    @FXML
+    public void handleFilterByMovieAction(ActionEvent event) {
+        listTickets = FXCollections.observableArrayList(iTicket.listByMovieASC(new GenericType<List<TicketEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        refreshTickets();
+    }
+
+    @FXML
+    public void handleFilterByPriceAction(ActionEvent event) {
+        listTickets = FXCollections.observableArrayList(iTicket.listByPriceASC(new GenericType<List<TicketEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        refreshTickets();
+    }
+
+    @FXML
+    public void handleFilterByBuyDateAction(ActionEvent event) {
+        listTickets = FXCollections.observableArrayList(iTicket.listByBuyDateASC(new GenericType<List<TicketEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        refreshTickets();
     }
 
     @FXML

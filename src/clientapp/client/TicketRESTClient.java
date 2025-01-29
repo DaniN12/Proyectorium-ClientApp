@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package clientapp.client;
 
 import clientapp.interfaces.ITicket;
@@ -11,14 +16,14 @@ import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:TicketEntityFacadeREST
- * [proyectorium.crud.entities.ticket]
+ * [proyectorium.crud.entities.ticket]<br>
  * USAGE:
  * <pre>
-        TicketRESTClient client = new TicketRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ *        TicketRESTClient client = new TicketRESTClient();
+ *        Object response = client.XXX(...);
+ *        // do whatever with response
+ *        client.close();
+ * </pre>
  *
  * @author kbilb
  */
@@ -33,7 +38,7 @@ public class TicketRESTClient implements ITicket {
         webTarget = client.target(BASE_URI).path("proyectorium.crud.entities.ticket");
     }
 
-    public String countREST() throws ClientErrorException {
+    public String countREST() throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("count");
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
@@ -54,17 +59,15 @@ public class TicketRESTClient implements ITicket {
     }
 
     @Override
-    public void edit(TicketEntity ticket, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML), TicketEntity.class);
+    public void edit(TicketEntity requestEntity, String id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     @Override
-    public TicketEntity find(String id) throws WebApplicationException {
+    public TicketEntity find(GenericType<TicketEntity> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(TicketEntity.class);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public <T> T findRange(Class<T> responseType, String from, String to) throws WebApplicationException {
@@ -74,9 +77,8 @@ public class TicketRESTClient implements ITicket {
     }
 
     @Override
-    public void create(TicketEntity ticket) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(ticket, javax.ws.rs.core.MediaType.APPLICATION_XML), TicketEntity.class);
+    public void create(TicketEntity requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
     @Override
@@ -87,18 +89,18 @@ public class TicketRESTClient implements ITicket {
     }
 
     @Override
-    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException {
+    public List<TicketEntity> findAll(GenericType<List<TicketEntity>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
     public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                .request().delete(TicketEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
     public void close() {
         client.close();
     }
+
 }

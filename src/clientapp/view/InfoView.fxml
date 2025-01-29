@@ -62,6 +62,14 @@
                         <TableColumn fx:id="peopleColumn" prefWidth="60.800048828125" text="People" />
                         <TableColumn fx:id="priceColumn" maxWidth="80.7999267578125" prefWidth="65.5999755859375" text="Price" />
                     </columns>
+               <contextMenu>
+                  <ContextMenu fx:id="tableContextMenu">
+                    <items>
+                      <MenuItem fx:id="addMenuItem" mnemonicParsing="false" text="Add ticket" />
+                        <MenuItem fx:id="removeMenuItem" mnemonicParsing="false" text="Remove ticket" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
                 </TableView>
 
                 <!-- Profile Image -->
@@ -78,9 +86,9 @@
                 <Button fx:id="addTicketButton" layoutX="1190.0" layoutY="653.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="161.0" text="Add Ticket" />
                 <MenuButton fx:id="FilterMenuButton" layoutX="1277.0" layoutY="14.0" mnemonicParsing="false" text="Filter by">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                        <MenuItem mnemonicParsing="false" text="Action 2" />
-                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                        <MenuItem fx:id="movieFilter" mnemonicParsing="false" text="Movie" />
+                        <MenuItem fx:id="priceFilter" mnemonicParsing="false" text="Price" />
+                        <MenuItem fx:id="buyDateFilter" mnemonicParsing="false" text="Buy Date" />
                     </items>
                 </MenuButton>
             </children>
