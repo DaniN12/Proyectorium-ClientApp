@@ -97,28 +97,6 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
 
         datePicker.setOnAction(e -> commitEdit(convertToDate(datePicker.getValue())));
     }
-    
-    private void configureDayCellFactory(DatePicker datePicker, LocalDate minDate) {
-    // Configura un DayCellFactory que limite las fechas seleccionables
-    final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
-        @Override
-        public DateCell call(final DatePicker datePicker) {
-            return new DateCell() {
-                @Override
-                public void updateItem(LocalDate item, boolean empty) {
-                    super.updateItem(item, empty);
-                    // Deshabilitar fechas anteriores a la fecha mínima
-                    if (minDate != null && item.isBefore(minDate)) {
-                        setDisable(true);
-                        setStyle("-fx-background-color: #ffc0cb;"); // Estilo opcional para fechas deshabilitadas
-                    }
-                }
-            };
-        }
-    };
-    datePicker.setDayCellFactory(dayCellFactory);
-}
-
 
     private String formatDate(Date date) {
         return date == null ? "" : java.text.DateFormat.getDateInstance().format(date);
