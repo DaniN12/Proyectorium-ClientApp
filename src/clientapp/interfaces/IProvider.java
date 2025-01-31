@@ -18,23 +18,31 @@ import javax.ws.rs.core.GenericType;
 public interface IProvider {
 
 
-    public <T> T listByContractEnd(Class<T> responseType) throws WebApplicationException;
+    public <T> T listByContractEnd_XML(GenericType<T> responseType) throws WebApplicationException;
+    public <T> T listByContractEnd_JSON(GenericType<T> responseType) throws WebApplicationException;
 
-    public <T> T listByContractInit(Class<T> responseType) throws WebApplicationException;
-
+    public <T> T listByContractInit_XML(GenericType<T> responseType) throws WebApplicationException;
+    public <T> T listByContractInit_JSON(GenericType<T> responseType) throws WebApplicationException;
+    
     public String countREST() throws WebApplicationException;
 
-    public void edit(Object requestEntity, String id) throws WebApplicationException;
+    public void edit_XML(Object requestEntity, String id) throws WebApplicationException;
+    public void edit_JSON(Object requestEntity, String id) throws WebApplicationException;
 
-    public <T> T find(Class<T> responseType, String id) throws WebApplicationException;
+    public <T> T find_XML(GenericType<T> responseType, String id) throws WebApplicationException;
+    public <T> T find_JSON(GenericType<T> responseType, String id) throws WebApplicationException;
 
-    public <T> T findRange(Class<T> responseType, String from, String to) throws WebApplicationException;
+    public <T> T findRange_XML(GenericType<T> responseType, String from, String to) throws WebApplicationException;
+    public <T> T findRange_JSON(GenericType<T> responseType, String from, String to) throws WebApplicationException;
+    
+    public <T> T listByPrice_XML(GenericType<T> responseType) throws WebApplicationException;
+    public <T> T listByPrice_JSON(GenericType<T> responseType) throws WebApplicationException;
 
-    public <T> T listByPrice(Class<T> responseType) throws WebApplicationException;
+    public void create_XML(Object requestEntity) throws WebApplicationException;
+    public void create_JSON(Object requestEntity) throws WebApplicationException;
 
-    public void create(Object requestEntity) throws WebApplicationException;
-
-    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException;
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException;
+    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException;
 
     public void remove(String id) throws WebApplicationException;
 

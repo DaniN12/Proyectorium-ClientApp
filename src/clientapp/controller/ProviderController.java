@@ -90,7 +90,7 @@ public class ProviderController {
         try {
             iProvider = ProviderManagerFactory.getIProvider();
 
-            provider = FXCollections.observableArrayList(iProvider.findAll(new GenericType<List<ProviderEntity>>() {
+            provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
             }));
 
             tbcolumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -109,28 +109,28 @@ public class ProviderController {
         tbcolumnEmail.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
             ProviderEntity provider = t.getRowValue();
             provider.setEmail(t.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         tbcolumnName.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
         tbcolumnName.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
             ProviderEntity provider = t.getRowValue();
             provider.setName(t.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         tbcolumnConInit.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConInit.setOnEditCommit(event -> {
             ProviderEntity provider = event.getRowValue();
             provider.setContractIni(event.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         tbcolumnConEnd.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConEnd.setOnEditCommit(event -> {
             ProviderEntity provider = event.getRowValue();
             provider.setContractEnd(event.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         tbcolumnPhone.setCellFactory(TextFieldTableCell.<ProviderEntity, Integer>forTableColumn(new StringConverter<Integer>() {
@@ -153,7 +153,7 @@ public class ProviderController {
         tbcolumnPhone.setOnEditCommit((CellEditEvent<ProviderEntity, Integer> t) -> {
             ProviderEntity provider = t.getRowValue();
             provider.setPhone(t.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         tbcolumnPrice.setCellFactory(TextFieldTableCell.<ProviderEntity, Float>forTableColumn(new StringConverter<Float>() {
@@ -176,7 +176,7 @@ public class ProviderController {
         tbcolumnPrice.setOnEditCommit((CellEditEvent<ProviderEntity, Float> t) -> {
             ProviderEntity provider = t.getRowValue();
             provider.setPrice(t.getNewValue());
-            iProvider.edit(provider, String.valueOf(provider.getId()));
+            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
         stage.show();
@@ -199,8 +199,8 @@ public class ProviderController {
     public void handleCreateAction(ActionEvent event) {
         ProviderEntity newProvider = new ProviderEntity();
 
-        iProvider.create(newProvider);
-        provider = FXCollections.observableArrayList(iProvider.findAll(new GenericType<List<ProviderEntity>>() {
+        iProvider.create_XML(newProvider);
+        provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
             }));
         tableProviders.setItems(provider);
     }
