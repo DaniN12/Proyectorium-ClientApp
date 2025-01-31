@@ -48,6 +48,7 @@
         <items>
           <MenuItem fx:id="filterPegi" mnemonicParsing="false" text="Pegi" />
           <MenuItem fx:id="filterDate" mnemonicParsing="false" text="Creation Date" />
+          <MenuItem fx:id="filterDescription" mnemonicParsing="false" text="Description - 50" />
         </items>
       </MenuButton>
    </children>

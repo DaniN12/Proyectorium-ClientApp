@@ -61,7 +61,7 @@ public class CategoryRESTClient implements ICategory{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T listCategoriesbyCreationDate(Class<T> responseType) throws WebApplicationException {
+    public <T> T listCategoriesbyCreationDate(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("listCategoriesbyCreationDate");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -72,7 +72,7 @@ public class CategoryRESTClient implements ICategory{
                 .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), CategoryEntity.class);
     }
 
-    public <T> T listCategoriesbyPegi(Class<T> responseType) throws ClientErrorException {
+    public <T> T listCategoriesbyPegi(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("listCategoriesbyPegi");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -87,7 +87,7 @@ public class CategoryRESTClient implements ICategory{
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(CategoryEntity.class);
     }
 
-    public <T> T listCategoriesByDescriptionAndPegi18(Class<T> responseType) throws WebApplicationException {
+    public <T> T listCategoriesByDescriptionAndPegi18(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("listCategoriesByDescriptionAndPegi18");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

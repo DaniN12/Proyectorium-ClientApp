@@ -12,6 +12,7 @@ import clientapp.model.Pegi;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -23,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -57,6 +59,12 @@ public class CategoryController {
     private TableColumn<CategoryEntity, Date> tbcolCreationDate;
     @FXML
     private TableColumn<CategoryEntity, Pegi> tbcolPegi;
+    @FXML
+    private MenuItem filterPegi;
+    @FXML
+    private MenuItem filterDate;
+    @FXML
+    private MenuItem filterDescription;
 
     private ICategory categoryManager;
 
@@ -181,6 +189,9 @@ public class CategoryController {
         });
 
         tbcategory.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        filterPegi.setOnAction(this::filterCategoriesByPegi);
+        filterDate.setOnAction(this::listCategoriesbyCreationDate);
+        filterDescription.setOnAction(this::listCategoriesByDescriptionAndPegi18);
     }
 
     public Stage getStage() {
@@ -255,7 +266,6 @@ public class CategoryController {
     private void refreshTable() {
         // Limpiar la lista actual de tickets
         categories.clear();
-
         // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
         categories.addAll(
                 categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
@@ -298,4 +308,41 @@ public class CategoryController {
 
     }
 
+    public void filterCategoriesByPegi(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesbyPegi(new GenericType<List<CategoryEntity>>() {
+            }));
+
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
+
+    public void listCategoriesbyCreationDate(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesbyCreationDate(new GenericType<List<CategoryEntity>>() {
+            }));
+
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
+    
+     public void listCategoriesByDescriptionAndPegi18(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesByDescriptionAndPegi18(new GenericType<List<CategoryEntity>>() {
+            }));
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
 }
