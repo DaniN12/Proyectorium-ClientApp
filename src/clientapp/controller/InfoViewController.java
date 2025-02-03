@@ -166,7 +166,7 @@ public class InfoViewController {
                             .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                             .collect(Collectors.toList()) // Recoger en una lista estándar
             );*/
-            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
+            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             setupTicketTable();
             ticketTableView.setItems(listTickets);

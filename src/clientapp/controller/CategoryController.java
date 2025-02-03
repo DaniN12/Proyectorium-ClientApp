@@ -63,19 +63,18 @@ public class CategoryController {
     private ObservableList<CategoryEntity> categories;
 
     @FXML
-    private TableView tbcategory;
+    private TableView viewTable;
 
     @FXML
     private Button removebtn;
 
     public void initialize(Parent root) {
-        logger.info("Initializing InfoView stage.");
-
+        logger.info("Initializing category View stage.");
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Category");
         stage.setResizable(false);
-        tbcategory.setEditable(true);
+        viewTable.setEditable(true);
 
         categoryManager = CategoryFactory.getICategory();
         try {
@@ -109,7 +108,7 @@ public class CategoryController {
             ObservableList<Pegi> pegiOptions = FXCollections.observableArrayList(Pegi.values());
             tbcolPegi.setCellFactory(ComboBoxTableCell.forTableColumn(pegiOptions));
 
-            tbcategory.setItems(categories);
+            viewTable.setItems(categories);
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No se ha podido abrir la ventana: " + e.getMessage(), ButtonType.OK);
@@ -247,12 +246,12 @@ public class CategoryController {
     }
 
     public void removeCategory() {
-        tbcategory.getItems().remove(tbcategory.getSelectionModel().getSelectedItem());
-        tbcategory.refresh();
+        viewTable.getItems().remove(viewTable.getSelectionModel().getSelectedItem());
+        viewTable.refresh();
     }
 
     public void handleRemoveAction(ActionEvent event) {
-        CategoryEntity removeCategory = (CategoryEntity) tbcategory.getSelectionModel().getSelectedItem();
+        CategoryEntity removeCategory = (CategoryEntity) viewTable.getSelectionModel().getSelectedItem();
 
         if (removeCategory != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -262,8 +261,8 @@ public class CategoryController {
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     categoryManager.remove(String.valueOf(removeCategory.getId()));
-                    tbcategory.getItems().remove(removeCategory);
-                    tbcategory.refresh();
+                    viewTable.getItems().remove(removeCategory);
+                    viewTable.refresh();
                 }
             });
         }
@@ -274,7 +273,7 @@ public class CategoryController {
         categoryManager.create(newCategory);
         categories = FXCollections.observableArrayList(categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
         }));
-        tbcategory.setItems(categories);
+        viewTable.setItems(categories);
 
     }
 

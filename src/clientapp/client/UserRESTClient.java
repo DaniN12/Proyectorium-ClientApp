@@ -77,7 +77,7 @@ public class UserRESTClient implements Signable {
             UserEntity userEntity = (UserEntity) requestEntity;
             String encryptedPassword = encryptPassword(userEntity.getPassword());
 
-            // Reemplazar la contraseña con la cifrada
+            // Reemplazar la contraseña original con la cifrada
             userEntity.setPassword(encryptedPassword);
 
             // Enviar la solicitud con la contraseña cifrada
@@ -89,8 +89,21 @@ public class UserRESTClient implements Signable {
     }
 
     public void create(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).
-                post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), UserEntity.class);
+        try {
+            // Encriptar la contraseña antes de enviarla
+            UserEntity userEntity = (UserEntity) requestEntity;
+            String encryptedPassword = encryptPassword(userEntity.getPassword());
+
+            // Reemplazar la contraseña original con la cifrada
+            userEntity.setPassword(encryptedPassword);
+
+            // Enviar la solicitud con la contraseña cifrada
+            webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                    .post(javax.ws.rs.client.Entity.entity(userEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), UserEntity.class);
+
+        } catch (Exception e) {
+            throw new WebApplicationException("Error al cifrar la contraseña", e);
+        }
     }
 
     public <T> T findAll(GenericType<T> responseType) throws WebApplicationException {
@@ -102,42 +115,7 @@ public class UserRESTClient implements Signable {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(UserEntity.class);
     }
 
-    private String encryptPassword(String password) throws Exception {
-        // Generar la clave de sesión AES
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(256);  // AES-256
-        SecretKey aesKey = keyGen.generateKey();
-
-        // Cifrar la contraseña con AES
-        Cipher aesCipher = Cipher.getInstance("AES");
-        aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
-        byte[] encryptedPassword = aesCipher.doFinal(password.getBytes());
-
-        // Cifrar la clave AES con RSA
-        PublicKey publicKey = loadPublicKey();
-        Cipher rsaCipher = Cipher.getInstance("RSA");
-        rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] encryptedAesKey = rsaCipher.doFinal(aesKey.getEncoded());
-
-        // Codificar la clave AES cifrada y la contraseña cifrada a Base64
-        String encryptedPasswordBase64 = java.util.Base64.getEncoder().encodeToString(encryptedPassword);
-        String encryptedAesKeyBase64 = java.util.Base64.getEncoder().encodeToString(encryptedAesKey);
-
-        // Devolver ambos valores (se pueden enviar como un objeto o un JSON)
-        return encryptedPasswordBase64 + ":" + encryptedAesKeyBase64;
-    }
-
-    private PublicKey loadPublicKey() throws Exception {
-        InputStream keyInputStream = new FileInputStream("C://Users/2dam/Desktop/Proyectorium-ClientApp/src/Public.key");
-        if (keyInputStream == null) {
-            throw new FileNotFoundException("Clave pública no encontrada.");
-        }
-        byte[] publicKeyBytes = readAllBytes(keyInputStream);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
-        return keyFactory.generatePublic(keySpec);
-    }
-
+    /*
     private byte[] readAllBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] data = new byte[1024];
@@ -146,6 +124,41 @@ public class UserRESTClient implements Signable {
             buffer.write(data, 0, bytesRead);
         }
         return buffer.toByteArray();
+    }
+     */
+
+    private PublicKey loadPublicKey() throws Exception {
+        byte[] publicKeyBytes;
+        try (InputStream keyInputStream = UserRESTClient.class.getResourceAsStream("Public.key");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            if (keyInputStream == null) {
+                throw new FileNotFoundException("No se encontró el archivo de clave pública.");
+            }
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = keyInputStream.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            publicKeyBytes = baos.toByteArray();
+        }
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        return keyFactory.generatePublic(publicKeySpec);
+    }
+
+    // Encriptar la contraseña con la clave pública RSA
+    private String encryptPassword(String password) throws Exception {
+        // Cargar la clave pública
+        PublicKey publicKey = loadPublicKey();
+
+        // Cifrar la contraseña
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedPassword = cipher.doFinal(password.getBytes());
+
+        // Codificar en Base64 para enviarla
+        return java.util.Base64.getEncoder().encodeToString(encryptedPassword);
     }
 
     public void close() {

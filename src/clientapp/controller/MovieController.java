@@ -39,7 +39,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -109,9 +108,6 @@ public class MovieController {
     @FXML
     private ComboBox findProveedorCbox;
 
-    @FXML
-    private Button searchBtn;
-
     private Stage stage;
 
     private IMovie movieManager;
@@ -140,9 +136,11 @@ public class MovieController {
         stage.setResizable(false);
         moviesTbv.setEditable(true);
         imgColumn.setEditable(false);
-        //     removeMovieBtn.setDisable(true);
         removeMovieBtn.setOnAction(this::handleRemoveAction);
         stage.setOnCloseRequest(this::onCloseRequest);
+        releaseDateMButton.setOnAction(this::filterByReleaseDate);
+        movieHourMButton.setOnAction(this::filterByMovieHour);
+        providerMButton.setOnAction(this::filterProvider);
 
         loadMovies();
         setupContextMenu();
@@ -162,7 +160,7 @@ public class MovieController {
             availableProviders = providerManager.findAll(new GenericType<List<ProviderEntity>>() {
             });
 
-            movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
+            movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
 
             setUpMovies();
@@ -224,7 +222,7 @@ public class MovieController {
                 t.getTableView().getItems().get(t.getTablePosition().getRow()).setTitle(t.getNewValue());
                 MovieEntity movie = t.getRowValue();
                 movie.setTitle(t.getNewValue());
-                movieManager.edit(movie, String.valueOf(movie.getId()));
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
 
             durationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>() {
@@ -247,7 +245,7 @@ public class MovieController {
                 t.getTableView().getItems().get(t.getTablePosition().getRow()).setDuration(t.getNewValue());
                 MovieEntity movie = t.getRowValue();
                 movie.setDuration(t.getNewValue());
-                movieManager.edit(movie, String.valueOf(movie.getId()));
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
 
             sinopsisColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
@@ -255,14 +253,14 @@ public class MovieController {
                 t.getTableView().getItems().get(t.getTablePosition().getRow()).setSinopsis(t.getNewValue());
                 MovieEntity movie = t.getRowValue();
                 movie.setSinopsis(t.getNewValue());
-                movieManager.edit(movie, String.valueOf(movie.getId()));
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
 
             rDateColumn.setCellFactory(column -> new DatePickerCellEditer());
             rDateColumn.setOnEditCommit(event -> {
                 MovieEntity movie = event.getRowValue();
                 movie.setReleaseDate(event.getNewValue());
-                movieManager.edit(movie, String.valueOf(movie.getId()));
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
 
             ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
@@ -286,7 +284,7 @@ public class MovieController {
             movieHourClolumn.setOnEditCommit(event -> {
                 MovieEntity movie = event.getRowValue();
                 movie.setMovieHour(event.getNewValue()); // Guarda la hora seleccionada
-                movieManager.edit(movie, String.valueOf(movie.getId()));
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
 
             providerColumn.setCellValueFactory(cellData -> {
@@ -337,7 +335,7 @@ public class MovieController {
                         if (selectedProvider != null) {
                             movie.setProvider(selectedProvider);
                             // Llamar al servicio REST para actualizar la película
-                            movieManager.edit(movie, String.valueOf(movie.getId()));
+                            movieManager.edit_XML(movie, String.valueOf(movie.getId()));
                             Platform.runLater(() -> {
                                 movies.set(rowIndex, movie); // Actualizar la fila directamente
                             });
@@ -377,8 +375,8 @@ public class MovieController {
         try {
             MovieEntity newMovie = new MovieEntity();
 
-            movieManager.create(newMovie);
-            movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
+            movieManager.create_XML(newMovie);
+            movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             moviesTbv.setItems(movies);
 
@@ -464,7 +462,7 @@ public class MovieController {
                         // Actualizar la lista de categorías seleccionadas en la película
                         movie.setCategories(selectedCategories);
 
-                        movieManager.edit(movie, String.valueOf(movie.getId()));
+                        movieManager.edit_XML(movie, String.valueOf(movie.getId()));
                         categoryStage.close();
                         moviesTbv.refresh();
 
@@ -493,8 +491,63 @@ public class MovieController {
         }
     }
 
-    private void filterMovies(String filterType) {
+    @FXML
+    private void filterByReleaseDate(ActionEvent event) {
 
+        movies = FXCollections.observableArrayList(movieManager.listByReleaseDate_XML(new GenericType<List<MovieEntity>>() {
+        }));
+        moviesTbv.setItems(movies);
+        moviesTbv.refresh();
+    }
+
+    @FXML
+    private void filterByMovieHour(ActionEvent event) {
+
+        ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
+
+        findProveedorCbox.setItems(availableHours);
+        findProveedorCbox.setOnAction(e -> applyMovieHourFilter());
+    }
+
+    private void applyMovieHourFilter() {
+        MovieHour selectedHour = (MovieHour) findProveedorCbox.getValue(); // Obtener la hora seleccionada
+
+        if (selectedHour != null) {
+            try {
+                movies = FXCollections.observableArrayList(movieManager.listByMovieHour_XML(new GenericType<List<MovieEntity>>() {
+                }, String.valueOf(selectedHour)));
+
+                moviesTbv.setItems(movies);
+                moviesTbv.refresh();
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void filterProvider(ActionEvent event) {
+        ObservableList<ProviderEntity> providersList = FXCollections.observableArrayList(availableProviders);
+
+        findProveedorCbox.setItems(providersList);
+
+        findProveedorCbox.setOnAction(e -> applyProviderFilter());
+    }
+
+    private void applyProviderFilter() {
+        ProviderEntity selectedProvider = (ProviderEntity) findProveedorCbox.getValue();
+
+        if (selectedProvider != null) {
+            try {
+                movies = FXCollections.observableArrayList(movieManager.listByProvider_XML(new GenericType<List<MovieEntity>>() {
+                }, String.valueOf(selectedProvider)));
+
+                moviesTbv.setItems(movies);
+                moviesTbv.refresh();
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

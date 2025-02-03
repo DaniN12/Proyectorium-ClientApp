@@ -105,8 +105,7 @@
 }
 
 #moviePane {
-    -fx-background-image: url("/resources/Info.png");
-    -fx-background-size: 140% auto; /* Ajustar ancho al 70% del contenedor y altura proporcional */
+    -fx-background-image: url("/resources/Adobe Express - file.png");
     -fx-background-position: center; /* Centrar la imagen en el contenedor */
     -fx-background-repeat: no-repeat; /* No repetir la imagen */
 }

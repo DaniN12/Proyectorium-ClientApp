@@ -7,6 +7,7 @@ package clientapp;
 
 import clientapp.controller.InfoViewController;
 import clientapp.controller.MovieController;
+import clientapp.controller.SignInController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
