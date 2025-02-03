@@ -7,14 +7,6 @@ package clientapp.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -26,29 +18,30 @@ public class CategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    Integer id;
+
+
     private byte[] icon;
     private String name;
     private String description;
-    private Date creationDate;
-    private Pegi pegi;
 
-    public CategoryEntity(Integer id, byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
-        this.id = id;
-        this.icon = icon;
-        this.name = name;
-        this.description = description;
-        this.creationDate = creationDate;
-        this.pegi = pegi;
-    }
+
+    private Date creationDate;
+
+
+    private Pegi pegi;
 
     public CategoryEntity() {
 
     }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
+    
+    public CategoryEntity(byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
+    this.icon = icon;
+    this.name = name;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.pegi = pegi;
+}
 
     public Integer getId() {
         return id;
@@ -124,4 +117,3 @@ public class CategoryEntity implements Serializable {
     }
 
 }
-

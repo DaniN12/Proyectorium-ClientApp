@@ -6,7 +6,6 @@
 package clientapp.controller;
 
 import clientapp.factories.CategoryFactory;
-import clientapp.factories.DatePickerCellEditer;
 import clientapp.interfaces.ICategory;
 import clientapp.model.CategoryEntity;
 import clientapp.model.Pegi;
@@ -24,6 +23,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -57,29 +58,36 @@ public class CategoryController {
     private TableColumn<CategoryEntity, Date> tbcolCreationDate;
     @FXML
     private TableColumn<CategoryEntity, Pegi> tbcolPegi;
+    @FXML
+    private MenuItem filterPegi;
+    @FXML
+    private MenuItem filterDate;
+    @FXML
+    private MenuItem filterDescription;
 
     private ICategory categoryManager;
 
     private ObservableList<CategoryEntity> categories;
 
     @FXML
-    private TableView viewTable;
+    private TableView tbcategory;
 
     @FXML
     private Button removebtn;
 
     public void initialize(Parent root) {
-        logger.info("Initializing category View stage.");
+        logger.info("Initializing InfoView stage.");
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Category");
         stage.setResizable(false);
-        viewTable.setEditable(true);
+        tbcategory.setEditable(true);
 
         categoryManager = CategoryFactory.getICategory();
         try {
 
-            categories = FXCollections.observableArrayList(categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+            categories = FXCollections.observableArrayList(categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             }));
 
             tbcolIcon.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<CategoryEntity, ImageView>, ObservableValue<ImageView>>() {
@@ -108,7 +116,7 @@ public class CategoryController {
             ObservableList<Pegi> pegiOptions = FXCollections.observableArrayList(Pegi.values());
             tbcolPegi.setCellFactory(ComboBoxTableCell.forTableColumn(pegiOptions));
 
-            viewTable.setItems(categories);
+            tbcategory.setItems(categories);
 
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No se ha podido abrir la ventana: " + e.getMessage(), ButtonType.OK);
@@ -179,6 +187,9 @@ public class CategoryController {
             categoryManager.edit(pegiAge, String.valueOf(pegiAge.getId()));
         });
 
+        tbcategory.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        filterDate.setOnAction(this::listCategoriesbyCreationDate);
+        filterDescription.setOnAction(this::listCategoriesByDescriptionAndPegi18);
     }
 
     public Stage getStage() {
@@ -246,23 +257,41 @@ public class CategoryController {
     }
 
     public void removeCategory() {
-        viewTable.getItems().remove(viewTable.getSelectionModel().getSelectedItem());
-        viewTable.refresh();
+        tbcategory.getItems().remove(tbcategory.getSelectionModel().getSelectedItem());
+        tbcategory.refresh();
+    }
+
+    private void refreshTable() {
+        // Limpiar la lista actual de tickets
+        categories.clear();
+        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
+        categories.addAll(
+                categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
+                }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
     }
 
     public void handleRemoveAction(ActionEvent event) {
-        CategoryEntity removeCategory = (CategoryEntity) viewTable.getSelectionModel().getSelectedItem();
-
+        List<CategoryEntity> removeCategory = tbcategory.getSelectionModel().getSelectedItems();
         if (removeCategory != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Remove confirmation");
             alert.setHeaderText("¿Are you sure you want to remove this category?");
-
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    categoryManager.remove(String.valueOf(removeCategory.getId()));
-                    viewTable.getItems().remove(removeCategory);
-                    viewTable.refresh();
+                    if (removeCategory.size() > 1) {
+                        for (CategoryEntity categ : removeCategory) {
+                            categoryManager.remove(String.valueOf(categ.getId()));
+                            tbcategory.getItems().remove(removeCategory);
+                        }
+                    } else {
+                        categoryManager.remove(String.valueOf(removeCategory.get(0).getId()));
+                        tbcategory.getItems().remove(removeCategory);
+                    }
+                    refreshTable();
                 }
             });
         }
@@ -271,10 +300,33 @@ public class CategoryController {
     public void handleCreateAction(ActionEvent event) {
         CategoryEntity newCategory = new CategoryEntity();
         categoryManager.create(newCategory);
-        categories = FXCollections.observableArrayList(categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+        categories = FXCollections.observableArrayList(categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
         }));
-        viewTable.setItems(categories);
+        tbcategory.setItems(categories);
 
     }
 
+    public void listCategoriesbyCreationDate(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesbyCreationDate_XML(new GenericType<List<CategoryEntity>>() {
+            }));
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
+    
+     public void listCategoriesByDescriptionAndPegi18(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesByDescriptionAndPegi18_XML(new GenericType<List<CategoryEntity>>() {
+            }));
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
 }
