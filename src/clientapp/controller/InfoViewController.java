@@ -5,13 +5,11 @@ import clientapp.factories.TicketDatePickerTableCell;
 import clientapp.factories.TicketFactory;
 import clientapp.interfaces.ITicket;
 import clientapp.model.MovieEntity;
-import clientapp.model.MovieHour;
 import clientapp.model.TicketEntity;
 import clientapp.model.UserEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +18,12 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -48,8 +46,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -152,7 +148,7 @@ public class InfoViewController {
             stage.show();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error initializing InfoView: {0}", e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Error initializing the view.");
+            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Error initializing the view.", "/resources/WarningAlert.png");
         }
     }
 
@@ -242,18 +238,13 @@ public class InfoViewController {
 
             if (selectedMovie != null) {
                 ticket.setMovie(selectedMovie); // Asignar la película al ticket
-                try {
-                    // Llamar al servicio REST para actualizar el ticket
-                    iTicket.edit(ticket, String.valueOf(ticket.getId()));
-                    refreshTickets(); // Actualizar la tabla después de realizar cambios
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
-                }
+                editDatabase(ticket);
             }
         });
         dateColumn.setOnEditCommit(event -> {
             TicketEntity ticket = event.getRowValue();
             ticket.setBuyDate(event.getNewValue());
+            editDatabase(ticket);
         });
         peopleColumn.setOnEditCommit(event -> {
             Integer newValue = event.getNewValue(); // Obtener el nuevo valor de la celda
@@ -262,15 +253,20 @@ public class InfoViewController {
             // Actualizar la propiedad correspondiente del ticket
             ticket.setNumPeople(newValue);
 
-            try {
-                // Llamar al servicio REST para actualizar el ticket
-                iTicket.edit(ticket, String.valueOf(ticket.getId()));
-                refreshTickets(); // Actualizar la tabla después de realizar cambios
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
-            }
+            editDatabase(ticket);
         });
         ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        removeMenuItem.visibleProperty().bind(ticketTableView.getSelectionModel().selectedItemProperty().isNotNull());
+    }
+
+    private void editDatabase(TicketEntity ticket) {
+        try {
+            // Llamar al servicio REST para actualizar el ticket
+            iTicket.edit(ticket, String.valueOf(ticket.getId()));
+            refreshTickets(); // Actualizar la tabla después de realizar cambios
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
+        }
     }
 
     private void refreshTickets() {
@@ -287,11 +283,26 @@ public class InfoViewController {
         );*/
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
+    private boolean showAlert(Alert.AlertType type, String title, String message, String imagePath) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
+        alert.setHeaderText(null);
         alert.setContentText(message);
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
+            imageView.setFitWidth(100);
+            imageView.setFitHeight(100);
+            alert.setGraphic(imageView);
+        }
+
+        if (type == Alert.AlertType.CONFIRMATION) {
+            Optional<ButtonType> result = alert.showAndWait();
+            return result.isPresent() && result.get() == ButtonType.OK;
+        }
+
         alert.showAndWait();
+        return true;
     }
 
     private void onOptionMordecay(ActionEvent event) {
@@ -308,15 +319,18 @@ public class InfoViewController {
 
     public void handleRemoveAction(ActionEvent event) {
         List<TicketEntity> removeTicket = ticketTableView.getSelectionModel().getSelectedItems();
-        if (removeTicket.size() > 1) {
-            for (TicketEntity ticket : removeTicket) {
-                iTicket.remove(String.valueOf(ticket.getId()));
+        if (showAlert(Alert.AlertType.CONFIRMATION, "Confirm", "Are you sure you want to delete?", "/resources/DeleteAlert.png")) {
+            if (removeTicket.size() > 1) {
+                for (TicketEntity ticket : removeTicket) {
+                    iTicket.remove(String.valueOf(ticket.getId()));
+                    ticketTableView.getItems().remove(removeTicket);
+                }
+            } else {
+                iTicket.remove(String.valueOf(removeTicket.get(0).getId()));
                 ticketTableView.getItems().remove(removeTicket);
             }
-        } else {
-            iTicket.remove(String.valueOf(removeTicket.get(0).getId()));
-            ticketTableView.getItems().remove(removeTicket);
         }
+
         refreshTickets();
     }
 
@@ -336,7 +350,8 @@ public class InfoViewController {
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                         .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
         );*/
-        refreshTickets();
+        ticketTableView.setItems(listTickets);
+        ticketTableView.refresh();
     }
 
     @FXML
@@ -347,7 +362,8 @@ public class InfoViewController {
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                         .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
         );*/
-        refreshTickets();
+        ticketTableView.setItems(listTickets);
+        ticketTableView.refresh();
     }
 
     @FXML
@@ -358,7 +374,8 @@ public class InfoViewController {
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                         .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
         );*/
-        refreshTickets();
+        ticketTableView.setItems(listTickets);
+        ticketTableView.refresh();
     }
 
     @FXML
@@ -372,18 +389,13 @@ public class InfoViewController {
             controller.initialize(root);
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Error loading SignInView.fxml: {0}", ex.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Loading Error", "Error loading SignInView.fxml.");
+            showAlert(Alert.AlertType.ERROR, "Loading Error", "Error loading SignInView.fxml.", "/resources/Flecha.png");
         }
     }
 
     @FXML
     public void onCloseRequest(WindowEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit");
-        alert.setContentText("Are you sure you want to close the application?");
-
-        Optional<ButtonType> answer = alert.showAndWait();
-        if (answer.isPresent() && answer.get() != ButtonType.OK) {
+        if (!showAlert(Alert.AlertType.CONFIRMATION, "Exit", "Are you sure you want to close the application?", "/resources/CloseAlert.png")) {
             event.consume();
         } else {
             Platform.exit();
