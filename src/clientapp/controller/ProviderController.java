@@ -187,7 +187,7 @@ public class ProviderController {
     public void handleRemoveAction(ActionEvent event) {
         ProviderEntity RmProvider = (ProviderEntity) tableProviders.getSelectionModel().getSelectedItem();
         if (RmProvider != null && RmProvider.getId() != null) {
-            System.out.println("ID de la película a eliminar: " + RmProvider.getId());
+            System.out.println("ID del proveedor a eliminar: " + RmProvider.getId());
             iProvider.remove(String.valueOf(RmProvider.getId()));
             tableProviders.getItems().remove(RmProvider);
             tableProviders.refresh();
