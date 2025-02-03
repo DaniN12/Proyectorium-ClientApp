@@ -1,0 +1,103 @@
+/* General Styling */
+* {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-base: #F0F0F0; /* Fondo general */
+}
+
+/* Estilo del AnchorPane */
+#AnchorPane {
+    -fx-background-color: #FFFFFF; /* Fondo blanco */
+    -fx-padding: 10px;
+}
+
+/* Estilo de todos los botones */
+.button {
+    -fx-background-color: #7FB8E9; /* Azul claro */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px; /* Bordes redondeados */
+    -fx-padding: 10px 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0, 0, 2); /* Sombra suave */
+    -fx-transition: background-color 0.3s ease; /* Transición suave al pasar el mouse */
+}
+
+.button:hover {
+    -fx-background-color: #5A99D8; /* Azul más oscuro al pasar el mouse */
+}
+
+.button:pressed {
+    -fx-background-color: #417BB3; /* Azul aún más oscuro al presionar */
+}
+
+/* Estilo de los botones con iconos */
+.button .graphic {
+    -fx-padding: 0 10px 0 0;
+}
+
+.button .graphic .image-view {
+    -fx-fit-width: 20px;
+    -fx-fit-height: 20px;
+}
+
+/* Estilo del MenuButton */
+.menu-button {
+    -fx-background-color: #C5D9F1; /* Azul muy claro */
+    -fx-text-fill: #333333;
+    -fx-border-radius: 8px;
+    -fx-padding: 5px 15px;
+    -fx-font-size: 14px;
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1px;
+}
+
+.menu-button .arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0 5px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #A7C5F0; /* Azul suave al pasar el mouse */
+}
+
+/* Estilo de las opciones del MenuButton */
+.menu-item {
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-color: white;
+}
+
+.menu-item:hover {
+    -fx-background-color: #F0F0F0;
+}
+
+/* Estilo de los botones "Add Provider" y "Remove Provider" */
+#btnAddProvider, #btnRemoveProvider {
+    -fx-background-color: #7FB8E9; /* Azul claro */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
+    -fx-transition: background-color 0.3s ease;
+}
+
+#btnAddProvider:hover, #btnRemoveProvider:hover {
+    -fx-background-color: #5A99D8; /* Azul más oscuro al pasar el mouse */
+}
+
+#btnAddProvider:pressed, #btnRemoveProvider:pressed {
+    -fx-background-color: #417BB3; /* Azul más oscuro al presionar */
+}
+
+/* Estilo del botón de Interrogación */
+#btnInterrogation {
+    -fx-background-color: transparent;
+    -fx-border: none;
+    -fx-padding: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0, 0, 2);
+}
+
+#btnInterrogation:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}

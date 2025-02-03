@@ -7,46 +7,41 @@ package clientapp.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Ruth
+ * @author 2dam
  */
-
-
-
 @XmlRootElement
 public class CategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Lob
+
     private byte[] icon;
     private String name;
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
+
     private Date creationDate;
 
-    @Enumerated(EnumType.STRING)
+
     private Pegi pegi;
 
     public CategoryEntity() {
 
     }
+    
+    public CategoryEntity(byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
+    this.icon = icon;
+    this.name = name;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.pegi = pegi;
+}
 
     public Integer getId() {
         return id;
@@ -80,20 +75,20 @@ public class CategoryEntity implements Serializable {
         this.description = description;
     }
 
-    public Pegi getPegi() {
-        return pegi;
-    }
-
-    public void setPegi(Pegi pegi) {
-        this.pegi = pegi;
-    }
-  
     public Date getCreationDate() {
         return creationDate;
     }
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Pegi getPegi() {
+        return pegi;
+    }
+
+    public void setPegi(Pegi pegi) {
+        this.pegi = pegi;
     }
 
     @Override

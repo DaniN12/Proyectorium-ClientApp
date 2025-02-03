@@ -7,20 +7,20 @@
 
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="1366.0" 
-      xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+      xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MenuController">
    <children>
-      <MenuBar prefHeight="26.0" prefWidth="1366.0">
+      <MenuBar fx:id="menuBar" prefHeight="26.0" prefWidth="1366.0">
         <menus>
           <Menu mnemonicParsing="false" text="User">
             <items>
-              <MenuItem mnemonicParsing="false" text="Log Out" />
+              <MenuItem fx:id="logOutMItem" mnemonicParsing="false" text="Log Out" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Navigate">
             <items>
-              <MenuItem mnemonicParsing="false" text="Providers" />
-                  <MenuItem mnemonicParsing="false" text="Movies" />
-                  <MenuItem mnemonicParsing="false" text="Categories" />
+              <MenuItem fx:id="providerMItem" mnemonicParsing="false" text="Providers" />
+                  <MenuItem fx:id="movieMItem" mnemonicParsing="false" text="Movies" />
+                  <MenuItem fx:id="categoryMItem" mnemonicParsing="false" text="Categories" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

@@ -8,6 +8,7 @@ package clientapp.factories;
 import clientapp.client.CategoryRESTClient;
 import clientapp.interfaces.ICategory;
 
+
 /**
  *
  * @author 2dam
@@ -22,6 +23,5 @@ public class CategoryFactory {
         }
 
         return categoryEntity;
-
     }
 }

@@ -5,6 +5,7 @@
  */
 package clientapp.controller;
 
+import clientapp.factories.DatePickerCellEditer;
 import clientapp.factories.CategoryFactory;
 import clientapp.factories.MovieFactory;
 import clientapp.factories.ProviderManagerFactory;
@@ -18,6 +19,9 @@ import clientapp.model.ProviderEntity;
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,7 +32,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -37,7 +44,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -45,6 +51,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javax.ws.rs.WebApplicationException;
@@ -90,25 +97,16 @@ public class MovieController {
     private Button addMovieBtn;
 
     @FXML
-    private TextField tfTitle;
+    private MenuItem releaseDateMButton;
 
     @FXML
-    private TextField tfSinopsis;
+    private MenuItem movieHourMButton;
 
     @FXML
-    private TextField tfDuration;
+    private MenuItem providerMButton;
 
     @FXML
-    private TextField tfReleaseDate;
-
-    @FXML
-    private TextField tfMovieHour;
-
-    @FXML
-    private TextField tfCategories;
-
-    @FXML
-    private TextField tfProviders;
+    private ComboBox findProveedorCbox;
 
     private Stage stage;
 
@@ -124,31 +122,58 @@ public class MovieController {
 
     private List<ProviderEntity> availableProviders;
 
+    private Logger logger = Logger.getLogger(InfoViewController.class.getName());
+
+    private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
+
     public void initialize(Parent root) {
 
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
         stage.setTitle("Movie");
+        stage.getIcons().add(icon);
         stage.setResizable(false);
         moviesTbv.setEditable(true);
         imgColumn.setEditable(false);
         removeMovieBtn.setOnAction(this::handleRemoveAction);
+        stage.setOnCloseRequest(this::onCloseRequest);
+        releaseDateMButton.setOnAction(this::filterByReleaseDate);
+        movieHourMButton.setOnAction(this::filterByMovieHour);
+        providerMButton.setOnAction(this::filterProvider);
 
-        movieManager = MovieFactory.getIMovie();
-        categoryManager = CategoryFactory.getICategory();
-        providerManager = ProviderManagerFactory.getIProvider();
+        loadMovies();
+        setupContextMenu();
 
+        stage.show();
+    }
+
+    public void loadMovies() {
         try {
+            movieManager = MovieFactory.getIMovie();
+            categoryManager = CategoryFactory.getICategory();
+            providerManager = ProviderManagerFactory.getIProvider();
+
             availableCategories = categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
             });
 
-            availableProviders = providerManager.findAll(new GenericType<List<ProviderEntity>>() {
+            availableProviders = providerManager.findAll_XML(new GenericType<List<ProviderEntity>>() {
             });
 
-            movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
+            movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
 
+            setUpMovies();
+
+        } catch (Exception ex) {
+            Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error loading movies", ButtonType.OK).showAndWait();
+        }
+
+    }
+
+    public void setUpMovies() {
+        try {
             imgColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<MovieEntity, ImageView>, ObservableValue<ImageView>>() {
                 @Override
                 public ObservableValue<ImageView> call(CellDataFeatures<MovieEntity, ImageView> param) {
@@ -182,172 +207,192 @@ public class MovieController {
             categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("categories"));
 
             moviesTbv.setItems(movies);
+            setUpEditableTable();
 
         } catch (Exception ex) {
-            ex.getLocalizedMessage();
+            Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error loading movies", ButtonType.OK).showAndWait();
         }
+    }
 
-        titleColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
-        titleColumn.setOnEditCommit((CellEditEvent<MovieEntity, String> t) -> {
-            t.getTableView().getItems().get(t.getTablePosition().getRow()).setTitle(t.getNewValue());
-            MovieEntity movie = t.getRowValue();
-            movie.setTitle(t.getNewValue());
-            movieManager.edit(movie, String.valueOf(movie.getId()));
-        });
+    public void setUpEditableTable() {
+        try {
+            titleColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
+            titleColumn.setOnEditCommit((CellEditEvent<MovieEntity, String> t) -> {
+                t.getTableView().getItems().get(t.getTablePosition().getRow()).setTitle(t.getNewValue());
+                MovieEntity movie = t.getRowValue();
+                movie.setTitle(t.getNewValue());
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
+            });
 
-        durationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>() {
-            @Override
-            public String toString(Integer object) {
-                return object == null ? "" : object.toString();  // Convierte el Integer a String
-            }
-
-            @Override
-            public Integer fromString(String string) {
-                try {
-                    return Integer.parseInt(string);  // Convierte el String a Integer
-                } catch (NumberFormatException e) {
-                    return null;  // Si no es un número válido, devuelve null
-                }
-            }
-        }));
-        durationColumn.setOnEditCommit((CellEditEvent<MovieEntity, Integer> t) -> {
-            t.getTableView().getItems().get(t.getTablePosition().getRow()).setDuration(t.getNewValue());
-            MovieEntity movie = t.getRowValue();
-            movie.setDuration(t.getNewValue());
-            movieManager.edit(movie, String.valueOf(movie.getId()));
-        });
-
-        sinopsisColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
-        sinopsisColumn.setOnEditCommit((CellEditEvent<MovieEntity, String> t) -> {
-            t.getTableView().getItems().get(t.getTablePosition().getRow()).setSinopsis(t.getNewValue());
-            MovieEntity movie = t.getRowValue();
-            movie.setSinopsis(t.getNewValue());
-            movieManager.edit(movie, String.valueOf(movie.getId()));
-        });
-
-        rDateColumn.setCellFactory(column -> new DatePickerCellEditer());
-        rDateColumn.setOnEditCommit(event -> {
-            MovieEntity movie = event.getRowValue();
-            movie.setReleaseDate(event.getNewValue());
-            movieManager.edit(movie, String.valueOf(movie.getId()));
-        });
-
-        ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
-
-        movieHourClolumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMovieHour()));
-
-        movieHourClolumn.setCellFactory(column -> {
-            return new ComboBoxTableCell<>(new StringConverter<MovieHour>() {
+            durationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>() {
                 @Override
-                public String toString(MovieHour hour) {
-                    return hour != null ? hour.toString() : "";
+                public String toString(Integer object) {
+                    return object == null ? "" : object.toString();  // Convierte el Integer a String
                 }
 
                 @Override
-                public MovieHour fromString(String string) {
-                    return MovieHour.valueOf(string);
+                public Integer fromString(String string) {
+                    try {
+                        return Integer.parseInt(string);  // Convierte el String a Integer
+                    } catch (NumberFormatException e) {
+                        new Alert(Alert.AlertType.ERROR, "The number has to have a number format", ButtonType.OK).showAndWait();
+                        return null;  // Si no es un número válido, devuelve null
+                    }
                 }
-            }, availableHours);
-        });
+            }));
+            durationColumn.setOnEditCommit((CellEditEvent<MovieEntity, Integer> t) -> {
+                t.getTableView().getItems().get(t.getTablePosition().getRow()).setDuration(t.getNewValue());
+                MovieEntity movie = t.getRowValue();
+                movie.setDuration(t.getNewValue());
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
+            });
 
-        movieHourClolumn.setOnEditCommit(event -> {
-            MovieEntity movie = event.getRowValue();
-            movie.setMovieHour(event.getNewValue()); // Guarda la hora seleccionada
-            movieManager.edit(movie, String.valueOf(movie.getId()));
-        });
+            sinopsisColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
+            sinopsisColumn.setOnEditCommit((CellEditEvent<MovieEntity, String> t) -> {
+                t.getTableView().getItems().get(t.getTablePosition().getRow()).setSinopsis(t.getNewValue());
+                MovieEntity movie = t.getRowValue();
+                movie.setSinopsis(t.getNewValue());
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
+            });
 
-        providerColumn.setCellValueFactory(cellData -> {
-            MovieEntity movie = cellData.getValue();
-            if (movie != null && movie.getProvider() != null) {
-                return new SimpleObjectProperty<>(movie.getProvider().getId());
-            } else {
-                // Manejar el caso en el que no haya proveedor o película
-                return new SimpleObjectProperty<>(null);  // o un valor por defecto si prefieres
-            }
-        });
+            rDateColumn.setCellFactory(column -> new DatePickerCellEditer());
+            rDateColumn.setOnEditCommit(event -> {
+                MovieEntity movie = event.getRowValue();
+                movie.setReleaseDate(event.getNewValue());
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
+            });
 
-        providerColumn.setCellFactory(column -> {
-            ComboBoxTableCell<MovieEntity, Long> cell = new ComboBoxTableCell<>(FXCollections.observableArrayList(availableProviders.stream().map(ProviderEntity::getId).collect(Collectors.toList())));
-            // Configurar el convertidor
-            cell.setConverter(new StringConverter<Long>() {
-                @Override
-                public String toString(Long providerId) {
-                    return availableProviders.stream()
-                            .filter(provider -> provider.getId().equals(providerId))
-                            .map(ProviderEntity::getName)
-                            .findFirst()
-                            .orElse("");
-                }
+            ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
 
-                @Override
-                public Long fromString(String name) {
-                    return availableProviders.stream()
-                            .filter(provider -> provider.getName().equals(name))
-                            .map(ProviderEntity::getId)
-                            .findFirst()
-                            .orElse(null);
+            movieHourClolumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMovieHour()));
+
+            movieHourClolumn.setCellFactory(column -> {
+                return new ComboBoxTableCell<>(new StringConverter<MovieHour>() {
+                    @Override
+                    public String toString(MovieHour hour) {
+                        return hour != null ? hour.toString() : "";
+                    }
+
+                    @Override
+                    public MovieHour fromString(String string) {
+                        return MovieHour.valueOf(string);
+                    }
+                }, availableHours);
+            });
+
+            movieHourClolumn.setOnEditCommit(event -> {
+                MovieEntity movie = event.getRowValue();
+                movie.setMovieHour(event.getNewValue()); // Guarda la hora seleccionada
+                movieManager.edit_XML(movie, String.valueOf(movie.getId()));
+            });
+
+            providerColumn.setCellValueFactory(cellData -> {
+                MovieEntity movie = cellData.getValue();
+                if (movie != null && movie.getProvider() != null) {
+                    return new SimpleObjectProperty<>(movie.getProvider().getId());
+                } else {
+                    // Manejar el caso en el que no haya proveedor o película
+                    return new SimpleObjectProperty<>(null);  // o un valor por defecto si prefieres
                 }
             });
-            return cell;
-        });
 
-        providerColumn.setOnEditCommit(event -> {
-            int rowIndex = event.getTablePosition().getRow();
-            if (rowIndex >= 0 && rowIndex < movies.size()) {
-                MovieEntity movie = event.getRowValue();
-                Long selectedProviderId = event.getNewValue();
-                if (selectedProviderId != null) {
-                    ProviderEntity selectedProvider = availableProviders.stream()
-                            .filter(provider -> provider.getId().equals(selectedProviderId))
-                            .findFirst()
-                            .orElse(null);
-                    if (selectedProvider != null) {
-                        movie.setProvider(selectedProvider);
-                        try {
+            providerColumn.setCellFactory(column -> {
+                ComboBoxTableCell<MovieEntity, Long> cell = new ComboBoxTableCell<>(FXCollections.observableArrayList(availableProviders.stream().map(ProviderEntity::getId).collect(Collectors.toList())));
+                // Configurar el convertidor
+                cell.setConverter(new StringConverter<Long>() {
+                    @Override
+                    public String toString(Long providerId) {
+                        return availableProviders.stream()
+                                .filter(provider -> provider.getId().equals(providerId))
+                                .map(ProviderEntity::getName)
+                                .findFirst()
+                                .orElse("");
+                    }
+
+                    @Override
+                    public Long fromString(String name) {
+                        return availableProviders.stream()
+                                .filter(provider -> provider.getName().equals(name))
+                                .map(ProviderEntity::getId)
+                                .findFirst()
+                                .orElse(null);
+                    }
+                });
+                return cell;
+            });
+
+            providerColumn.setOnEditCommit(event -> {
+                int rowIndex = event.getTablePosition().getRow();
+                if (rowIndex >= 0 && rowIndex < movies.size()) {
+                    MovieEntity movie = event.getRowValue();
+                    Long selectedProviderId = event.getNewValue();
+                    if (selectedProviderId != null) {
+                        ProviderEntity selectedProvider = availableProviders.stream()
+                                .filter(provider -> provider.getId().equals(selectedProviderId))
+                                .findFirst()
+                                .orElse(null);
+                        if (selectedProvider != null) {
+                            movie.setProvider(selectedProvider);
                             // Llamar al servicio REST para actualizar la película
-                            movieManager.edit(movie, String.valueOf(movie.getId()));
+                            movieManager.edit_XML(movie, String.valueOf(movie.getId()));
                             Platform.runLater(() -> {
                                 movies.set(rowIndex, movie); // Actualizar la fila directamente
                             });
-                        } catch (WebApplicationException e) {
-                            // Manejar el error si es necesario
+
                         }
                     }
                 }
-            }
-        });
+            });
 
-        setupContextMenu();
-
-        stage.show();
+        } catch (Exception ex) {
+            Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error triying to update movies", ButtonType.OK).showAndWait();
+        }
     }
 
     public void handleRemoveAction(ActionEvent event) {
-        MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
-        if (RmMovie != null && RmMovie.getId() != null) {
-            System.out.println("ID de la película a eliminar: " + RmMovie.getId());
-            movieManager.remove(String.valueOf(RmMovie.getId()));
-            moviesTbv.getItems().remove(RmMovie);
-            moviesTbv.refresh();
-        } else {
-            System.out.println("No se puede eliminar una película sin ID.");
+
+        try {
+            MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
+            if (RmMovie != null && RmMovie.getId() != null) {
+                System.out.println("ID de la película a eliminar: " + RmMovie.getId());
+                movieManager.remove(String.valueOf(RmMovie.getId()));
+                moviesTbv.getItems().remove(RmMovie);
+                moviesTbv.refresh();
+            } else {
+                logger.info("The ID cannot be null");
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error trying to remove movies", ButtonType.OK).showAndWait();
         }
     }
 
     public void handleCreateAction(ActionEvent event) {
-        // Crear una nueva instancia de MovieEntity
-        MovieEntity newMovie = new MovieEntity();
 
-        movieManager.create(newMovie);
-        movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
-        }));
-        moviesTbv.setItems(movies);
+        try {
+            MovieEntity newMovie = new MovieEntity();
+
+            movieManager.create_XML(newMovie);
+            movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
+            }));
+            moviesTbv.setItems(movies);
+
+        } catch (Exception ex) {
+            Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error trying to add movies", ButtonType.OK).showAndWait();
+        }
 
     }
 
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem addCategoryMenuItem = new MenuItem("Añadir categoria");
+        MenuItem addCategoryMenuItem = new MenuItem("Add category");
+        MenuItem addMovie = new MenuItem("Add movie");
+        MenuItem removeMovie = new MenuItem("RemoveMovie");
+        MenuItem print = new MenuItem("Print table");
 
         addCategoryMenuItem.setOnAction(event -> {
             MovieEntity selectedCategory = moviesTbv.getSelectionModel().getSelectedItem();
@@ -356,14 +401,20 @@ public class MovieController {
             }
         });
 
+        addMovie.setOnAction(this::handleCreateAction);
+        removeMovie.setOnAction(this::handleRemoveAction);
+
         contextMenu.getItems().add(addCategoryMenuItem);
+        contextMenu.getItems().add(addMovie);
+        contextMenu.getItems().add(removeMovie);
+        contextMenu.getItems().add(print);
 
         moviesTbv.setContextMenu(contextMenu);
     }
 
     private void showCategorySelectionDialog(MovieEntity movie) {
         Stage categoryStage = new Stage();
-        categoryStage.setTitle("Seleccionar Categorías");
+        categoryStage.setTitle("Select Categories");
 
         ListView<CategoryEntity> categoryListView = new ListView<>();
         ObservableList<CategoryEntity> selectedCategories = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
@@ -411,14 +462,13 @@ public class MovieController {
                         // Actualizar la lista de categorías seleccionadas en la película
                         movie.setCategories(selectedCategories);
 
-                        movieManager.edit(movie, String.valueOf(movie.getId()));
+                        movieManager.edit_XML(movie, String.valueOf(movie.getId()));
                         categoryStage.close();
                         moviesTbv.refresh();
-                        //     logger.info("Categorías seleccionadas para la película: " + movie.getName());
+
                     } catch (Exception ex) {
-                        // Loguear error si algo sale mal
-                        //   logger.log(Level.SEVERE, "Error al añadir categorías a la película", ex);
-                        //showAlert("Error", "No se pudieron añadir las categorías a la película");
+                        logger.log(Level.SEVERE, "Error adding categories to the movie", ex);
+                        new Alert(Alert.AlertType.ERROR, "Error loading categories", ButtonType.OK).showAndWait();
                     }
                 }
             });
@@ -436,8 +486,90 @@ public class MovieController {
             categoryStage.show();
 
         } catch (Exception ex) {
-            // logger.log(Level.SEVERE, "Error al cargar las categorías", ex);
-            //showAlert("Error", "No se pudieron cargar las categorías");
+            logger.log(Level.SEVERE, "Error loading categories", ex);
+            new Alert(Alert.AlertType.ERROR, "Error loading categories", ButtonType.OK).showAndWait();
+        }
+    }
+
+    @FXML
+    private void filterByReleaseDate(ActionEvent event) {
+
+        movies = FXCollections.observableArrayList(movieManager.listByReleaseDate_XML(new GenericType<List<MovieEntity>>() {
+        }));
+        moviesTbv.setItems(movies);
+        moviesTbv.refresh();
+    }
+
+    @FXML
+    private void filterByMovieHour(ActionEvent event) {
+
+        ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
+
+        findProveedorCbox.setItems(availableHours);
+        findProveedorCbox.setOnAction(e -> applyMovieHourFilter());
+    }
+
+    private void applyMovieHourFilter() {
+        MovieHour selectedHour = (MovieHour) findProveedorCbox.getValue(); // Obtener la hora seleccionada
+
+        if (selectedHour != null) {
+            try {
+                movies = FXCollections.observableArrayList(movieManager.listByMovieHour_XML(new GenericType<List<MovieEntity>>() {
+                }, String.valueOf(selectedHour)));
+
+                moviesTbv.setItems(movies);
+                moviesTbv.refresh();
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void filterProvider(ActionEvent event) {
+        ObservableList<ProviderEntity> providersList = FXCollections.observableArrayList(availableProviders);
+
+        findProveedorCbox.setItems(providersList);
+
+        findProveedorCbox.setOnAction(e -> applyProviderFilter());
+    }
+
+    private void applyProviderFilter() {
+        ProviderEntity selectedProvider = (ProviderEntity) findProveedorCbox.getValue();
+
+        if (selectedProvider != null) {
+            try {
+                movies = FXCollections.observableArrayList(movieManager.listByProvider_XML(new GenericType<List<MovieEntity>>() {
+                }, String.valueOf(selectedProvider)));
+
+                moviesTbv.setItems(movies);
+                moviesTbv.refresh();
+            } catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void onCloseRequest(WindowEvent event) {
+
+        //Create an alert to make sure that the user wants to close the application
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        //set the alert message and title
+        alert.setHeaderText(null);
+        alert.setTitle("EXIT");
+        alert.setContentText("Are you sure you want to close the application?");
+
+        //create a variable to compare the button type
+        Optional<ButtonType> answer = alert.showAndWait();
+
+        //Condition to close the application
+        if (answer.get() == ButtonType.OK) {
+            //if the answer is ok the app will close
+            Platform.exit();
+        } else {
+            //else the alert will dispose and the user will continue in the app
+            event.consume();
         }
     }
 
@@ -543,62 +675,6 @@ public class MovieController {
 
     public void setAddMovieBtn(Button addMovieBtn) {
         this.addMovieBtn = addMovieBtn;
-    }
-
-    public TextField getTfTitle() {
-        return tfTitle;
-    }
-
-    public void setTfTitle(TextField tfTitle) {
-        this.tfTitle = tfTitle;
-    }
-
-    public TextField getTfSinopsis() {
-        return tfSinopsis;
-    }
-
-    public void setTfSinopsis(TextField tfSinopsis) {
-        this.tfSinopsis = tfSinopsis;
-    }
-
-    public TextField getTfDuration() {
-        return tfDuration;
-    }
-
-    public void setTfDuration(TextField tfDuration) {
-        this.tfDuration = tfDuration;
-    }
-
-    public TextField getTfReleaseDate() {
-        return tfReleaseDate;
-    }
-
-    public void setTfReleaseDate(TextField tfReleaseDate) {
-        this.tfReleaseDate = tfReleaseDate;
-    }
-
-    public TextField getTfMovieHour() {
-        return tfMovieHour;
-    }
-
-    public void setTfMovieHour(TextField tfMovieHour) {
-        this.tfMovieHour = tfMovieHour;
-    }
-
-    public TextField getTfCategories() {
-        return tfCategories;
-    }
-
-    public void setTfCategories(TextField tfCategories) {
-        this.tfCategories = tfCategories;
-    }
-
-    public TextField getTfProviders() {
-        return tfProviders;
-    }
-
-    public void setTfProviders(TextField tfProviders) {
-        this.tfProviders = tfProviders;
     }
 
 }
