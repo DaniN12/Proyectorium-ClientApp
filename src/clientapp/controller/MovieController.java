@@ -137,7 +137,7 @@ public class MovieController {
         try {
             movies = FXCollections.observableArrayList(movieManager.findAll(new GenericType<List<MovieEntity>>() {
             }));
-            availableCategories = categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+            availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
 
             imgColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<MovieEntity, ImageView>, ObservableValue<ImageView>>() {
