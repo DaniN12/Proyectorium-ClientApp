@@ -5,13 +5,9 @@
  */
 package clientapp.interfaces;
 
-import clientapp.model.TicketEntity;
-import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -19,20 +15,30 @@ import javax.ws.rs.core.Response;
  */
 public interface ITicket {
     
-    public List<TicketEntity> listByMovieASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
+    public <T> T listByMovieASC_XML(GenericType<T> responseType) throws WebApplicationException;
     
-    public List<TicketEntity> listByBuyDateASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
-
-    public void edit(TicketEntity ticket, String id) throws WebApplicationException;
-
-    public TicketEntity find(GenericType<TicketEntity> responseType, String id) throws ClientErrorException;
-
-    public void create(TicketEntity ticket) throws WebApplicationException;
-
-    public List<TicketEntity> listByPriceASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
+    public <T> T listByMovieASC_JSON(GenericType<T> responseType) throws WebApplicationException;
     
-    public List<TicketEntity> findAll(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
-
+    public <T> T listByBuyDateASC_XML(GenericType<T> responseType) throws WebApplicationException;
+    
+    public <T> T listByBuyDateASC_JSON(GenericType<T> responseType) throws WebApplicationException;
+    
+    public void edit_XML(Object requestEntity, String id) throws ClientErrorException;
+    
+    public void edit_JSON(Object requestEntity, String id) throws ClientErrorException;
+    
+    public void create_XML(Object requestEntity) throws ClientErrorException;
+    
+    public void create_JSON(Object requestEntity) throws ClientErrorException;
+    
+    public <T> T listByPriceASC_XML(GenericType<T> responseType) throws WebApplicationException;
+    
+    public <T> T listByPriceASC_JSON(GenericType<T> responseType) throws WebApplicationException;
+    
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException;
+    
+    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException;
+    
     public void remove(String id) throws WebApplicationException;
     
 }
