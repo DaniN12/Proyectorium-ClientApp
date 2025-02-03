@@ -257,6 +257,43 @@ public class ProviderController {
         // Convertimos LocalDate a Date
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
+    
+    @FXML
+    public void handleFilterByContractInit (ActionEvent event){
+        provider = FXCollections.observableArrayList(iProvider.listByContractInit_XML(new GenericType<List<ProviderEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        tableProviders.setItems(provider);
+        tableProviders.refresh();
+    }
+    
+    @FXML
+    public void handleFilterByContractEnd (ActionEvent event){
+        provider = FXCollections.observableArrayList(iProvider.listByContractEnd_XML(new GenericType<List<ProviderEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        tableProviders.setItems(provider);
+        tableProviders.refresh();
+    }
+    
+    @FXML
+    public void handleFilterByPrice (ActionEvent event){
+        provider = FXCollections.observableArrayList(iProvider.listByPrice_XML(new GenericType<List<ProviderEntity>>() {
+        }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+        tableProviders.setItems(provider);
+        tableProviders.refresh();
+    }
+    
 
 //Establecer el modelo de datos de la tabla  
     public Stage getStage() {

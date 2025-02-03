@@ -25,9 +25,9 @@
         </Button>
         <MenuButton fx:id="menuBtn" layoutX="36.0" layoutY="127.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filter">
             <items>
-                <MenuItem fx:id="menuBtnConIn" mnemonicParsing="false" text="Contract Init" />
-                <MenuItem fx:id="menuBtnConEn" mnemonicParsing="false" text="Contract end" />
-                <MenuItem fx:id="menuBtnPrice" mnemonicParsing="false" text="Price ascend" />
+                <MenuItem fx:id="menuBtnConIn" mnemonicParsing="false" text="Contract Init" onAction="#handleFilterByContractInit"/>
+                <MenuItem fx:id="menuBtnConEn" mnemonicParsing="false" text="Contract end" onAction="#handleFilterByContractEnd"/>
+                <MenuItem fx:id="menuBtnPrice" mnemonicParsing="false" text="Price ascend" onAction="#handleFilterByPrice"/>
             </items>
         </MenuButton>
         <TableView fx:id="tableProviders" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
