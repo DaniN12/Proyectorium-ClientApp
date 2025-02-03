@@ -5,6 +5,7 @@
  */
 package clientapp.controller;
 
+import clientapp.factories.DatePickerCellEditer;
 import clientapp.factories.ProviderManagerFactory;
 import clientapp.interfaces.IProvider;
 import clientapp.model.ProviderEntity;

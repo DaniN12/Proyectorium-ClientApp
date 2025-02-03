@@ -6,6 +6,7 @@ import clientapp.factories.TicketFactory;
 import clientapp.interfaces.ITicket;
 import clientapp.model.MovieEntity;
 import clientapp.model.TicketEntity;
+import clientapp.model.UserEntity;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -116,7 +117,7 @@ public class InfoViewController {
     /**
      * Initializes the controller class.
      */
-    public void initialize(Parent root/*, UserEntity user*/) {
+    public void initialize(Parent root, UserEntity user) {
         try {
             logger.info("Initializing InfoView stage.");
 
@@ -161,7 +162,7 @@ public class InfoViewController {
                             .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                             .collect(Collectors.toList()) // Recoger en una lista estándar
             );*/
-            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll(new GenericType<List<MovieEntity>>() {
+            listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             setupTicketTable();
             ticketTableView.setItems(listTickets);

@@ -1,4 +1,4 @@
-package clientapp.controller;
+package clientapp.factories;
 
 import clientapp.model.MovieEntity;
 import java.time.LocalDate;
@@ -69,7 +69,6 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
         datePicker = new DatePicker(convertToLocalDate(getItem()));
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 
-        // Disable future dates
         final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(final DatePicker datePicker) {
@@ -77,9 +76,9 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
                     @Override
                     public void updateItem(LocalDate item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (item.isAfter(LocalDate.now())) {
+                        if (item.isBefore(LocalDate.now())) { // Cambio aquí: ahora deshabilita fechas pasadas
                             setDisable(true);
-                            setStyle("-fx-background-color: #ffc0cb;");
+                            setStyle("-fx-background-color: #ffc0cb;"); // Fondo rosa para indicar deshabilitado
                         }
                     }
                 };
@@ -87,7 +86,6 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
         };
 
         datePicker.setDayCellFactory(dayCellFactory);
-
         // Commit the value when focus is lost or a date is selected
         datePicker.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {

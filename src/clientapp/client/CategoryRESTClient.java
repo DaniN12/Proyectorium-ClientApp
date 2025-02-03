@@ -30,6 +30,7 @@ public class CategoryRESTClient implements ICategory{
 
     private WebTarget webTarget;
     private Client client;
+    //Añadir al archivo de propiedades, y moverlo a la carpeta app. Clave publica en app
     private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
 
     public CategoryRESTClient() {

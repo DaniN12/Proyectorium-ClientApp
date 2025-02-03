@@ -5,27 +5,14 @@
  */
 package clientapp;
 
-import clientapp.controller.CategoryController;
-import clientapp.factories.CategoryFactory;
-import clientapp.model.CategoryEntity;
-import java.util.List;
+import clientapp.controller.InfoViewController;
 import clientapp.controller.MovieController;
 import clientapp.controller.SignInController;
-import clientapp.factories.MovieFactory;
-import clientapp.model.MovieEntity;
-import clientapp.controller.ProviderController;
-import clientapp.factories.ProviderManagerFactory;
-import clientapp.factories.SignableFactory;
-import clientapp.model.ProviderEntity;
-import clientapp.model.UserEntity;
-import java.util.List;
-
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -44,19 +31,10 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
-                /*getClass().getResource("/clientapp/view/MainCategory.fxml"));
+                getClass().getResource("/clientapp/view/MovieMainView.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        CategoryController controller = (CategoryController) loader.getController();*/
-               /* getClass().getResource("/clientapp/view/MovieMainView.fxml"));
-                /* getClass().getResource("/clientapp/view/MovieMainView.fxml"));
-        Parent root = (Parent) loader.load();
-        // Retrieve the controller associated with the view
-        MovieController controller = (MovieController) loader.getController();*/
-                getClass().getResource("/clientapp/view/MainProviders.fxml"));
-        Parent root = (Parent) loader.load();
-        // Retrieve the controller associated with the view
-        ProviderController controller = (ProviderController) loader.getController();
+        MovieController controller = (MovieController)loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
         controller.initialize(root);
@@ -68,7 +46,8 @@ public class Main extends Application {
      *
      * @param args the command line arguments
      */
-   public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
+
     }
 }

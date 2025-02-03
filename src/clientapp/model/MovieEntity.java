@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -41,7 +42,6 @@ public class MovieEntity implements Serializable {
         this.sinopsis = "";
         this.releaseDate = null;
         this.movieHour = MovieHour.HOUR_16;
-        this.provider = new ProviderEntity();
     }
 
     public MovieEntity(String title, Integer duration, String sinopsis, Date releaseDate, MovieHour movieHour, ProviderEntity provider) {

@@ -21,9 +21,9 @@ public class TicketEntity implements Serializable {
     //constructor vacio
     public TicketEntity() {
     }
-    
+
     // Constructor predeterminado
-    public TicketEntity( ObservableList<MovieEntity> listMovies ) {
+    public TicketEntity(ObservableList<MovieEntity> listMovies) {
         this.buyDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
         this.numPeople = 0;
         this.price = 7.5f;

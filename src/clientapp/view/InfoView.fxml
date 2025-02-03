@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 
-<SplitPane fx:id="infoViewpanel" dividerPositions="0.048" maxHeight="-Infinity" maxWidth="-Infinity" 
-           minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="1000.0" 
-           stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-           fx:controller="clientapp.controller.InfoViewController">
+<SplitPane fx:id="infoViewpanel" dividerPositions="0.048" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.InfoViewController">
     <items>
         <!-- Top AnchorPane -->
         <AnchorPane fx:id="anchorPaneTop" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
             <children>
-                <MenuBar fx:id="menuBar" layoutY="1.0" prefHeight="26.0" prefWidth="998.0">
+                <MenuBar fx:id="menuBar" layoutX="-1.0" layoutY="1.0" prefHeight="26.0" prefWidth="1365.0">
                     <menus>
                         <Menu mnemonicParsing="false" text="User">
                             <items>
@@ -35,35 +43,33 @@
         <!-- Bottom AnchorPane -->
         <AnchorPane fx:id="anchorPaneDown" minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="160.0">
             <children>
-                
-                <MenuButton fx:id="FilterMenuButton" layoutX="894.0" layoutY="47.0" mnemonicParsing="false" text="Filter by">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                        <MenuItem mnemonicParsing="false" text="Action 2" />
-                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                    </items>
-                </MenuButton>
-                
-                <Label fx:id="userNameLbl" layoutX="29.0" layoutY="349.0" prefHeight="18.0" prefWidth="195.0" text="User name:" />
-                <Label fx:id="emailLbl" layoutX="29.0" layoutY="237.0" prefHeight="16.0" prefWidth="100.0" text="Email:" />
-                <Label fx:id="cityLbl" layoutX="29.0" layoutY="442.0" prefHeight="16.0" prefWidth="100.0" text="City:" />
-                
+                <!-- TextFields and Labels -->
+                <TextField fx:id="userNameTextF" editable="false" layoutX="31.0" layoutY="434.0" prefHeight="26.0" prefWidth="195.0" />
                 <TextField fx:id="emailTextF" editable="false" layoutX="29.0" layoutY="263.0" prefHeight="26.0" prefWidth="195.0" />
-                <TextField fx:id="userNameTextF" editable="false" layoutX="29.0" layoutY="374.0" prefHeight="26.0" prefWidth="195.0" />
-                <TextField fx:id="cityTextF" editable="false" layoutX="29.0" layoutY="467.0" prefHeight="26.0" prefWidth="195.0" />
-                
-                <Button fx:id="addTicketButton" layoutX="897.0" layoutY="519.0" mnemonicParsing="false" text="Add Ticket" />
-                
+                <TextField fx:id="cityTextF" editable="false" layoutX="31.0" layoutY="618.0" prefHeight="26.0" prefWidth="195.0" />
+                <Label fx:id="userNameLbl" layoutX="31.0" layoutY="409.0" prefHeight="18.0" prefWidth="195.0" text="User name:" />
+                <Label fx:id="emailLbl" layoutX="29.0" layoutY="237.0" prefHeight="16.0" prefWidth="100.0" text="Email:" />
+                <Label fx:id="cityLbl" layoutX="31.0" layoutY="593.0" prefHeight="16.0" prefWidth="100.0" text="City:" />
+
                 <!-- TableView -->
-                <TableView fx:id="ticketTableView" editable="true" layoutX="241.0" layoutY="47.0" prefHeight="497.0" prefWidth="625.0">
+                <TableView fx:id="ticketTableView" editable="true" layoutX="241.0" layoutY="47.0" prefHeight="598.0" prefWidth="1109.0">
                     <columns>
-                        <TableColumn fx:id="movieImageColumn" prefWidth="109.6" text="Movie Image" />
-                        <TableColumn fx:id="movieTitleColumn" prefWidth="115.2" text="Movie Title" />
-                        <TableColumn fx:id="dateHourColumn" prefWidth="129.6" text="Date" />
-                        <TableColumn fx:id="durationColumn" prefWidth="96.0" text="Duration" />
-                        <TableColumn fx:id="peopleColumn" prefWidth="86.4" text="People" />
-                        <TableColumn fx:id="priceColumn" prefWidth="83.4" text="Price" />
+                        <TableColumn fx:id="movieImageColumn" prefWidth="237.59999084472656" text="Movie Image" />
+                        <TableColumn fx:id="movieTitleColumn" prefWidth="391.9999694824219" text="Movie Title" />
+                        <TableColumn fx:id="dateColumn" prefWidth="172.79986572265625" text="Date" />
+                  <TableColumn fx:id="hourColumn" prefWidth="98.4000244140625" text="Hour" />
+                        <TableColumn fx:id="durationColumn" prefWidth="82.4000244140625" text="Duration" />
+                        <TableColumn fx:id="peopleColumn" prefWidth="60.800048828125" text="People" />
+                        <TableColumn fx:id="priceColumn" maxWidth="80.7999267578125" prefWidth="65.5999755859375" text="Price" />
                     </columns>
+               <contextMenu>
+                  <ContextMenu fx:id="tableContextMenu">
+                    <items>
+                      <MenuItem fx:id="addMenuItem" mnemonicParsing="false" text="Add ticket" />
+                        <MenuItem fx:id="removeMenuItem" mnemonicParsing="false" text="Remove ticket" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
                 </TableView>
 
                 <!-- Profile Image -->
@@ -75,6 +81,16 @@
                         <Circle centerX="87" centerY="87" radius="85" />
                     </clip>
                 </ImageView>
+
+                <!-- Buttons -->
+                <Button fx:id="addTicketButton" layoutX="1190.0" layoutY="653.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="161.0" text="Add Ticket" />
+                <MenuButton fx:id="FilterMenuButton" layoutX="1277.0" layoutY="14.0" mnemonicParsing="false" text="Filter by">
+                    <items>
+                        <MenuItem fx:id="movieFilter" mnemonicParsing="false" text="Movie" />
+                        <MenuItem fx:id="priceFilter" mnemonicParsing="false" text="Price" />
+                        <MenuItem fx:id="buyDateFilter" mnemonicParsing="false" text="Buy Date" />
+                    </items>
+                </MenuButton>
             </children>
         </AnchorPane>
     </items>
