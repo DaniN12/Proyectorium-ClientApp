@@ -11,6 +11,7 @@ import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -24,13 +25,13 @@ public interface ITicket {
 
     public void edit(TicketEntity ticket, String id) throws WebApplicationException;
 
-    public TicketEntity find(String id) throws WebApplicationException;
+    public TicketEntity find(GenericType<TicketEntity> responseType, String id) throws ClientErrorException;
 
     public void create(TicketEntity ticket) throws WebApplicationException;
 
     public List<TicketEntity> listByPriceASC(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
-
-    public <T> T findAll(GenericType<T> responseType) throws WebApplicationException;
+    
+    public List<TicketEntity> findAll(GenericType<List<TicketEntity>> responseType) throws WebApplicationException;
 
     public void remove(String id) throws WebApplicationException;
     

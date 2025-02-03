@@ -300,11 +300,11 @@ public class SignUpViewController {
 
                 signable.create(user);
 
-                /*if (signedUpUser != null) {
+                if (user != null) {
                     // if the method is well executed returns to the signIn window
                     backButtonAction(event);
                 }
-                 */
+
             }
 
         } catch (IncorrectPasswordException | IncorrectPatternException

@@ -16,6 +16,16 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
             <children>
+                <Button layoutX="380.0" layoutY="33.0" mnemonicParsing="false">
+                    <graphic>
+                        <ImageView fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../resources/interrogation.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                
                 <Label fx:id="lblEmail" layoutX="55.0" layoutY="220.0" text="Email:" />
                 <Label fx:id="lblPassword" layoutX="55.0" layoutY="282.0" text="Password:" />
             
@@ -32,18 +42,13 @@
                     </graphic>
                 </Button>
                 
+                <Hyperlink fx:id="HyperLinkRegistered1" layoutX="54.0" layoutY="344.0" text="Did you forget your password?" />
+                
                 <Button fx:id="btnSignIn" layoutX="108.0" layoutY="373.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="102.0" styleClass="minimal-button" text="Sign In" onAction="#handleSignIn"/>
+                
                 <Hyperlink fx:id="HyperLinkRegistered" layoutX="55.0" layoutY="420.0" text="You are not Registered yet? Click here!" />
-            <Hyperlink fx:id="HyperLinkRegistered1" layoutX="54.0" layoutY="344.0" text="Did you forget your password?" />
-            <Button layoutX="380.0" layoutY="33.0" mnemonicParsing="false">
-               <graphic>
-                  <ImageView fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
+                
+            
                 
             </children>
         </AnchorPane>

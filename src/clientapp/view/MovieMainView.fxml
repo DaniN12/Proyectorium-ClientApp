@@ -12,8 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="moviePane" prefHeight="768.0" prefWidth="1366.0" 
-            xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller = "clientapp.controller.MovieController">
+<AnchorPane id="moviePane" fx:id="moviePane" prefHeight="768.0" prefWidth="1366.0" styleClass="moviePane" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MovieController">
     <children>
         <fx:include fx:id="menuHBox" source="Menu.fxml">
             <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
@@ -43,27 +42,27 @@
             <graphic>
                 <ImageView fx:id="helpImg" fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
+                        <Image url="@../../resources/interrogation.png" />
                     </image>
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="addMovieBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="ADD MOVIE" onAction="#handleCreateAction">
+        <Button fx:id="addMovieBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" stylesheets="@../../resources/styles.css" text="ADD MOVIE">
             <font>
                 <Font size="18.0" />
             </font>
         </Button>
         <MenuButton fx:id="filterMenuBtn" layoutX="36.0" layoutY="127.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filters">
             <items>
-                <MenuItem mnemonicParsing="false" text="Release date" />
-                <MenuItem mnemonicParsing="false" text="Movie hour" />
-                <MenuItem mnemonicParsing="false" text="Provider" />
+                <MenuItem fx:id="releaseDateMButton" mnemonicParsing="false" text="Release date" />
+                <MenuItem fx:id="movieHourMButton" mnemonicParsing="false" text="Movie hour" />
+                <MenuItem fx:id="providerMButton" mnemonicParsing="false" text="Provider" />
             </items>
             <font>
                 <Font size="18.0" />
             </font>
         </MenuButton>
-        <Button fx:id="removeMovieBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="REMOVE MOVIE" onAction="#handleRemoveAction">
+        <Button fx:id="removeMovieBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="REMOVE MOVIE">
             <font>
                 <Font size="18.0" />
             </font>

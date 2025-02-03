@@ -104,6 +104,12 @@
     -fx-background-repeat: no-repeat; /* No repetir la imagen */
 }
 
+#moviePane {
+    -fx-background-image: url("/resources/Adobe Express - file.png");
+    -fx-background-position: center; /* Centrar la imagen en el contenedor */
+    -fx-background-repeat: no-repeat; /* No repetir la imagen */
+}
+
 @font-face {
     font-family: 'Cheri';
     src: url('/resources/CHERI___.TTF'); /* Ajusta esta ruta si es necesario */
