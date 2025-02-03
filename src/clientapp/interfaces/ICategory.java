@@ -6,6 +6,9 @@
 package clientapp.interfaces;
 
 import clientapp.model.CategoryEntity;
+import java.util.List;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
@@ -16,7 +19,7 @@ import javax.ws.rs.core.GenericType;
  * @author 2dam
  */
 public interface ICategory {
-
+    
     public String countREST() throws WebApplicationException;
 
     public void edit(Object requestEntity, String id) throws WebApplicationException;

@@ -19,33 +19,35 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Ruth
+ * @author 2dam
  */
-
-
-
 @XmlRootElement
 public class CategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-
-    @Lob
+    private Integer id;
     private byte[] icon;
     private String name;
     private String description;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
-
-    @Enumerated(EnumType.STRING)
     private Pegi pegi;
+
+    public CategoryEntity(Integer id, byte[] icon, String name, String description, Date creationDate, Pegi pegi) {
+        this.id = id;
+        this.icon = icon;
+        this.name = name;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.pegi = pegi;
+    }
 
     public CategoryEntity() {
 
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
     public Integer getId() {
@@ -80,20 +82,20 @@ public class CategoryEntity implements Serializable {
         this.description = description;
     }
 
-    public Pegi getPegi() {
-        return pegi;
-    }
-
-    public void setPegi(Pegi pegi) {
-        this.pegi = pegi;
-    }
-  
     public Date getCreationDate() {
         return creationDate;
     }
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Pegi getPegi() {
+        return pegi;
+    }
+
+    public void setPegi(Pegi pegi) {
+        this.pegi = pegi;
     }
 
     @Override
@@ -122,3 +124,4 @@ public class CategoryEntity implements Serializable {
     }
 
 }
+

@@ -15,39 +15,43 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
             <children>
+                <Button layoutX="596.0" layoutY="28.0" mnemonicParsing="false">
+                    <graphic>
+                        <ImageView fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../resources/interrogation.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                
                 <Label fx:id="lblPassword" layoutX="136.0" layoutY="218.0" text="Actual Password:" />
+                <Label fx:id="lblPassword1" layoutX="136.0" layoutY="290.0" text="New Password:" />
+                <Label fx:id="lblPassword11" layoutX="140.0" layoutY="363.0" text="Repeat Password:" />
+                
+                <Line endX="100.0" layoutX="236.0" layoutY="270.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
+                <Line endX="100.0" layoutX="235.0" layoutY="337.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
+                <Line endX="100.0" layoutX="239.0" layoutY="410.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
+                
                 <TextField fx:id="txtFieldPassword" layoutX="135.0" layoutY="248.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your password" />
                 <PasswordField fx:id="PasswordField" layoutX="135.0" layoutY="248.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
-                <Line endX="100.0" layoutX="236.0" layoutY="270.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
+                <TextField fx:id="txtFieldPassword1" layoutX="135.0" layoutY="311.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your new password" />
+                <PasswordField fx:id="PasswordField1" layoutX="135.0" layoutY="311.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your new password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
                 
                 <Button fx:id="btnShowPasswd" layoutX="336.0" layoutY="304.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="32.0" styleClass="btnShowPasswd">
                     <graphic>
                         <ImageView fx:id="ImageViewEye" fitHeight="31.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../resources/SinVerContraseña.png" />
-                     </image></ImageView>
+                            <image>
+                                <Image url="@../../resources/SinVerContraseña.png" />
+                            </image>
+                        </ImageView>
                     </graphic>
                 </Button>
                 
-                <Button fx:id="btnSignIn" layoutX="396.0" layoutY="442.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="124.0" styleClass="minimal-button" text="Change password" />
-            <Button layoutX="596.0" layoutY="28.0" mnemonicParsing="false">
-               <graphic>
-                  <ImageView fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Label fx:id="lblPassword1" layoutX="136.0" layoutY="290.0" text="New Password:" />
-            <TextField fx:id="txtFieldPassword1" layoutX="135.0" layoutY="311.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your new password" />
-            <PasswordField fx:id="PasswordField1" layoutX="135.0" layoutY="311.0" prefHeight="22.0" prefWidth="201.0" promptText="Enter your new password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
-            <Line endX="100.0" layoutX="235.0" layoutY="337.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
-            <Label fx:id="lblPassword11" layoutX="140.0" layoutY="363.0" text="Repeat Password:" />
-            <TextField fx:id="txtFieldPassword11" layoutX="139.0" layoutY="384.0" prefHeight="22.0" prefWidth="201.0" promptText="repeat your password" />
-            <PasswordField fx:id="PasswordField11" layoutX="139.0" layoutY="384.0" prefHeight="22.0" prefWidth="201.0" promptText="repeat your password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
-            <Line endX="100.0" layoutX="239.0" layoutY="410.0" startX="-100.0" stroke="#b5b0b0" strokeWidth="1" />
+                <TextField fx:id="txtFieldPassword11" layoutX="139.0" layoutY="384.0" prefHeight="22.0" prefWidth="201.0" promptText="repeat your password" />
+                <PasswordField fx:id="PasswordField11" layoutX="139.0" layoutY="384.0" prefHeight="22.0" prefWidth="201.0" promptText="repeat your password" style="-fx-background-color: transparent; -fx-border-color: transparent;" />
                 
+                <Button fx:id="btnSignIn" layoutX="396.0" layoutY="442.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="124.0" styleClass="minimal-button" text="Change password" />          
             </children>
         </AnchorPane>
     </items>
