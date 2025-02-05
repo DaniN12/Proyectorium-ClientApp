@@ -32,6 +32,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -180,22 +183,53 @@ public class ProviderController {
             iProvider.edit_XML(provider, String.valueOf(provider.getId()));
         });
 
+        setupContextMenu();
+        tableProviders.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
         stage.show();
 
-
+       
     }
+    
+    private void refreshTable() {
+        // Limpiar la lista actual de tickets
+        provider.clear();
+        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
+        provider.addAll(
+                iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
+                }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+    }
+    
+    
 
     public void handleRemoveAction(ActionEvent event) {
-        ProviderEntity RmProvider = (ProviderEntity) tableProviders.getSelectionModel().getSelectedItem();
-        if (RmProvider != null && RmProvider.getId() != null) {
-            System.out.println("ID del proveedor a eliminar: " + RmProvider.getId());
-            iProvider.remove(String.valueOf(RmProvider.getId()));
-            tableProviders.getItems().remove(RmProvider);
-            tableProviders.refresh();
-        } else {
-            System.out.println("No se puede eliminar un proveedor sin ID.");
+        List<ProviderEntity> removeProvider = tableProviders.getSelectionModel().getSelectedItems();
+        if (removeProvider != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Remove confirmation");
+            alert.setHeaderText("¿Are you sure you want to remove this provider?");
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    if (removeProvider.size() > 1) {
+                        for (ProviderEntity categ : removeProvider) {
+                            iProvider.remove(String.valueOf(categ.getId()));
+                            tableProviders.getItems().remove(removeProvider);
+                        }
+                    } else {
+                        iProvider.remove(String.valueOf(removeProvider.get(0).getId()));
+                        tableProviders.getItems().remove(removeProvider);
+                    }
+                    refreshTable();
+                }
+            });
         }
     }
+
+
 
     public void handleCreateAction(ActionEvent event) {
         ProviderEntity newProvider = new ProviderEntity();
@@ -259,6 +293,24 @@ public class ProviderController {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
     
+    private void setupContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem addProvider = new MenuItem("Add provider");
+        MenuItem removeProvider= new MenuItem("Removde provider");
+        MenuItem print = new MenuItem("Print table");
+
+        
+
+        addProvider.setOnAction(this::handleCreateAction);
+        removeProvider.setOnAction(this::handleRemoveAction);
+
+        contextMenu.getItems().add(addProvider);
+        contextMenu.getItems().add(removeProvider);
+        contextMenu.getItems().add(print);
+
+        tableProviders.setContextMenu(contextMenu);
+    }
+    
     @FXML
     public void handleFilterByContractInit (ActionEvent event){
         provider = FXCollections.observableArrayList(iProvider.listByContractInit_XML(new GenericType<List<ProviderEntity>>() {
@@ -294,6 +346,7 @@ public class ProviderController {
         tableProviders.setItems(provider);
         tableProviders.refresh();
     }
+    
     
 
 //Establecer el modelo de datos de la tabla  
