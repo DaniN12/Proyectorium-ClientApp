@@ -23,7 +23,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -65,7 +64,7 @@ public class InfoViewController {
     @FXML
     private TextField cityTextF;
     @FXML
-    private ImageView profileImageView;
+    private ImageView profileImageView = new ImageView();
     @FXML
     private ContextMenu contextMenu;
     @FXML
@@ -107,7 +106,7 @@ public class InfoViewController {
     @FXML
     private Button addTicketButton;
 
-    private ITicket iTicket;
+    private ITicket iTicket = TicketFactory.getITicket();
     private ObservableList<TicketEntity> listTickets;
     private ObservableList<MovieEntity> listMovies;
     private final Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
@@ -138,7 +137,9 @@ public class InfoViewController {
             optionRigby.setOnAction(this::onOptionRigby);
             addMenuItem.setOnAction(this::handleCreateAction);
             removeMenuItem.setOnAction(this::handleRemoveAction);
+
             addTicketButton.setOnAction(this::handleCreateAction);
+
             priceFilter.setOnAction(this::handleFilterByPriceAction);
             buyDateFilter.setOnAction(this::handleFilterByBuyDateAction);
             movieFilter.setOnAction(this::handleFilterByMovieAction);
@@ -156,7 +157,7 @@ public class InfoViewController {
         try {
             iTicket = TicketFactory.getITicket();
             listTickets = FXCollections.observableArrayList(
-                    iTicket.findAll(new GenericType<List<TicketEntity>>() {
+                    iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
                     }));/*
                             .stream()
                             .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
@@ -166,7 +167,7 @@ public class InfoViewController {
             }));
             setupTicketTable();
             ticketTableView.setItems(listTickets);
-        } catch (Exception e) {
+        } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error loading tickets: {0}", e.getMessage());
         }
     }
@@ -262,7 +263,7 @@ public class InfoViewController {
     private void editDatabase(TicketEntity ticket) {
         try {
             // Llamar al servicio REST para actualizar el ticket
-            iTicket.edit(ticket, String.valueOf(ticket.getId()));
+            iTicket.edit_XML(ticket, String.valueOf(ticket.getId()));
             refreshTickets(); // Actualizar la tabla después de realizar cambios
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
@@ -275,7 +276,7 @@ public class InfoViewController {
 
         // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
         listTickets.addAll(
-                iTicket.findAll(new GenericType<List<TicketEntity>>() {
+                iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
                 }));/*
                         .stream()
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
@@ -320,13 +321,8 @@ public class InfoViewController {
     public void handleRemoveAction(ActionEvent event) {
         List<TicketEntity> removeTicket = ticketTableView.getSelectionModel().getSelectedItems();
         if (showAlert(Alert.AlertType.CONFIRMATION, "Confirm", "Are you sure you want to delete?", "/resources/DeleteAlert.png")) {
-            if (removeTicket.size() > 1) {
-                for (TicketEntity ticket : removeTicket) {
-                    iTicket.remove(String.valueOf(ticket.getId()));
-                    ticketTableView.getItems().remove(removeTicket);
-                }
-            } else {
-                iTicket.remove(String.valueOf(removeTicket.get(0).getId()));
+            for (TicketEntity ticket : removeTicket) {
+                iTicket.remove(String.valueOf(ticket.getId()));
                 ticketTableView.getItems().remove(removeTicket);
             }
         }
@@ -336,7 +332,7 @@ public class InfoViewController {
 
     public void handleCreateAction(ActionEvent event) {
         TicketEntity newTicket = new TicketEntity(listMovies);
-        iTicket.create(newTicket);
+        iTicket.create_XML(newTicket);
         listTickets.add(newTicket);
         ticketTableView.setItems(listTickets);
         refreshTickets();
@@ -344,7 +340,7 @@ public class InfoViewController {
 
     @FXML
     public void handleFilterByMovieAction(ActionEvent event) {
-        listTickets = FXCollections.observableArrayList(iTicket.listByMovieASC(new GenericType<List<TicketEntity>>() {
+        listTickets = FXCollections.observableArrayList(iTicket.listByMovieASC_XML(new GenericType<List<TicketEntity>>() {
         }));/*
                         .stream()
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
@@ -356,7 +352,7 @@ public class InfoViewController {
 
     @FXML
     public void handleFilterByPriceAction(ActionEvent event) {
-        listTickets = FXCollections.observableArrayList(iTicket.listByPriceASC(new GenericType<List<TicketEntity>>() {
+        listTickets = FXCollections.observableArrayList(iTicket.listByPriceASC_XML(new GenericType<List<TicketEntity>>() {
         }));/*
                         .stream()
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
@@ -368,7 +364,7 @@ public class InfoViewController {
 
     @FXML
     public void handleFilterByBuyDateAction(ActionEvent event) {
-        listTickets = FXCollections.observableArrayList(iTicket.listByBuyDateASC(new GenericType<List<TicketEntity>>() {
+        listTickets = FXCollections.observableArrayList(iTicket.listByBuyDateASC_XML(new GenericType<List<TicketEntity>>() {
         }));/*
                         .stream()
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
