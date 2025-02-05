@@ -9,12 +9,13 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" fx:id="providerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.ProviderController" stylesheets="@../../resources/stylesEntities.css">
+<AnchorPane id="providerPane" fx:id="providerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../../resources/stylesEntities.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.ProviderController">
     <children>
         <fx:include source="Menu.fxml">
             <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
         </fx:include>
-        <Button fx:id="btnInterrogation" layoutX="1146.0" layoutY="43.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="40.0">
+        
+        <Button fx:id="btnInterrogation" layoutX="1146.0" layoutY="66.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="40.0">
             <graphic>
                 <ImageView fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
                     <image>
@@ -23,13 +24,14 @@
                 </ImageView>
             </graphic>
         </Button>
-        <MenuButton fx:id="menuBtn" layoutX="36.0" layoutY="127.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filter">
+        <MenuButton fx:id="menuBtn" layoutX="36.0" layoutY="90.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filter">
             <items>
-                <MenuItem fx:id="menuBtnConIn" mnemonicParsing="false" text="Contract Init" onAction="#handleFilterByContractInit"/>
-                <MenuItem fx:id="menuBtnConEn" mnemonicParsing="false" text="Contract end" onAction="#handleFilterByContractEnd"/>
-                <MenuItem fx:id="menuBtnPrice" mnemonicParsing="false" text="Price ascend" onAction="#handleFilterByPrice"/>
+                <MenuItem fx:id="menuBtnConIn" mnemonicParsing="false" onAction="#handleFilterByContractInit" text="Contract Init" />
+                <MenuItem fx:id="menuBtnConEn" mnemonicParsing="false" onAction="#handleFilterByContractEnd" text="Contract end" />
+                <MenuItem fx:id="menuBtnPrice" mnemonicParsing="false" onAction="#handleFilterByPrice" text="Price ascend" />
             </items>
         </MenuButton>
+        
         <TableView fx:id="tableProviders" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
             <columns>
                 <TableColumn fx:id="tbcolumnName" prefWidth="154.4000015258789" text="Name" />
@@ -40,7 +42,8 @@
                 <TableColumn fx:id="tbcolumnPrice" prefWidth="203.99993896484375" text="Price" />
             </columns>
         </TableView>
-        <Button fx:id="btnAddProvider" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="Add Provider" onAction="#handleCreateAction"/>
-        <Button fx:id="btnRemoveProvider" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="Remove Provider" onAction="#handleRemoveAction"/>
+
+        <Button fx:id="btnAddProvider" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" text="Add Provider" />
+        <Button fx:id="btnRemoveProvider" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="Remove Provider" />
     </children>
 </AnchorPane>

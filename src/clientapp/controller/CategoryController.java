@@ -76,7 +76,7 @@ public class CategoryController {
     private Button removebtn;
 
     public void initialize(Parent root) {
-        logger.info("Initializing InfoView stage.");
+        logger.info("Initializing Category stage.");
 
         Scene scene = new Scene(root);
         stage.setScene(scene);

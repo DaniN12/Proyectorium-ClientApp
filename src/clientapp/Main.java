@@ -5,8 +5,10 @@
  */
 package clientapp;
 
+import clientapp.controller.CategoryController;
 import clientapp.controller.InfoViewController;
 import clientapp.controller.MovieController;
+import clientapp.controller.ProviderController;
 import clientapp.controller.SignInController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -31,10 +33,10 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/clientapp/view/MovieMainView.fxml"));
+                getClass().getResource("/clientapp/view/MainProviders.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        MovieController controller = (MovieController)loader.getController();
+        ProviderController controller = (ProviderController)loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
         controller.initialize(root);

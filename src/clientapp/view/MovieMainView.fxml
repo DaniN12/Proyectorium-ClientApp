@@ -12,14 +12,48 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="moviePane" fx:id="moviePane" prefHeight="768.0" prefWidth="1366.0" styleClass="moviePane" stylesheets="@../../resources/styles.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MovieController">
+<AnchorPane id="moviePane" fx:id="moviePane" prefHeight="768.0" prefWidth="1366.0" styleClass="moviePane" stylesheets="@../../resources/stylesEntities.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MovieController">
     <children>
         <fx:include fx:id="menuHBox" source="Menu.fxml">
             <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
         </fx:include>
+        
+        <Button fx:id="helpBtn" layoutX="1146.0" layoutY="66.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="40.0">
+            <graphic>
+                <ImageView fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/interrogation.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        
+        <MenuButton fx:id="filterMenuBtn" layoutX="36.0" layoutY="90.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filter">
+            <items>
+                <MenuItem fx:id="releaseDateMButton" mnemonicParsing="false" text="Release date" />
+                <MenuItem fx:id="movieHourMButton" mnemonicParsing="false" text="Movie hour" />
+                <MenuItem fx:id="providerMButton" mnemonicParsing="false" text="Provider" />
+            </items>
+            <font>
+                <Font size="18.0" />
+            </font>
+        </MenuButton>
+        
+        <ComboBox fx:id="findProveedorCbox" layoutX="226.0" layoutY="90.0" prefHeight="39.0" prefWidth="187.0" />
+        
+        <Button fx:id="searchBtn" layoutX="476.0" layoutY="90.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="63.0">
+            <graphic>
+                <ImageView fitHeight="26.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/lupa.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        
         <TableView fx:id="moviesTbv" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
             <columns>
-                <TableColumn fx:id="imgColumn" prefWidth="126.40001678466797" text="Billboard image" />
+                <TableColumn fx:id="imgColumn" prefWidth="126.40001678466797" text="Poster" />
                 <TableColumn fx:id="titleColumn" prefWidth="111.19996643066406" text="Title" />
                 <TableColumn fx:id="sinopsisColumn" prefWidth="194.66659545898438" text="Sinopsis" />
                 <TableColumn fx:id="rDateColumn" prefWidth="137.86663818359375" text="Release date" />
@@ -38,44 +72,18 @@
                 </ContextMenu>
             </contextMenu>
         </TableView>
-        <Button fx:id="helpBtn" layoutX="1146.0" layoutY="43.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0">
-            <graphic>
-                <ImageView fx:id="helpImg" fitHeight="17.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../../resources/interrogation.png" />
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
+        
         <Button fx:id="addMovieBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" stylesheets="@../../resources/styles.css" text="ADD MOVIE">
             <font>
                 <Font size="18.0" />
             </font>
         </Button>
-        <MenuButton fx:id="filterMenuBtn" layoutX="36.0" layoutY="127.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filters">
-            <items>
-                <MenuItem fx:id="releaseDateMButton" mnemonicParsing="false" text="Release date" />
-                <MenuItem fx:id="movieHourMButton" mnemonicParsing="false" text="Movie hour" />
-                <MenuItem fx:id="providerMButton" mnemonicParsing="false" text="Provider" />
-            </items>
-            <font>
-                <Font size="18.0" />
-            </font>
-        </MenuButton>
+        
         <Button fx:id="removeMovieBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="REMOVE MOVIE">
             <font>
                 <Font size="18.0" />
             </font>
         </Button>
-        <Button fx:id="searchBtn" layoutX="476.0" layoutY="127.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="63.0">
-            <graphic>
-                <ImageView fitHeight="26.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../../resources/lupa.png" />
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
-        <ComboBox fx:id="findProveedorCbox" layoutX="226.0" layoutY="127.0" prefHeight="39.0" prefWidth="187.0" />
+        
     </children>
 </AnchorPane>
