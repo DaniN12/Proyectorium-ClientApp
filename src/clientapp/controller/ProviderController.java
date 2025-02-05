@@ -7,7 +7,9 @@ package clientapp.controller;
 
 import clientapp.factories.DatePickerCellEditer;
 import clientapp.factories.ProviderManagerFactory;
+import clientapp.interfaces.IMovie;
 import clientapp.interfaces.IProvider;
+import clientapp.model.MovieEntity;
 import clientapp.model.ProviderEntity;
 import clientapp.model.UserEntity;
 import java.io.BufferedReader;
@@ -22,6 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,7 +43,9 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -182,16 +187,42 @@ public class ProviderController {
 
         stage.show();
 
-
     }
 
     public void handleRemoveAction(ActionEvent event) {
         ProviderEntity RmProvider = (ProviderEntity) tableProviders.getSelectionModel().getSelectedItem();
         if (RmProvider != null && RmProvider.getId() != null) {
-            System.out.println("ID de la película a eliminar: " + RmProvider.getId());
-            iProvider.remove(String.valueOf(RmProvider.getId()));
-            tableProviders.getItems().remove(RmProvider);
-            tableProviders.refresh();
+            try {
+                // Se intenta eliminar el proveedor a través del servicio REST
+                iProvider.remove(String.valueOf(RmProvider.getId()));
+
+                // Si la eliminación fue exitosa, se remueve de la tabla y se refresca la vista.
+                tableProviders.getItems().remove(RmProvider);
+                tableProviders.refresh();
+            } catch (WebApplicationException ex) {
+                // Si el servidor devuelve un error, por ejemplo, 409 Conflict
+                if (ex.getResponse() != null
+                        && ex.getResponse().getStatus() == Response.Status.CONFLICT.getStatusCode()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR,
+                            "No se puede eliminar el proveedor, tiene películas asociadas.\n"
+                            + "Por favor, elimina o reasigna las películas antes de proceder.",
+                            ButtonType.OK);
+                    alert.setTitle("Error al eliminar proveedor");
+                    alert.showAndWait();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR,
+                            "Error al eliminar el proveedor: " + ex.getMessage(),
+                            ButtonType.OK);
+                    alert.setTitle("Error");
+                    alert.showAndWait();
+                }
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR,
+                        "Error inesperado: " + ex.getMessage(),
+                        ButtonType.OK);
+                alert.setTitle("Error");
+                alert.showAndWait();
+            }
         } else {
             System.out.println("No se puede eliminar un proveedor sin ID.");
         }
@@ -202,7 +233,7 @@ public class ProviderController {
 
         iProvider.create_XML(newProvider);
         provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
-            }));
+        }));
         tableProviders.setItems(provider);
     }
 
@@ -258,9 +289,9 @@ public class ProviderController {
         // Convertimos LocalDate a Date
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
-    
+
     @FXML
-    public void handleFilterByContractInit (ActionEvent event){
+    public void handleFilterByContractInit(ActionEvent event) {
         provider = FXCollections.observableArrayList(iProvider.listByContractInit_XML(new GenericType<List<ProviderEntity>>() {
         }));/*
                         .stream()
@@ -270,9 +301,9 @@ public class ProviderController {
         tableProviders.setItems(provider);
         tableProviders.refresh();
     }
-    
+
     @FXML
-    public void handleFilterByContractEnd (ActionEvent event){
+    public void handleFilterByContractEnd(ActionEvent event) {
         provider = FXCollections.observableArrayList(iProvider.listByContractEnd_XML(new GenericType<List<ProviderEntity>>() {
         }));/*
                         .stream()
@@ -282,9 +313,9 @@ public class ProviderController {
         tableProviders.setItems(provider);
         tableProviders.refresh();
     }
-    
+
     @FXML
-    public void handleFilterByPrice (ActionEvent event){
+    public void handleFilterByPrice(ActionEvent event) {
         provider = FXCollections.observableArrayList(iProvider.listByPrice_XML(new GenericType<List<ProviderEntity>>() {
         }));/*
                         .stream()
@@ -294,7 +325,6 @@ public class ProviderController {
         tableProviders.setItems(provider);
         tableProviders.refresh();
     }
-    
 
 //Establecer el modelo de datos de la tabla  
     public Stage getStage() {

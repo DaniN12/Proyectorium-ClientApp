@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ResourceBundle;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -41,7 +42,7 @@ public class UserRESTClient implements Signable {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Config").getString("URL");
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -126,7 +127,6 @@ public class UserRESTClient implements Signable {
         return buffer.toByteArray();
     }
      */
-
     private PublicKey loadPublicKey() throws Exception {
         byte[] publicKeyBytes;
         try (InputStream keyInputStream = UserRESTClient.class.getResourceAsStream("Public.key");

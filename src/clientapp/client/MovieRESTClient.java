@@ -7,6 +7,7 @@ package clientapp.client;
 
 import clientapp.interfaces.IMovie;
 import clientapp.model.MovieEntity;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -18,19 +19,19 @@ import javax.ws.rs.core.GenericType;
  * [proyectorium.crud.entities.movie]<br>
  * USAGE:
  * <pre>
-        MovieRESTClient client = new MovieRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ * MovieRESTClient client = new MovieRESTClient();
+ * Object response = client.XXX(...);
+ * // do whatever with response
+ * client.close();
+ * </pre>
  *
  * @author 2dam
  */
-public class MovieRESTClient implements IMovie{
+public class MovieRESTClient implements IMovie {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Config").getString("URL");
 
     public MovieRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -44,11 +45,14 @@ public class MovieRESTClient implements IMovie{
     }
 
     public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), MovieEntity.class);
     }
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), MovieEntity.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), MovieEntity.class);
     }
 
     public <T> T listByProvider_XML(GenericType<T> responseType, String provider) throws WebApplicationException {
@@ -160,5 +164,5 @@ public class MovieRESTClient implements IMovie{
     public void close() {
         client.close();
     }
-    
+
 }

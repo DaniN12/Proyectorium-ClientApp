@@ -154,7 +154,7 @@ public class MovieController {
             categoryManager = CategoryFactory.getICategory();
             providerManager = ProviderManagerFactory.getIProvider();
 
-            availableCategories = categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+            availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
 
             availableProviders = providerManager.findAll_XML(new GenericType<List<ProviderEntity>>() {
@@ -374,6 +374,7 @@ public class MovieController {
 
         try {
             MovieEntity newMovie = new MovieEntity();
+            
 
             movieManager.create_XML(newMovie);
             movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {

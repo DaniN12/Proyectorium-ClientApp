@@ -8,6 +8,7 @@ package clientapp.client;
 import clientapp.interfaces.ITicket;
 import clientapp.model.TicketEntity;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -31,7 +32,7 @@ public class TicketRESTClient implements ITicket {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/cinemapp/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("resources.Config").getString("URL");
 
     public TicketRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
