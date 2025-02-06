@@ -59,7 +59,7 @@ public class SignInController {
     private PasswordField PasswordField;
 
     @FXML
-    private Button btnShowPassword = new Button();
+    private Button btnShowPasswd = new Button();
 
     @FXML
     private Button btnSignIn = new Button();
@@ -115,6 +115,8 @@ public class SignInController {
 
         signable = SignableFactory.getSignable();
 
+        btnShowPasswd.setOnAction(this::showPassword);
+        
         stage.show();
     }
 
@@ -145,7 +147,7 @@ public class SignInController {
                     throw new EmptyFieldException("Fields are empty, all fields need to be filled");
                 }
 
-                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]\\.com$") || !txtFieldEmail.getText().equals("admin")) {
+                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com$")) {
                     throw new IncorrectPatternException("The email is not well written or is incorrect");
                 }
                 UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {

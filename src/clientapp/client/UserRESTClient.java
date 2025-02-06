@@ -94,7 +94,7 @@ public class UserRESTClient implements Signable {
             // Encriptar la contraseña antes de enviarla
             UserEntity userEntity = (UserEntity) requestEntity;
             String encryptedPassword = encryptPassword(userEntity.getPassword());
-
+            
             // Reemplazar la contraseña original con la cifrada
             userEntity.setPassword(encryptedPassword);
 

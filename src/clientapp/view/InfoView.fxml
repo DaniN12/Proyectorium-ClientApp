@@ -27,7 +27,7 @@
                             <items>
                                 <MenuItem mnemonicParsing="false" text="Change Password" />
                                 <MenuItem mnemonicParsing="false" text="Restore Password" />
-                                <MenuItem mnemonicParsing="false" text="Log Out" />
+                                <MenuItem fx:id="logOutMenuItem" mnemonicParsing="false" text="Log Out" />
                             </items>
                         </Menu>
                         <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help" />

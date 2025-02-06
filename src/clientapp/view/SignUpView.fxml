@@ -46,19 +46,19 @@
             
                 <TextField fx:id="emailTxf" layoutX="20.0" layoutY="209.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your email" />
                 <TextField fx:id="fullNameTxf" layoutX="21.0" layoutY="285.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your full name" />
-                <TextField fx:id="streetTxf" layoutX="404.0" layoutY="260.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your street" />
-                <TextField fx:id="passwordTxf" layoutX="22.0" layoutY="368.0" prefHeight="26.0" prefWidth="202.0" promptText="enter your password" />
                 <PasswordField fx:id="passwordPwdf" layoutX="22.0" layoutY="368.0" prefHeight="26.0" prefWidth="202.0" />
+                <TextField fx:id="passwordTxf" layoutX="22.0" layoutY="368.0" prefHeight="26.0" prefWidth="202.0" promptText="enter your password" />
+                <PasswordField fx:id="repeatPasswordPwdf" layoutX="18.0" layoutY="446.0" prefHeight="26.0" prefWidth="201.0" />
+                <TextField fx:id="retryPasswordTxf" layoutX="18.0" layoutY="446.0" prefHeight="26.0" prefWidth="210.0" promptText="repeat your password" />
                 
                 <Button fx:id="btnShowPasswd" layoutX="227.0" layoutY="365.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="44.0" styleClass="btnShowPasswd">
                     <graphic>
                         <ImageView fx:id="buttonImgView" fitHeight="24.0" fitWidth="28.0" pickOnBounds="true" />
                     </graphic>
                 </Button>
+                <TextField fx:id="streetTxf" layoutX="404.0" layoutY="260.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your street" />
                 
                 <TextField fx:id="cityTxf" layoutX="404.0" layoutY="338.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your city" />
-                <TextField fx:id="retryPasswordTxf" layoutX="18.0" layoutY="446.0" prefHeight="26.0" prefWidth="210.0" promptText="repeat your password" />
-                <PasswordField fx:id="repeatPasswordPwdf" layoutX="18.0" layoutY="446.0" prefHeight="26.0" prefWidth="201.0" />
                 <TextField fx:id="zipTxf" layoutX="404.0" layoutY="430.0" prefHeight="26.0" prefWidth="201.0" promptText="enter your zip" />
                 
                 <CheckBox fx:id="checkActive" layoutX="23.0" layoutY="507.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="94.0" selected="true" text="Active">
@@ -67,7 +67,7 @@
                     </font>
                 </CheckBox>
                 
-                <Button fx:id="singUpButton" defaultButton="true" layoutX="482.0" layoutY="502.0" onAction = "#handleButtonAction" mnemonicParsing="false" prefHeight="45.0" prefWidth="103.0" styleClass="minimal-button" text="SignUp" />
+                <Button fx:id="singUpButton" defaultButton="true" layoutX="482.0" layoutY="502.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="45.0" prefWidth="103.0" styleClass="minimal-button" text="SignUp" />
                 
                 <Line fx:id="emailLine" endX="100.0" layoutX="119.0" layoutY="235.0" startX="-100.0" />
                 <Line fx:id="fullNameLine" endX="100.0" layoutX="122.0" layoutY="311.0" startX="-100.0" />

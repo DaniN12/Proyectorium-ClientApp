@@ -114,7 +114,7 @@ public class InfoViewController {
     @FXML
     private MenuItem printMenuItem;
     @FXML
-    private Menu printMenu;
+    private MenuItem logOutMenuItem;
     @FXML
     private TableView<TicketEntity> ticketTableView;
     @FXML
@@ -170,7 +170,8 @@ public class InfoViewController {
             addMenuItem.setOnAction(this::handleCreateAction);
             removeMenuItem.setOnAction(this::handleRemoveAction);
             printMenuItem.setOnAction(this::handlePrintAction);
-
+            logOutMenuItem.setOnAction(this::logOutButtonAction);
+            
             addTicketButton.setOnAction(this::handleCreateAction);
 
             priceFilter.setOnAction(this::handleFilterByPriceAction);
