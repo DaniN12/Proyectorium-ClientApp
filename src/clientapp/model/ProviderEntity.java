@@ -45,8 +45,8 @@ public class ProviderEntity implements Serializable {
     public ProviderEntity() {
 
     }
-    
-    public ProviderEntity(String name){
+
+    public ProviderEntity(String name) {
         this.name = name;
     }
 

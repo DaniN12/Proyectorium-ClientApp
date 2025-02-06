@@ -9,16 +9,22 @@ import clientapp.factories.DatePickerCellEditer;
 import clientapp.factories.CategoryFactory;
 import clientapp.factories.MovieFactory;
 import clientapp.factories.ProviderManagerFactory;
+import clientapp.factories.TicketFactory;
 import clientapp.interfaces.ICategory;
 import clientapp.interfaces.IMovie;
 import clientapp.interfaces.IProvider;
+import clientapp.interfaces.ITicket;
 import clientapp.model.CategoryEntity;
 import clientapp.model.MovieEntity;
 import clientapp.model.MovieHour;
 import clientapp.model.ProviderEntity;
+import clientapp.model.TicketEntity;
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +46,8 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -56,80 +64,90 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
  * @author enzo
  */
 public class MovieController {
-
+    
     @FXML
     private TableColumn<MovieEntity, String> titleColumn;
-
+    
     @FXML
     private TableColumn imgColumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, Integer> durationColumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, String> sinopsisColumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, Date> rDateColumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, MovieHour> movieHourClolumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, Long> providerColumn;
-
+    
     @FXML
     private TableColumn<MovieEntity, ObservableList<CategoryEntity>> categoriesColumn;
-
+    
     @FXML
     private TableView<MovieEntity> moviesTbv;
-
+    
     @FXML
     private Button removeMovieBtn;
-
+    
     @FXML
     private Button addMovieBtn;
-
+    
     @FXML
     private MenuItem releaseDateMButton;
-
+    
     @FXML
     private MenuItem movieHourMButton;
-
+    
     @FXML
     private MenuItem providerMButton;
-
+    
     @FXML
     private ComboBox findProveedorCbox;
-
+    
     private Stage stage;
-
+    
     private IMovie movieManager;
-
+    
     private ICategory categoryManager;
-
+    
     private IProvider providerManager;
-
+    
+    private ITicket ticketManager;
+    
     private ObservableList<MovieEntity> movies;
-
+    
     private List<CategoryEntity> availableCategories;
-
+    
     private List<ProviderEntity> availableProviders;
-
+    
+    private List<TicketEntity> availableTickets;
+    
     private Logger logger = Logger.getLogger(InfoViewController.class.getName());
-
+    
     private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
-
+    
     public void initialize(Parent root) {
-
+        
         Scene scene = new Scene(root);
-
+        
         stage.setScene(scene);
         stage.setTitle("Movie");
         stage.getIcons().add(icon);
@@ -141,37 +159,42 @@ public class MovieController {
         releaseDateMButton.setOnAction(this::filterByReleaseDate);
         movieHourMButton.setOnAction(this::filterByMovieHour);
         providerMButton.setOnAction(this::filterProvider);
-
+        moviesTbv.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
         loadMovies();
         setupContextMenu();
-
+        
         stage.show();
     }
-
+    
     public void loadMovies() {
         try {
             movieManager = MovieFactory.getIMovie();
             categoryManager = CategoryFactory.getICategory();
             providerManager = ProviderManagerFactory.getIProvider();
+            ticketManager = TicketFactory.getITicket();
 
             availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
-
+            
             availableProviders = providerManager.findAll_XML(new GenericType<List<ProviderEntity>>() {
             });
-
+            
+            availableTickets = ticketManager.findAll_XML(new GenericType<List<TicketEntity>>() {
+            });
+            
             movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
-
+            
             setUpMovies();
-
+            
         } catch (Exception ex) {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error loading movies", ButtonType.OK).showAndWait();
         }
-
+        
     }
-
+    
     public void setUpMovies() {
         try {
             imgColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<MovieEntity, ImageView>, ObservableValue<ImageView>>() {
@@ -197,7 +220,7 @@ public class MovieController {
                     return new SimpleObjectProperty<>(imageView);
                 }
             });
-
+            
             titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
             durationColumn.setCellValueFactory(new PropertyValueFactory<>("duration"));
             sinopsisColumn.setCellValueFactory(new PropertyValueFactory<>("sinopsis"));
@@ -205,16 +228,16 @@ public class MovieController {
             movieHourClolumn.setCellValueFactory(new PropertyValueFactory<>("movieHour"));
             providerColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
             categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("categories"));
-
+            
             moviesTbv.setItems(movies);
             setUpEditableTable();
-
+            
         } catch (Exception ex) {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error loading movies", ButtonType.OK).showAndWait();
         }
     }
-
+    
     public void setUpEditableTable() {
         try {
             titleColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
@@ -224,13 +247,13 @@ public class MovieController {
                 movie.setTitle(t.getNewValue());
                 movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
-
+            
             durationColumn.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>() {
                 @Override
                 public String toString(Integer object) {
                     return object == null ? "" : object.toString();  // Convierte el Integer a String
                 }
-
+                
                 @Override
                 public Integer fromString(String string) {
                     try {
@@ -247,7 +270,7 @@ public class MovieController {
                 movie.setDuration(t.getNewValue());
                 movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
-
+            
             sinopsisColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
             sinopsisColumn.setOnEditCommit((CellEditEvent<MovieEntity, String> t) -> {
                 t.getTableView().getItems().get(t.getTablePosition().getRow()).setSinopsis(t.getNewValue());
@@ -255,38 +278,38 @@ public class MovieController {
                 movie.setSinopsis(t.getNewValue());
                 movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
-
+            
             rDateColumn.setCellFactory(column -> new DatePickerCellEditer());
             rDateColumn.setOnEditCommit(event -> {
                 MovieEntity movie = event.getRowValue();
                 movie.setReleaseDate(event.getNewValue());
                 movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
-
+            
             ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
-
+            
             movieHourClolumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMovieHour()));
-
+            
             movieHourClolumn.setCellFactory(column -> {
                 return new ComboBoxTableCell<>(new StringConverter<MovieHour>() {
                     @Override
                     public String toString(MovieHour hour) {
                         return hour != null ? hour.toString() : "";
                     }
-
+                    
                     @Override
                     public MovieHour fromString(String string) {
                         return MovieHour.valueOf(string);
                     }
                 }, availableHours);
             });
-
+            
             movieHourClolumn.setOnEditCommit(event -> {
                 MovieEntity movie = event.getRowValue();
                 movie.setMovieHour(event.getNewValue()); // Guarda la hora seleccionada
                 movieManager.edit_XML(movie, String.valueOf(movie.getId()));
             });
-
+            
             providerColumn.setCellValueFactory(cellData -> {
                 MovieEntity movie = cellData.getValue();
                 if (movie != null && movie.getProvider() != null) {
@@ -296,32 +319,37 @@ public class MovieController {
                     return new SimpleObjectProperty<>(null);  // o un valor por defecto si prefieres
                 }
             });
-
+            
             providerColumn.setCellFactory(column -> {
                 ComboBoxTableCell<MovieEntity, Long> cell = new ComboBoxTableCell<>(FXCollections.observableArrayList(availableProviders.stream().map(ProviderEntity::getId).collect(Collectors.toList())));
                 // Configurar el convertidor
                 cell.setConverter(new StringConverter<Long>() {
                     @Override
                     public String toString(Long providerId) {
+                        if (providerId == null) {
+                            return ""; // Evita el NullPointerException devolviendo un string vacío
+                        }
+                        
                         return availableProviders.stream()
-                                .filter(provider -> provider.getId().equals(providerId))
+                                .filter(provider -> providerId.equals(provider.getId())) // Cambiado para evitar NPE
                                 .map(ProviderEntity::getName)
                                 .findFirst()
-                                .orElse("");
+                                .orElse(""); // Si no encuentra el proveedor, devuelve una cadena vacía
                     }
-
+                    
                     @Override
-                    public Long fromString(String name) {
+                    public Long fromString(String string) {
                         return availableProviders.stream()
-                                .filter(provider -> provider.getName().equals(name))
+                                .filter(provider -> provider.getName().equals(string))
                                 .map(ProviderEntity::getId)
                                 .findFirst()
-                                .orElse(null);
+                                .orElse(null); // Si no encuentra un proveedor, devuelve null
                     }
                 });
+                
                 return cell;
             });
-
+            
             providerColumn.setOnEditCommit(event -> {
                 int rowIndex = event.getTablePosition().getRow();
                 if (rowIndex >= 0 && rowIndex < movies.size()) {
@@ -339,83 +367,102 @@ public class MovieController {
                             Platform.runLater(() -> {
                                 movies.set(rowIndex, movie); // Actualizar la fila directamente
                             });
-
+                            
                         }
                     }
                 }
             });
-
+            
         } catch (Exception ex) {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error triying to update movies", ButtonType.OK).showAndWait();
         }
     }
-
+    
     public void handleRemoveAction(ActionEvent event) {
-
         try {
             MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
             if (RmMovie != null && RmMovie.getId() != null) {
-                System.out.println("ID de la película a eliminar: " + RmMovie.getId());
-                movieManager.remove(String.valueOf(RmMovie.getId()));
-                moviesTbv.getItems().remove(RmMovie);
-                moviesTbv.refresh();
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Remove confirmation");
+                alert.setHeaderText("¿Are you sure you want to remove this Movie?\nTickets associated to the movie will be automatically deleted");
+                Optional<ButtonType> answer = alert.showAndWait();
+                if (answer.get() == ButtonType.OK) {
+                    List<TicketEntity> tickets = ticketManager.findAll_XML(new GenericType<List<TicketEntity>>() {
+                    });
+
+                    // Filtrar los tickets que pertenecen a la película a eliminar
+                    for (TicketEntity ticket : tickets) {
+                        if (ticket.getMovie().getId().equals(RmMovie.getId())) {
+                            ticketManager.remove(String.valueOf(ticket.getId())); // Eliminar cada ticket individualmente
+                        }
+                    }
+
+                    // Luego, eliminar la película
+                    movieManager.remove(String.valueOf(RmMovie.getId()));
+
+                    // Actualizar la tabla de películas
+                    moviesTbv.getItems().remove(RmMovie);
+                    moviesTbv.refresh();
+                } else {
+                    event.consume();
+                }
             } else {
                 logger.info("The ID cannot be null");
             }
-
         } catch (Exception ex) {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error trying to remove movies", ButtonType.OK).showAndWait();
         }
     }
-
+    
     public void handleCreateAction(ActionEvent event) {
-
+        
         try {
             MovieEntity newMovie = new MovieEntity();
-
+            
             movieManager.create_XML(newMovie);
             movies = FXCollections.observableArrayList(movieManager.findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             moviesTbv.setItems(movies);
-
+            
         } catch (Exception ex) {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error trying to add movies", ButtonType.OK).showAndWait();
         }
-
+        
     }
-
+    
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addCategoryMenuItem = new MenuItem("Add category");
         MenuItem addMovie = new MenuItem("Add movie");
         MenuItem removeMovie = new MenuItem("RemoveMovie");
         MenuItem print = new MenuItem("Print table");
-
+        
         addCategoryMenuItem.setOnAction(event -> {
             MovieEntity selectedCategory = moviesTbv.getSelectionModel().getSelectedItem();
             if (selectedCategory != null) {
                 showCategorySelectionDialog(selectedCategory);
             }
         });
-
+        
         addMovie.setOnAction(this::handleCreateAction);
         removeMovie.setOnAction(this::handleRemoveAction);
-
+        print.setOnAction(this::printBtn);
+        
         contextMenu.getItems().add(addCategoryMenuItem);
         contextMenu.getItems().add(addMovie);
         contextMenu.getItems().add(removeMovie);
         contextMenu.getItems().add(print);
-
+        
         moviesTbv.setContextMenu(contextMenu);
     }
-
+    
     private void showCategorySelectionDialog(MovieEntity movie) {
         Stage categoryStage = new Stage();
         categoryStage.setTitle("Select Categories");
-
+        
         ListView<CategoryEntity> categoryListView = new ListView<>();
         ObservableList<CategoryEntity> selectedCategories = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
 
@@ -432,13 +479,13 @@ public class MovieController {
                     protected void updateItem(CategoryEntity item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item != null) {
-                            setText(item.getName()); // Mostrar el nombre de la categoría
+                            setText(item.toString());
                         } else {
                             setText(null);
                         }
                     }
                 };
-
+                
                 cell.setOnMouseClicked(event -> {
                     if (cell.getItem() != null) {
                         CategoryEntity clickedCategory = cell.getItem();
@@ -451,64 +498,64 @@ public class MovieController {
                         }
                     }
                 });
-
+                
                 return cell;
             });
-
+            
             Button confirmButton = new Button("Confirmar");
             confirmButton.setOnAction(e -> {
                 if (!selectedCategories.isEmpty()) {
                     try {
                         // Actualizar la lista de categorías seleccionadas en la película
                         movie.setCategories(selectedCategories);
-
+                        
                         movieManager.edit_XML(movie, String.valueOf(movie.getId()));
                         categoryStage.close();
                         moviesTbv.refresh();
-
+                        
                     } catch (Exception ex) {
                         logger.log(Level.SEVERE, "Error adding categories to the movie", ex);
                         new Alert(Alert.AlertType.ERROR, "Error loading categories", ButtonType.OK).showAndWait();
                     }
                 }
             });
-
+            
             VBox layout = new VBox(10);
             layout.getStyleClass().add("jfx-popup-container");
             layout.setPadding(new javafx.geometry.Insets(10));
             layout.getChildren().addAll(categoryListView, confirmButton);
-
+            
             Scene scene = new Scene(layout);
             categoryStage.setScene(scene);
             categoryStage.setWidth(300);
             categoryStage.setHeight(300);
-
+            
             categoryStage.show();
-
+            
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error loading categories", ex);
             new Alert(Alert.AlertType.ERROR, "Error loading categories", ButtonType.OK).showAndWait();
         }
     }
-
+    
     @FXML
     private void filterByReleaseDate(ActionEvent event) {
-
+        
         movies = FXCollections.observableArrayList(movieManager.listByReleaseDate_XML(new GenericType<List<MovieEntity>>() {
         }));
         moviesTbv.setItems(movies);
         moviesTbv.refresh();
     }
-
+    
     @FXML
     private void filterByMovieHour(ActionEvent event) {
-
+        
         ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
-
+        
         findProveedorCbox.setItems(availableHours);
         findProveedorCbox.setOnAction(e -> applyMovieHourFilter());
     }
-
+    
     private void applyMovieHourFilter() {
         MovieHour selectedHour = (MovieHour) findProveedorCbox.getValue(); // Obtener la hora seleccionada
 
@@ -516,7 +563,7 @@ public class MovieController {
             try {
                 movies = FXCollections.observableArrayList(movieManager.listByMovieHour_XML(new GenericType<List<MovieEntity>>() {
                 }, String.valueOf(selectedHour)));
-
+                
                 moviesTbv.setItems(movies);
                 moviesTbv.refresh();
             } catch (WebApplicationException e) {
@@ -524,24 +571,24 @@ public class MovieController {
             }
         }
     }
-
+    
     @FXML
     private void filterProvider(ActionEvent event) {
         ObservableList<ProviderEntity> providersList = FXCollections.observableArrayList(availableProviders);
-
+        
         findProveedorCbox.setItems(providersList);
-
+        
         findProveedorCbox.setOnAction(e -> applyProviderFilter());
     }
-
+    
     private void applyProviderFilter() {
         ProviderEntity selectedProvider = (ProviderEntity) findProveedorCbox.getValue();
-
+        
         if (selectedProvider != null) {
             try {
                 movies = FXCollections.observableArrayList(movieManager.listByProvider_XML(new GenericType<List<MovieEntity>>() {
                 }, String.valueOf(selectedProvider)));
-
+                
                 moviesTbv.setItems(movies);
                 moviesTbv.refresh();
             } catch (WebApplicationException e) {
@@ -549,7 +596,21 @@ public class MovieController {
             }
         }
     }
-
+    
+    @FXML
+    private void printBtn(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/clientapp/reports/MoviesReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<MovieEntity>) this.moviesTbv.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception error) {
+            //Logger.log(Level.SEVERE, "AccountController(handlePrintReport): Exception while creating the report {0}", error.getMessage());
+        }
+    }
+    
     @FXML
     public void onCloseRequest(WindowEvent event) {
 
@@ -572,109 +633,109 @@ public class MovieController {
             event.consume();
         }
     }
-
+    
     public TableColumn getTitleColumn() {
         return titleColumn;
     }
-
+    
     public void setTitleColumn(TableColumn titleColumn) {
         this.titleColumn = titleColumn;
     }
-
+    
     public TableColumn getDurationColumn() {
         return durationColumn;
     }
-
+    
     public void setDurationColumn(TableColumn durationColumn) {
         this.durationColumn = durationColumn;
     }
-
+    
     public TableColumn getSinopsisColumn() {
         return sinopsisColumn;
     }
-
+    
     public void setSinopsisColumn(TableColumn sinopsisColumn) {
         this.sinopsisColumn = sinopsisColumn;
     }
-
+    
     public TableColumn getMovieHourClolumn() {
         return movieHourClolumn;
     }
-
+    
     public void setMovieHourClolumn(TableColumn movieHourClolumn) {
         this.movieHourClolumn = movieHourClolumn;
     }
-
+    
     public TableColumn getProviderColumn() {
         return providerColumn;
     }
-
+    
     public void setProviderColumn(TableColumn providerColumn) {
         this.providerColumn = providerColumn;
     }
-
+    
     public TableColumn getCategoriesColumn() {
         return categoriesColumn;
     }
-
+    
     public void setCategoriesColumn(TableColumn categoriesColumn) {
         this.categoriesColumn = categoriesColumn;
     }
-
+    
     public Stage getStage() {
         return stage;
     }
-
+    
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
+    
     public IMovie getMovieManager() {
         return movieManager;
     }
-
+    
     public void setMovieManager(IMovie movieManager) {
         this.movieManager = movieManager;
     }
-
+    
     public TableColumn getImgColumn() {
         return imgColumn;
     }
-
+    
     public void setImgColumn(TableColumn imgColumn) {
         this.imgColumn = imgColumn;
     }
-
+    
     public TableColumn getrDateColumn() {
         return rDateColumn;
     }
-
+    
     public void setrDateColumn(TableColumn rDateColumn) {
         this.rDateColumn = rDateColumn;
     }
-
+    
     public TableView getMoviesTbv() {
         return moviesTbv;
     }
-
+    
     public void setMoviesTbv(TableView moviesTbv) {
         this.moviesTbv = moviesTbv;
     }
-
+    
     public Button getRemoveMovieBtn() {
         return removeMovieBtn;
     }
-
+    
     public void setRemoveMovieBtn(Button removeMovieBtn) {
         this.removeMovieBtn = removeMovieBtn;
     }
-
+    
     public Button getAddMovieBtn() {
         return addMovieBtn;
     }
-
+    
     public void setAddMovieBtn(Button addMovieBtn) {
         this.addMovieBtn = addMovieBtn;
     }
-
+    
 }

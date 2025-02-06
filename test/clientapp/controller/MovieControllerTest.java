@@ -7,6 +7,7 @@ package clientapp.controller;
 
 import clientapp.Main;
 import clientapp.model.MovieEntity;
+import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
+import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.util.NodeQueryUtils.isVisible;
@@ -173,5 +175,30 @@ public class MovieControllerTest extends ApplicationTest {
         assertEquals("The movie has not been added correctly!!!",
                 movies.stream().filter(m -> m.getSinopsis().equals(movieSinopsis)).count(), 1);
 
+    }
+    
+    @Test
+    public void testD_deleteMovie() throws NotBoundException {
+        // Obtener el número de filas antes de eliminar
+        int rowCount = table.getItems().size();
+
+        // Verificar que la tabla tiene datos
+        assertNotEquals("Table has no data: Cannot test.", rowCount, 0);
+
+        // Seleccionar la última fila en la tabla
+        int lastRowIndex = rowCount - 1;
+        Node row = lookup(".table-row-cell").nth(lastRowIndex).query();
+        assertNotNull("Row is null: table has not that row.", row);
+        clickOn(row);
+        // Hacer clic en el botón de eliminar
+        clickOn("#removeMovieBtn");
+
+        // Verificar que aparece el cuadro de diálogo de confirmación
+        verifyThat("¿Are you sure you want to remove this Movie?\nTickets associated to the movie will be automatically deleted", isVisible());
+        // Confirmar la eliminación haciendo clic en el botón predeterminado (OK)
+        clickOn("Aceptar");
+
+        // Verificar que la fila ha sido eliminada
+        assertEquals("The row has not been deleted!!!", rowCount - 1, table.getItems().size());
     }
 }
