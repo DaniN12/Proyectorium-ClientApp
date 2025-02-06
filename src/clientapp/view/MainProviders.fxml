@@ -47,7 +47,7 @@
                     <items>
                         <MenuItem mnemonicParsing="false" text="Add Provider" />
                         <MenuItem mnemonicParsing="false" text="Remove Provider" />
-                        <MenuItem mnemonicParsing="false" text="Print" />
+                        <MenuItem mnemonicParsing="false" text="Print" onAction="#handleRemoveAction"/>
                     </items>
                 </ContextMenu>
             </contextMenu>
@@ -58,7 +58,8 @@
 
         <Button fx:id="btnAddProvider" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" text="Add Provider" />
         <Button fx:id="btnRemoveProvider" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="Remove Provider" />
-        
+        <Button fx:id="btnPrint" layoutX="409.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleImprimirAction" prefHeight="35.0" prefWidth="200.0" text="Print" />
+
         
     </children>
 </AnchorPane>

@@ -140,5 +140,5 @@
 }
 
 .table-column {
-    -fx-background-color: rgba(255, 255, 255, 0.8); /* Un poco más opaco */
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Un poco más opaco */
 }

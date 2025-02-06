@@ -20,8 +20,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +48,15 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+
+
 
 /**
  *
@@ -106,21 +119,36 @@ public class ProviderController {
 
             tableProviders.setItems(provider);
         } catch (Exception ex) {
-
+            logger.severe("Error initializing provider data: " + ex.getMessage());
         }
 
         tbcolumnEmail.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
-        tbcolumnEmail.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
+        tbcolumnEmail.setOnEditCommit(t -> {
             ProviderEntity provider = t.getRowValue();
-            provider.setEmail(t.getNewValue());
-            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            String newEmail = t.getNewValue();
+            if (!newEmail.endsWith("@gmail.com")) {
+                showAlert("Invalid Email", "Email must end with @gmail.com.");
+                tableProviders.refresh();
+            } else if (newEmail.length() > 50) {
+                showAlert("Email Too Long", "Email cannot exceed 50 characters.");
+                tableProviders.refresh();
+            } else {
+                provider.setEmail(newEmail);
+                iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            }
         });
 
         tbcolumnName.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
-        tbcolumnName.setOnEditCommit((CellEditEvent<ProviderEntity, String> t) -> {
+        tbcolumnName.setOnEditCommit(t -> {
             ProviderEntity provider = t.getRowValue();
-            provider.setName(t.getNewValue());
-            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            String newName = t.getNewValue();
+            if (newName.length() > 50) {
+                showAlert("Name Too Long", "Name cannot exceed 50 characters.");
+                tableProviders.refresh();
+            } else {
+                provider.setName(newName);
+                iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            }
         });
 
         tbcolumnConInit.setCellFactory(column -> new DatePickerCellEditer());
@@ -154,10 +182,16 @@ public class ProviderController {
             }
         }));
 
-        tbcolumnPhone.setOnEditCommit((CellEditEvent<ProviderEntity, Integer> t) -> {
+        tbcolumnPhone.setOnEditCommit(t -> {
             ProviderEntity provider = t.getRowValue();
-            provider.setPhone(t.getNewValue());
-            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            Integer newPhone = t.getNewValue();
+            if (newPhone == null || String.valueOf(newPhone).length() != 9) {
+                showAlert("Invalid Phone Number", "The phone number must have exactly 9 digits.");
+                tableProviders.refresh();
+            } else {
+                provider.setPhone(newPhone);
+                iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            }
         });
 
         tbcolumnPrice.setCellFactory(TextFieldTableCell.<ProviderEntity, Float>forTableColumn(new StringConverter<Float>() {
@@ -186,9 +220,20 @@ public class ProviderController {
         setupContextMenu();
         tableProviders.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
+        
+        
+        
+        
         stage.show();
 
        
+    }
+     private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
     
     private void refreshTable() {
@@ -238,6 +283,21 @@ public class ProviderController {
         provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
             }));
         tableProviders.setItems(provider);
+    }
+    
+    @FXML
+    private void handleImprimirAction(ActionEvent event){
+        try {
+            JasperReport report   = JasperCompileManager.compileReport(getClass().getResourceAsStream("/clientapp/reports/ProvidersReport.jrxml"));
+            JRBeanCollectionDataSource dataItems   = new JRBeanCollectionDataSource((Collection<ProviderEntity>) this.tableProviders.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception error) {
+            //Logger.log(Level.SEVERE, "AccountController(handlePrintReport): Exception while creating the report {0}", error.getMessage());
+        }
+
     }
 
     public static String introducirCadena() {
