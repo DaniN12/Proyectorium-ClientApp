@@ -121,4 +121,8 @@ public class TicketEntity implements Serializable {
         return movie.getDuration() + "min";
     }
 
+    public String getMovieTitle() {
+        return movie.getTitle();
+    }
+
 }

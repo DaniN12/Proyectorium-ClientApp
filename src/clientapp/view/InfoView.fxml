@@ -30,11 +30,7 @@
                                 <MenuItem mnemonicParsing="false" text="Log Out" />
                             </items>
                         </Menu>
-                        <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Tutorial" />
-                            </items>
-                        </Menu>
+                        <Menu fx:id="helpMenu" mnemonicParsing="false" text="Help" />
                     </menus>
                 </MenuBar>
             </children>
@@ -67,6 +63,7 @@
                     <items>
                       <MenuItem fx:id="addMenuItem" mnemonicParsing="false" text="Add ticket" />
                         <MenuItem fx:id="removeMenuItem" mnemonicParsing="false" text="Remove ticket" />
+                        <MenuItem fx:id="printMenuItem" mnemonicParsing="false" text="Print table" />
                     </items>
                   </ContextMenu>
                </contextMenu>

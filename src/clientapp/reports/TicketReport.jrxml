@@ -1,29 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD JasperReport//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-
-<jasperReport name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-    <background>
-        <band/>
-    </background>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ticket_report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b1c6b9a5-ea0e-437f-9a5e-64e6a1e8425b">
+    <property name="ireport.zoom" value="1.0"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <field name="movieTitle" class="java.lang.String"/>
+    <field name="movieDuration" class="java.lang.String"/>
+    <field name="buyDate" class="java.util.Date"/>
+    <field name="numPeople" class="java.lang.Integer"/>
+    <field name="calculatedPrice" class="java.lang.String"/>
     <title>
-        <band height="79"/>
+        <band height="79" splitType="Stretch">
+            <staticText>
+                <reportElement x="222" y="31" width="150" height="20" uuid="fd22cc6b-e68f-4a9a-8537-b3c7d05b6077"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ticket Report]]></text>
+            </staticText>
+        </band>
     </title>
     <pageHeader>
-        <band height="35"/>
+        <band height="35" splitType="Stretch"/>
     </pageHeader>
     <columnHeader>
-        <band height="61"/>
+        <band height="20" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="0" width="107" height="20" uuid="ee709c56-00c1-4f89-957d-d6e7c3e1f05d"/>
+                <textElement>
+                    <font isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[Movie Title]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="107" y="0" width="107" height="20" uuid="47d1d6b0-4da1-406b-8cf5-8d4e4ac01ea4"/>
+                <textElement>
+                    <font isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[Duration]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="214" y="0" width="107" height="20" uuid="edcb7b8d-4e8b-41a1-926f-1f6ea76b3b4e"/>
+                <textElement>
+                    <font isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[Buy Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="321" y="0" width="107" height="20" uuid="2cbd184f-2ed5-4c0c-97f3-bddba2f2cd71"/>
+                <textElement>
+                    <font isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[People]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="428" y="0" width="107" height="20" uuid="b9b3e8e4-5d93-4f58-9417-9f4e0cc9c9f6"/>
+                <textElement>
+                    <font isUnderline="true"/>
+                </textElement>
+                <text><![CDATA[Final Price]]></text>
+            </staticText>
+        </band>
     </columnHeader>
     <detail>
-        <band height="125"/>
+        <band height="21" splitType="Stretch">
+            <!-- Obtener el título de la película desde el objeto Movie -->
+            <textField>
+                <reportElement x="0" y="0" width="107" height="20" uuid="cc55fd80-0f2e-43a1-9e78-3d062a50dbff"/>
+                <textFieldExpression><![CDATA[$F{movieTitle}]]></textFieldExpression>
+            </textField>
+            <!-- Obtener la duración de la película desde el objeto Movie -->
+            <textField>
+                <reportElement x="107" y="0" width="107" height="20" uuid="c9fc703e-1c82-4e57-bd1f-11633c13ad02"/>
+                <textFieldExpression><![CDATA[$F{movieDuration}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="214" y="0" width="107" height="20" uuid="6b0624b1-c270-4375-9b8a-d8f9be4c3bb4"/>
+                <textFieldExpression><![CDATA[$F{buyDate}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="321" y="0" width="107" height="20" uuid="ef8d1a71-9b5f-42b6-b36b-67f5423c35da"/>
+                <textFieldExpression><![CDATA[$F{numPeople}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="428" y="0" width="107" height="20" uuid="c035b9ca-e8f7-44f9-9b95-7d8b63a55be4"/>
+                <textFieldExpression><![CDATA[$F{calculatedPrice}]]></textFieldExpression>
+            </textField>
+        </band>
     </detail>
     <columnFooter>
-        <band height="45"/>
+        <band height="45" splitType="Stretch"/>
     </columnFooter>
     <pageFooter>
-        <band height="54"/>
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="455" y="0" width="100" height="20" uuid="d7b8a5c1-6b7d-4c8f-973a-5e2c91d7b8b3"/>
+                <textElement textAlignment="Center">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
     </pageFooter>
-    <summary>
-        <band height="42"/>
-    </summary>
 </jasperReport>

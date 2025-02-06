@@ -7,11 +7,18 @@ import clientapp.interfaces.ITicket;
 import clientapp.model.MovieEntity;
 import clientapp.model.TicketEntity;
 import clientapp.model.UserEntity;
+import java.awt.Graphics;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +30,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -33,7 +41,12 @@ import javafx.stage.WindowEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
+import javafx.scene.Node;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -45,12 +58,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 
 import javax.ws.rs.core.GenericType;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -87,6 +110,10 @@ public class InfoViewController {
     private MenuItem priceFilter;
     @FXML
     private MenuItem buyDateFilter;
+    @FXML
+    private MenuItem printMenuItem;
+    @FXML
+    private Menu printMenu;
     @FXML
     private TableView<TicketEntity> ticketTableView;
     @FXML
@@ -137,6 +164,7 @@ public class InfoViewController {
             optionRigby.setOnAction(this::onOptionRigby);
             addMenuItem.setOnAction(this::handleCreateAction);
             removeMenuItem.setOnAction(this::handleRemoveAction);
+            printMenuItem.setOnAction(this::handlePrintAction);
 
             addTicketButton.setOnAction(this::handleCreateAction);
 
@@ -256,6 +284,7 @@ public class InfoViewController {
 
             editDatabase(ticket);
         });
+
         ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         removeMenuItem.visibleProperty().bind(ticketTableView.getSelectionModel().selectedItemProperty().isNotNull());
     }
@@ -372,6 +401,20 @@ public class InfoViewController {
         );*/
         ticketTableView.setItems(listTickets);
         ticketTableView.refresh();
+    }
+
+    public void handlePrintAction(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/clientapp/reports/TicketReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<TicketEntity>) ticketTableView.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading report: {0}", e.getMessage());
+            showAlert(AlertType.ERROR, "Error de Reporte", "Ocurrió un error al generar el reporte.", "/resources/WarningAlert.png");
+        }
     }
 
     @FXML
