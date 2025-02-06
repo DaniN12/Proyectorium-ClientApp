@@ -6,9 +6,12 @@
 package clientapp.controller;
 
 import clientapp.Main;
+import clientapp.model.CategoryEntity;
+import clientapp.model.MovieEntity;
 import java.rmi.NotBoundException;
+import java.util.List;
+import java.util.Random;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -69,6 +72,57 @@ public class CategoryControllerTest extends ApplicationTest {
 //                    rowCount-1,table.getItems().size());
 //        verifyThat(tfLogin,  (TextField t) -> t.isFocused());
 //    }
+    
+      @Test
+    public void listCategory() {
+        assertNotNull("Error loading movies", isVisible());
+    }
+
+       @Test
+    public void createCategory() {
+
+        // Obtener el número de filas antes de agregar una nueva
+        int rowCount = tbcategory.getItems().size();
+
+        // Generar un nombre aleatorio para la nueva película
+        String categoryName = "Category" + new Random().nextInt();
+
+        // Hacer clic en el botón de agregar película
+        clickOn("#addBtn");
+
+        // Esperar a que la fila se agregue
+        waitForFxEvents();
+
+        // Seleccionar la última fila de la tabla (la recién añadida)
+        int lastRowIndex = tbcategory.getItems().size() - 1;
+        interact(() -> tbcategory.getSelectionModel().select(lastRowIndex)); // Selecciona la fila programáticamente
+        waitForFxEvents();
+
+        // Hacer doble clic en la celda "title" de la última fila
+        Node titleCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(1) // Suponiendo que la columna "title" es la segunda columna
+                .query();
+        doubleClickOn(titleCell);
+        waitForFxEvents(); // Esperar a que la celda entre en modo edición
+
+        // Buscar el TextField dentro de la celda en modo edición
+        Node textField = lookup(".text-field").query();
+        clickOn(textField); // Asegurar que el foco esté en el campo de edición
+        write(categoryName);  // Escribir el título
+
+        // Confirmar la edición (ENTER)
+        type(javafx.scene.input.KeyCode.ENTER);
+        waitForFxEvents();
+
+        // Verificar que la fila se haya añadido
+        assertEquals("The row has not been added!!!", rowCount + 1, tbcategory.getItems().size());
+
+        // Comprobar que el título se ha guardado correctamente en la tabla
+        List<CategoryEntity> cate = tbcategory.getItems();
+        assertEquals("The movie has not been added correctly!!!",
+                cate.stream().filter(m -> m.getName().equals(categoryName)).count(), 1);
+    }
+
     /**
      * Test that movie is deleted when the OK button is clicked in the
      * confirmation dialog.

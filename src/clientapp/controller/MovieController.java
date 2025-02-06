@@ -154,7 +154,7 @@ public class MovieController {
             categoryManager = CategoryFactory.getICategory();
             providerManager = ProviderManagerFactory.getIProvider();
 
-            availableCategories = categoryManager.findAll(new GenericType<List<CategoryEntity>>() {
+            availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
 
             availableProviders = providerManager.findAll_XML(new GenericType<List<ProviderEntity>>() {
@@ -352,7 +352,6 @@ public class MovieController {
     }
 
     public void handleRemoveAction(ActionEvent event) {
-
         try {
             MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
             if (RmMovie != null && RmMovie.getId() != null) {

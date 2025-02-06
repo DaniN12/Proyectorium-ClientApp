@@ -10,45 +10,51 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" fx:id="categoryPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.CategoryController">
-   <children>
-       <fx:include fx:id="menuHBox" source="Menu.fxml">
-        <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
-    </fx:include>
-      <TableView fx:id="tbcategory" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
-        <columns>
-          <TableColumn fx:id="tbcolIcon" prefWidth="159.99996948242188" text="Icon" />
-           <TableColumn fx:id="tbcolName" prefWidth="150.39996337890625" text="Name" />
-           <TableColumn fx:id="tbcolDescription" minWidth="0.0" prefWidth="447.20001220703125" text="Description" />
-            <TableColumn fx:id="tbcolCreationDate" prefWidth="251.20001220703125" text="Creation Date" />
-           <TableColumn fx:id="tbcolPegi" prefWidth="193.60009765625" text="Pegi" />
+<AnchorPane id="categoryPane" fx:id="categoryPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../../resources/stylesEntities.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.CategoryController">
+    <children>
+        <fx:include fx:id="menuHBox" source="Menu.fxml">
+            <AnchorPane.topAnchor>0.0</AnchorPane.topAnchor>
+        </fx:include>
+    
+        <Button fx:id="helpBtn" layoutX="1146.0" layoutY="66.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="36.0">
+            <graphic>
+                <ImageView fx:id="helpImg" fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/interrogation.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    
+        <MenuButton fx:id="filterBtn" layoutX="36.0" layoutY="90.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="134.0" text="Filter">
+            <items>
+                <MenuItem fx:id="filterDate" mnemonicParsing="false" text="Creation Date DESC" />
+                <MenuItem fx:id="filterDescription" mnemonicParsing="false" text="Description - 50 and Pegi18" />
+            </items>
+        </MenuButton>
+        
+        <TableView fx:id="tbcategory" layoutX="103.0" layoutY="174.0" prefHeight="450.0" prefWidth="1200.0">
+            <columns>
+                <TableColumn fx:id="tbcolIcon" prefWidth="159.99996948242188" text="Icon" />
+                <TableColumn fx:id="tbcolName" prefWidth="150.39996337890625" text="Name" />
+                <TableColumn fx:id="tbcolDescription" minWidth="0.0" prefWidth="447.20001220703125" text="Description" />
+                <TableColumn fx:id="tbcolCreationDate" prefWidth="251.20001220703125" text="Creation Date" />
+                <TableColumn fx:id="tbcolPegi" prefWidth="193.60009765625" text="Pegi" />
            
-        </columns>
-         <contextMenu>
-            <ContextMenu fx:id="tableMenu">
-              <items>
-                <MenuItem fx:id="addMenu" mnemonicParsing="false" text="Add" />
-                  <MenuItem fx:id="removeMenu" mnemonicParsing="false" text="Remove" />
-                  <MenuItem fx:id="printMenu" mnemonicParsing="false" text="Print" />
-              </items>
-            </ContextMenu>
-         </contextMenu>
-      </TableView>
-      <Button fx:id="helpBtn" layoutX="1146.0" layoutY="43.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="36.0">
-         <graphic>
-            <ImageView fx:id="helpImg" fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../resources/pngimg.com%20-%20question_mark_PNG91.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <Button fx:id="addBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" onAction="#handleCreateAction"/>
-      <Button fx:id="removeBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" onAction="#handleRemoveAction"/>
-      <MenuButton fx:id="filterBtn" layoutX="36.0" layoutY="125.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="90.0" text="Filters">
-        <items>
-          <MenuItem fx:id="filterDate" mnemonicParsing="false" text="Creation Date" />
-          <MenuItem fx:id="filterDescription" mnemonicParsing="false" text="Description - 50 and Pegi18" />
-        </items>
-      </MenuButton>
-   </children>
+            </columns>
+            <contextMenu>
+                <ContextMenu fx:id="tableMenu">
+                    <items>
+                        <MenuItem fx:id="addMenu" mnemonicParsing="false" text="Add" />
+                        <MenuItem fx:id="removeMenu" mnemonicParsing="false" text="Remove" />
+                    </items>
+                </ContextMenu>
+            </contextMenu>
+        </TableView>
+      
+        <Button fx:id="addBtn" layoutX="583.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" />
+        <Button fx:id="removeBtn" layoutX="838.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" />
+        <Button fx:id="printBtn" layoutX="1088.0" layoutY="673.0" mnemonicParsing="false" onAction="#handlePrintAction" prefHeight="35.0" prefWidth="200.0" text="PRINT TABLE" />
+        
+    </children>
 </AnchorPane>

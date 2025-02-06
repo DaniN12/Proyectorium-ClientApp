@@ -5,9 +5,7 @@
  */
 package clientapp;
 
-import clientapp.controller.InfoViewController;
-import clientapp.controller.MovieController;
-import clientapp.controller.SignInController;
+import clientapp.controller.CategoryController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -31,10 +29,10 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/clientapp/view/MovieMainView.fxml"));
+                getClass().getResource("/clientapp/view/MainCategory.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        MovieController controller = (MovieController)loader.getController();
+        CategoryController controller = (CategoryController)loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
         controller.initialize(root);

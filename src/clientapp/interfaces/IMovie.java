@@ -60,3 +60,6 @@ public interface IMovie {
     public void close();
     
 }
+
+
+
