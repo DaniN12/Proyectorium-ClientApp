@@ -214,6 +214,7 @@ public class SignUpViewController {
         retryButtonEye.setOnAction(this::retryShowPassword);
         itemResetFields.setOnAction(this::resetFields);
         itemBack.setOnAction(this::backButtonAction);
+        returnButton.setOnAction(this::backButtonAction);
         root.setOnContextMenuRequested(this::manejarContextMenu);
         //show primary window
         stage.show();
