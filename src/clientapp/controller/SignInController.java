@@ -143,7 +143,7 @@ public class SignInController {
                 throw new EmptyFieldException("Fields are empty, all fields need to be filled");
             }
 
-            if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+            if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]\\.com$")) {
                 throw new IncorrectPatternException("The email is not well written or is incorrect");
             }
 
@@ -194,7 +194,7 @@ public class SignInController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root/*, user*/);
+            controller.initialize(root, user);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage
