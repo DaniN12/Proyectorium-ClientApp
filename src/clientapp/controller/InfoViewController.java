@@ -199,11 +199,11 @@ public class InfoViewController {
             iTicket = TicketFactory.getITicket();
             listTickets = FXCollections.observableArrayList(
                     iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
-                    }));/*
+                    })
                             .stream()
                             .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                             .collect(Collectors.toList()) // Recoger en una lista estándar
-            );*/
+            );
             listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             setupTicketTable();
