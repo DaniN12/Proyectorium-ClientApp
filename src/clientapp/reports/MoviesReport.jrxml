@@ -1,29 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD JasperReport//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-
-<jasperReport name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-    <background>
-        <band/>
-    </background>
-    <title>
-        <band height="79"/>
-    </title>
-    <pageHeader>
-        <band height="35"/>
-    </pageHeader>
-    <columnHeader>
-        <band height="61"/>
-    </columnHeader>
-    <detail>
-        <band height="125"/>
-    </detail>
-    <columnFooter>
-        <band height="45"/>
-    </columnFooter>
-    <pageFooter>
-        <band height="54"/>
-    </pageFooter>
-    <summary>
-        <band height="42"/>
-    </summary>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MovieReport" pageWidth="750" pageHeight="842" columnWidth="710" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4c981eef-c5fb-4705-b8b0-062567888ce4">
+	<property name="ireport.zoom" value="1.9487171000000014"/>
+	<property name="ireport.x" value="89"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ReportTitle" class="java.lang.String"/>
+	<field name="title" class="java.lang.String"/>
+	<field name="sinopsis" class="java.lang.String"/>
+	<field name="duration" class="java.lang.Integer"/>
+	<field name="releaseDate" class="java.util.Date"/>
+	<field name="provider" class="clientapp.model.ProviderEntity"/>
+	<field name="categories" class="clientapp.model.CategoryEntity"/>
+	<field name="movieHour" class="clientapp.model.MovieHour"/>
+	<title>
+		<band height="77">
+			<staticText>
+				<reportElement x="0" y="0" width="535" height="70" uuid="e2419adc-ab83-4711-89eb-67ab3a06bb36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="HP Simplified" size="36"/>
+				</textElement>
+				<text><![CDATA[Proyectorium]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="400" y="50" width="100" height="20" uuid="fb2380c0-2b02-4e36-9c32-bc1668fb1e57"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH.mm">
+				<reportElement x="510" y="50" width="100" height="20" uuid="2ef20d98-db8c-496d-a4c2-5f0cc3a0d176"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="50" width="100" height="20" uuid="a67c3898-63ad-4484-b814-6a8692c8e3cc"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Movie Report]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30">
+			<staticText>
+				<reportElement x="0" y="0" width="80" height="30" uuid="bb433946-7cd4-429a-83f8-d6fc07d423eb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Title]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="94" y="0" width="80" height="30" uuid="42f1eb94-3580-44f5-b4c2-ea5eba597444"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Sinopsis]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="207" y="0" width="80" height="30" uuid="e4a29f82-133e-4178-ac75-64b38b2be22e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Duration]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="0" width="80" height="30" uuid="3bd0e571-a844-44a1-b1a4-e8a0757d9f30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Release Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="430" y="0" width="80" height="30" uuid="8cccaabb-16d9-4f85-8157-5453cc72c730"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Provider]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="535" y="0" width="80" height="30" uuid="8cccaabb-16d9-4f85-8157-5453cc72c730"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Categories]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="630" y="0" width="80" height="30" uuid="8cccaabb-16d9-4f85-8157-5453cc72c730"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[MovieHour]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30">
+			<textField>
+				<reportElement x="0" y="0" width="80" height="30" uuid="055a9a58-a0fe-434b-8d9b-3e327d31318d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="0" width="80" height="30" uuid="9ed54979-8fc9-42b5-8750-4f6009af2ec7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sinopsis}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="207" y="0" width="80" height="30" uuid="ff2890bc-2f11-4821-8f26-c0a90d3adf96"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{duration}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="0" width="80" height="30" uuid="347114f4-89d9-4937-8380-c449f177298d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{releaseDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="0" width="80" height="30" uuid="5cd4dc61-4540-47f3-9b09-9cf253f9931d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{provider}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="535" y="0" width="80" height="30" uuid="5cd4dc61-4540-47f3-9b09-9cf253f9931d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{categories}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="630" y="0" width="80" height="30" uuid="5cd4dc61-4540-47f3-9b09-9cf253f9931d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{movieHour}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40">
+			<textField>
+				<reportElement x="55" y="0" width="555" height="40" uuid="16e6c205-e40e-4b45-b28b-cf054872f33b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
 </jasperReport>

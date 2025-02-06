@@ -277,11 +277,7 @@ public class InfoViewController {
         // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
         listTickets.addAll(
                 iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
-                }));/*
-                        .stream()
-                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
-                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
-        );*/
+                }));
     }
 
     private boolean showAlert(Alert.AlertType type, String title, String message, String imagePath) {
