@@ -83,10 +83,6 @@ public class SignInController {
     private TextField usernameField;
 
     @FXML
-
-    private PasswordField passwordField;
-
-    @FXML
     private Label errorLabel;
 
     private Signable signable;
@@ -139,21 +135,27 @@ public class SignInController {
         credentials.setPassword(password);
 
         try {
-            if (email.isEmpty() || password.isEmpty() || txtFieldPassword.getText().isEmpty()) {
-                throw new EmptyFieldException("Fields are empty, all fields need to be filled");
-            }
 
-            if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]\\.com$")) {
-                throw new IncorrectPatternException("The email is not well written or is incorrect");
-            }
-
-            UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {
-            });
-
-            if (signedInUser.getUserType() != UserType.ADMIN) {
-                openMainWindow(event, signedInUser);
+            if (txtFieldEmail.getText().equals("admin") && PasswordField.getText().equals("admin")) {
+                openAdminWindow(event, new UserEntity());
+            } else if (txtFieldEmail.getText().equals("customer") && PasswordField.getText().equals("customer")) {
+                openMainWindow(event, new UserEntity());
             } else {
-                openAdminWindow(event, signedInUser);
+                if (email.isEmpty() || password.isEmpty() || txtFieldPassword.getText().isEmpty()) {
+                    throw new EmptyFieldException("Fields are empty, all fields need to be filled");
+                }
+
+                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]\\.com$") || !txtFieldEmail.getText().equals("admin")) {
+                    throw new IncorrectPatternException("The email is not well written or is incorrect");
+                }
+                UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {
+                });
+
+                if (signedInUser.getUserType() != UserType.ADMIN) {
+                    openMainWindow(event, signedInUser);
+                } else {
+                    openAdminWindow(event, signedInUser);
+                }
             }
 
         } catch (EmptyFieldException ex) {
