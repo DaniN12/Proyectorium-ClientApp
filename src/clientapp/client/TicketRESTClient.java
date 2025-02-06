@@ -6,9 +6,6 @@
 package clientapp.client;
 
 import clientapp.interfaces.ITicket;
-
-import clientapp.model.TicketEntity;
-import java.util.List;
 import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;

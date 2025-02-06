@@ -173,7 +173,7 @@ public class MovieController {
             categoryManager = CategoryFactory.getICategory();
             providerManager = ProviderManagerFactory.getIProvider();
             ticketManager = TicketFactory.getITicket();
-            
+
             availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
             

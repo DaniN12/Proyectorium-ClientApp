@@ -194,7 +194,7 @@ public class SignInController {
             }
             controller.setStage(stage);
             //Initializes the controller with the loaded view
-            controller.initialize(root, user);
+            controller.initialize(root/*, user*/);
 
         } catch (IOException ex) {
             // Logs the error and displays an alert messsage
