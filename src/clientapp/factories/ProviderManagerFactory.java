@@ -10,6 +10,7 @@ import clientapp.interfaces.IProvider;
 import clientapp.model.ProviderEntity;
 
 /**
+ * Factory for provider
  * @author Dani
  * @version 1.0
  * @see IProvider

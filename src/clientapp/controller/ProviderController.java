@@ -57,7 +57,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 
 /**
- *
+ *Controller for the provider views
  * @author Dani
  * @version 1.0
  * @see ProviderEntity

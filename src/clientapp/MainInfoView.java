@@ -5,7 +5,11 @@
  */
 package clientapp;
 
-import clientapp.controller.CategoryController;
+import clientapp.controller.InfoViewController;
+import clientapp.controller.MovieController;
+import clientapp.controller.ProviderController;
+import clientapp.controller.SignInController;
+import clientapp.model.UserEntity;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -13,10 +17,10 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 /**
- * Class that runs the application
+ *
  * @author 2dam
  */
-public class Main extends Application {
+public class MainInfoView extends Application {
 
     /**
      * Method to open the main window, in this case the signIn window
@@ -29,13 +33,13 @@ public class Main extends Application {
 
         // Load DOM form FXML view
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/clientapp/view/MainCategory.fxml"));
+                getClass().getResource("/clientapp/view/InfoView.fxml"));
         Parent root = (Parent) loader.load();
         // Retrieve the controller associated with the view
-        CategoryController controller = (CategoryController)loader.getController();
+        InfoViewController controller = (InfoViewController)loader.getController();
         controller.setStage(stage);
         //Initializes the controller with the loaded view
-        controller.initialize(root);
+        controller.initialize(root, new UserEntity());
 
     }
 

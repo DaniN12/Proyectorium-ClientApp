@@ -12,7 +12,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- *
+ *Interface for the proveider 
  * @author Dani
  * @version 1.0
  * @see ProviderEntity

@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ *Represents a provider entity that contains details about a specific provider.
  * @author Dani
  * @version 1.0
  * @see Serializable

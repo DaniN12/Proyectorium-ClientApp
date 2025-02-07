@@ -5,7 +5,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Interface for managing {@link Ticket} entities via RESTful services.
+ * Interface for managing  entities via RESTful services.
  * <p>
  * This interface provides methods for creating, editing, and removing tickets, 
  * as well as retrieving lists of tickets sorted by different criteria such as 

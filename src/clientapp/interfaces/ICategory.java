@@ -5,7 +5,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Interface for managing {@link Category} entities via RESTful services.
+ * Interface for managing  entities via RESTful services.
  * <p>
  * This interface provides various methods for performing CRUD operations
  * and retrieving categories based on different filters such as creation date,
