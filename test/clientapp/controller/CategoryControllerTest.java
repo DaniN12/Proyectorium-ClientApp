@@ -178,7 +178,7 @@ public class CategoryControllerTest extends ApplicationTest {
         interact(() -> tbcategory.getSelectionModel().select(lastRowIndex)); // Selecciona la fila programáticamente
         waitForFxEvents();
 
-        // =================== EDITAR EL NOMBRE ===================
+        //EDITAR EL NOMBRE
         Node nameCell = lookup(".table-row-cell").nth(lastRowIndex)
                 .lookup(".table-cell").nth(1) // Suponiendo que la columna "name" es la segunda columna
                 .query();
@@ -193,7 +193,7 @@ public class CategoryControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
         waitForFxEvents();
 
-        // =================== EDITAR LA DESCRIPCIÓN ===================
+        //EDITAR LA DESCRIPCIÓN
         Node descriptionCell = lookup(".table-row-cell").nth(lastRowIndex)
                 .lookup(".table-cell").nth(2) // Suponiendo que la columna "description" es la tercera columna
                 .query();
@@ -208,7 +208,7 @@ public class CategoryControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
         waitForFxEvents();
 
-        // =================== EDITAR LA FECHA ===================
+        //EDITAR LA FECHA
         Node dateCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(3).query();
         clickOn(dateCell).doubleClickOn(dateCell);
         waitForFxEvents();
@@ -227,23 +227,23 @@ public class CategoryControllerTest extends ApplicationTest {
         type(KeyCode.ENTER);
         waitForFxEvents();
 
-        // =================== EDITAR EL PEGI (COMBOBOX) ===================
+        //EDITAR EL PEGI
         Node pegiCell = lookup(".table-row-cell").nth(lastRowIndex)
                 .lookup(".table-cell").nth(4) // Suponiendo que la columna "pegi" es la quinta columna
                 .query();
         doubleClickOn(pegiCell); // Activar el ComboBox
         waitForFxEvents();
 
-// Buscar y seleccionar la opción correcta en la lista desplegable
+        // Buscar y seleccionar la opción correcta en la lista desplegable
         interact(() -> {
              comboBoxNode = (ComboBox<?>) lookup(".combo-box-base").query();
             comboBoxNode.getSelectionModel().select(1); // Cambiar la selección al segundo elemento
         });
-// Confirmar la selección (ENTER)
+        // Confirmar la selección (ENTER)
         type(KeyCode.ENTER);
         waitForFxEvents();
 
-        // =================== VERIFICAR QUE LOS CAMBIOS SE HAN GUARDADO ===================
+        //VERIFICAR QUE LOS CAMBIOS SE HAN GUARDADO
         List<CategoryEntity> categories = tbcategory.getItems();
         CategoryEntity updatedCategory = categories.get(lastRowIndex);
 
