@@ -47,14 +47,14 @@
                     <items>
                         <MenuItem fx:id="addMenu" mnemonicParsing="false" text="Add" />
                         <MenuItem fx:id="removeMenu" mnemonicParsing="false" text="Remove" />
-                        <MenuItem fx:id="printMenu" mnemonicParsing="false" text="Print" />
                     </items>
                 </ContextMenu>
             </contextMenu>
         </TableView>
       
-        <Button fx:id="addBtn" layoutX="682.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" onAction="#handleCreateAction"/>
-        <Button fx:id="removeBtn" layoutX="955.0" layoutY="673.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" onAction="#handleRemoveAction"/>
+        <Button fx:id="addBtn" layoutX="583.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCreateAction" prefHeight="35.0" prefWidth="200.0" text="ADD CATEGORY" />
+        <Button fx:id="removeBtn" layoutX="838.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleRemoveAction" prefHeight="35.0" prefWidth="200.0" text="REMOVE CATEGORY" />
+        <Button fx:id="printBtn" layoutX="1088.0" layoutY="673.0" mnemonicParsing="false" onAction="#handlePrintAction" prefHeight="35.0" prefWidth="200.0" text="PRINT TABLE" />
         
     </children>
 </AnchorPane>

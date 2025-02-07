@@ -11,7 +11,7 @@
 }
 
 /* Estilo del AnchorPane con imagen de fondo */
-.AnchorPane, #providerPane, #categoryPane, #moviePane {
+.AnchorPane, #providerPane, #categoryPane, #moviePane, #adminPane {
     -fx-background-image: url('/resources/Info.png');
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
@@ -59,19 +59,13 @@
     -fx-font-size: 14px;
     -fx-padding: 10px;
     -fx-background-color: white;
+    -fx-text-fill: black; /* Asegura que el texto siempre sea negro */
 }
 
+/* Estilo cuando el cursor se posa sobre un MenuItem */
 .menu-item:hover {
     -fx-background-color: #D8BFD8; /* Morado claro */
-    -fx-text-fill: white;
-}
-
-/* Estilo del botón de Interrogación */
-#btnInterrogation {
-    -fx-background-color: transparent;
-    -fx-border: none;
-    -fx-padding: 5px;
-    -fx-cursor: hand;
+    -fx-text-fill: black; /* Mantiene el texto negro */
 }
 
 #btnInterrogation:hover {
@@ -134,16 +128,35 @@
 /* Efecto hover para los menús */
 .menu:hover {
     -fx-background-color: #1cb5b5; /* Azul más oscuro al pasar el cursor */
-    -fx-text-fill: white;
+    -fx-text-fill: black; /* Mantiene el texto negro */
 }
 
-/* Estilo de los MenuItem al pasar el cursor */
-.menu-item {
-    -fx-background-color: white;
-    -fx-text-fill: black;
+.table-view {
+    -fx-background-color: rgba(255, 255, 255, 0.7); /* Blanco con 70% de opacidad */
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: transparent;
+    -fx-padding: 5px;
 }
 
-.menu-item:hover {
-    -fx-background-color: #D8BFD8; /* Morado claro */
-    -fx-text-fill: white;
+.table-column {
+    -fx-background-color: rgba(255, 255, 255, 0.4); /* Un poco más opaco */
+}
+
+/* Reducir el tamaño de la fuente en las celdas de la tabla */
+.table-cell {
+    -fx-font-size: 14px; /* Ajusta el tamaño según prefieras */
+    -fx-text-fill: black; /* Mantiene el texto negro por defecto */
+}
+
+/* Mantener el texto en negro al editar celdas */
+.table-row-cell:filled:selected .text-field,
+.table-row-cell:filled:selected .text-field .content {
+    -fx-text-fill: black !important;
+}
+
+#categoriesLbl, #moviesLbl, #providersLbl {
+    -fx-font-family: 'Cheri';
+    -fx-font-size: 18px;
+    -fx-text-fill: #87CEFA; /* Azul claro */
 }
