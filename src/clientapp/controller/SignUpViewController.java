@@ -110,7 +110,7 @@ public class SignUpViewController {
      * Button to show password
      */
     @FXML
-    private Button buttonEye = new Button();
+    private Button btnShowPasswd = new Button();
 
     /**
      * Button to show password in retry password
@@ -193,102 +193,100 @@ public class SignUpViewController {
      * @param root the parent gotten from the previous window
      */
     public void initialize(Parent root) {
-
         splitPane = (SplitPane) root;
-        splitPane.getDividers().forEach(divider -> divider.positionProperty().addListener((obs, oldPos, newPos)
-                -> divider.setPosition(0.25) // Vuelve a fijar la posición si se intenta mover
-        ));
+        splitPane.getDividers().forEach(divider -> divider.positionProperty().addListener((obs, oldPos, newPos) -> divider.setPosition(0.25))); // Fix divider position
 
         logger.info("Initializing SignUp stage.");
-        //create a scene associated the node graph root
+
+        // Setting up scene and stage properties
         Scene scene = new Scene(root);
-        //Associate scene to primaryStage(Window)
         stage.setScene(scene);
-        //set window properties
         stage.setTitle("Sign Up");
         stage.setResizable(false);
-        //set window's events handlers
+
+        // Register event handlers
         stage.setOnShowing(this::handleWindowShowing);
         stage.setOnCloseRequest(this::onCloseRequest);
-        buttonEye.setOnAction(this::showPassword);
-        retryButtonEye.setOnAction(this::retryShowPassword);
+        btnShowPasswd.setOnAction(this::showPassword);
         itemResetFields.setOnAction(this::resetFields);
         itemBack.setOnAction(this::backButtonAction);
         root.setOnContextMenuRequested(this::manejarContextMenu);
-        //show primary window
+
+        // Show the stage
         stage.show();
     }
 
     /**
-     * Method to create the context menu and set it to be usable in all the
-     * window
+     * Handles the context menu action triggered by a click on the window.
+     * Displays the context menu at the click position.
      *
-     * @param event triggers an action, in this case a click on the window
+     * @param event The event triggered by the right-click
      */
     private void manejarContextMenu(ContextMenuEvent event) {
         contextMenu.show(splitPane, event.getScreenX(), event.getScreenY());
     }
 
     /**
-     * Method that handles the events that occur before the window opens
+     * Initializes the visibility and behavior of password fields when the
+     * window is shown. Also sets up the password text field bindings and
+     * context menu items.
      *
-     * @param event triggers an action, in this case a window opening
+     * @param event The event triggered when the window is shown
      */
     public void handleWindowShowing(WindowEvent event) {
-
         logger.info("Beginning event handler::handleWindowShowing");
-        // hide the password textfields
+
+        // Hide the visible password fields and bind them to the corresponding password fields
         passwordTxf.setVisible(false);
         passwordTxf.setManaged(false);
         retryPasswordTxf.setVisible(false);
         retryPasswordTxf.setManaged(false);
-        // to write in both passwordFields and textFields at the same time
         passwordTxf.textProperty().bindBidirectional(passwordPwdf.textProperty());
         retryPasswordTxf.textProperty().bindBidirectional(repeatPasswordPwdf.textProperty());
-        //put the images in the imageviews
+
+        // Set the initial images for password visibility
         buttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/SinVerContraseña.png")));
-//        repeatbuttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/SinVerContraseña.png")));
-        //Context menu
+        btnShowPasswd.setOnAction(this::showPassword);
+
+        returnButton.setOnAction(this::backButtonAction);
+
+        // Context menu setup
         contextMenu.getItems().addAll(itemResetFields, itemBack);
+
+        // Initialize the signable factory
         signable = SignableFactory.getSignable();
     }
 
     /**
-     * This method handles the event that occurs when the button signUp is
-     * clicked and makes sure that all the conditions to register a user are met
+     * Handles the sign-up action when the user clicks the sign-up button. It
+     * validates the input fields, checks for errors, and creates a new user.
      *
-     * @param event triggers the action, in this case a button click
-     * @throws UserAlreadyExistException checks if the user already exits
-     * @throws ConnectionErrorException checks if there was an error while
-     * connecting with the server
+     * @param event The event triggered by the sign-up button click
      */
     @FXML
     public void handleButtonAction(ActionEvent event) {
         try {
-            // Check if the fields are empty and throws an exception if they are
+            // Check if the fields are empty
             if (emailTxf.getText().isEmpty() || fullNameTxf.getText().isEmpty() || passwordTxf.getText().isEmpty()
                     || passwordPwdf.getText().isEmpty() || retryPasswordTxf.getText().isEmpty()
                     || repeatPasswordPwdf.getText().isEmpty() || streetTxf.getText().isEmpty() || cityTxf.getText().isEmpty()) {
 
                 throw new EmptyFieldException("Fields are empty, all fields need to be filled");
-                // Checks if the password and retry password do match, if not throws an exception
-            } else if (!passwordTxf.getText().equalsIgnoreCase(retryPasswordTxf.getText()) && !passwordPwdf.getText().equalsIgnoreCase(repeatPasswordPwdf.getText())) {
+            } // Check if passwords match
+            else if (!passwordTxf.getText().equalsIgnoreCase(retryPasswordTxf.getText()) && !passwordPwdf.getText().equalsIgnoreCase(repeatPasswordPwdf.getText())) {
 
                 throw new IncorrectPasswordException("The password fields do not match");
-                // Checks if the email format is correct, if not throws an exception
-            } else if (!emailTxf.getText().matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+            } // Check if email matches the correct pattern
+            else if (!emailTxf.getText().matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
 
-                throw new IncorrectPatternException("The email has to have a email format, don't forget the @");
-                // Checks if the zip format is correct, if not throws an exception
-            } else if (!zipTxf.getText().matches("\\d+")) {
+                throw new IncorrectPatternException("The email has to have a valid email format, e.g., @gmail.com");
+            } // Check if zip code is numeric
+            else if (!zipTxf.getText().matches("\\d+")) {
 
                 throw new IncorrectPatternException("The zip has to be an Integer");
-
-                // if all the credentials are ok creates a user with the written credentials
-            } else {
-                // Create a new user
+            } // Create user if all validations are passed
+            else {
                 UserEntity user = new UserEntity();
-                // Set the credentials to the new user
                 user.setEmail(emailTxf.getText());
                 user.setFullName(fullNameTxf.getText());
                 user.setPassword(passwordTxf.getText());
@@ -296,99 +294,67 @@ public class SignUpViewController {
                 user.setCity(cityTxf.getText());
                 user.setZip(Integer.parseInt(zipTxf.getText()));
                 user.setUserType(UserType.CUSTOMER);
-                // Generates a signable to get the register method
 
                 signable.create(user);
 
                 if (user != null) {
-                    // if the method is well executed returns to the signIn window
+                    // Return to the sign-in window if registration is successful
                     backButtonAction(event);
                 }
-
             }
-
-        } catch (IncorrectPasswordException | IncorrectPatternException
-                | EmptyFieldException ex) {
-            // Logs the error and displays an alert messsage
+        } catch (IncorrectPasswordException | IncorrectPatternException | EmptyFieldException ex) {
+            // Log and display the error message
             Logger.getLogger(SignUpViewController.class.getName()).log(Level.WARNING, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, ex.getLocalizedMessage(), ButtonType.OK).showAndWait();
         }
-
     }
 
-    /*
     /**
-     * This method handles the event that occur when the button to go back to
-     * the signIn window is pressed
+     * Navigates back to the sign-in window when the back button is clicked.
      *
-     * @param event triggers an action, in this case a button click
+     * @param event The event triggered by the back button click
      */
     @FXML
     public void backButtonAction(ActionEvent event) {
-
         try {
-            // Load DOM form FXML view
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/clientapp/view/SignInView.fxml"));
-            Parent root = (Parent) loader.load();
-            // Retrieve the controller associated with the view
-            SignInController controller = (SignInController) loader.getController();
-            //Check if there is a RuntimeException while opening the view
-            if (controller == null) {
-                throw new RuntimeException("Failed to load SignInController");
-            }
-
-            if (stage == null) {
-                throw new RuntimeException("Stage is not initialized");
-            }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientapp/view/SignInView.fxml"));
+            Parent root = loader.load();
+            SignInController controller = loader.getController();
             controller.setStage(stage);
-            //Initializes the controller with the loaded view
             controller.initialize(root);
-
         } catch (IOException ex) {
-            // Logs the error and displays an alert messsage
             Logger.getLogger(SignUpViewController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error loading SignInView.fxml", ButtonType.OK).showAndWait();
-        } catch (RuntimeException ex) {
-            // Logs the error and displays an alert messsage
-            Logger.getLogger(SignUpViewController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
     /**
-     * This method handles the close request for the application
+     * Handles the close request for the application. Confirms with the user
+     * before exiting.
      *
-     * @param event triggers an action, in this case a close request when the
-     * user attemps to close the window
+     * @param event The event triggered by the window close action
      */
     @FXML
     public void onCloseRequest(WindowEvent event) {
-
-        //Create an alert to make sure that the user wants to close the application
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        //set the alert message and title
         alert.setHeaderText(null);
         alert.setTitle("EXIT");
         alert.setContentText("Are you sure you want to close the application?");
 
-        //create a variable to compare the button type
         Optional<ButtonType> answer = alert.showAndWait();
-
-        //Condition to close the application
         if (answer.get() == ButtonType.OK) {
-            //if the answer is ok the app will close
             Platform.exit();
         } else {
-            //else the alert will dispose and the user will continue in the app
             event.consume();
         }
     }
 
     /**
-     * Method to change the visibility of the password
+     * Toggles the visibility of the password fields when the show password
+     * button is clicked.
      *
-     * @param event triggers an action, in this case a button click
+     * @param event The event triggered by the password visibility toggle button
+     * click
      */
     public void showPassword(ActionEvent event) {
         if (!passwordVisible) {
@@ -397,6 +363,10 @@ public class SignUpViewController {
             passwordPwdf.setManaged(false);
             passwordTxf.setVisible(true);
             passwordTxf.setManaged(true);
+            repeatPasswordPwdf.setVisible(false);
+            repeatPasswordPwdf.setManaged(false);
+            retryPasswordTxf.setVisible(true);
+            retryPasswordTxf.setManaged(true);
             passwordVisible = true;
         } else {
             buttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/SinVerContraseña.png")));
@@ -404,40 +374,21 @@ public class SignUpViewController {
             passwordTxf.setManaged(false);
             passwordPwdf.setVisible(true);
             passwordPwdf.setManaged(true);
+            retryPasswordTxf.setVisible(false);
+            retryPasswordTxf.setManaged(false);
+            repeatPasswordPwdf.setVisible(true);
+            repeatPasswordPwdf.setManaged(true);
             passwordVisible = false;
         }
     }
 
     /**
-     * Method to change the visibility of the retryPassword
+     * Resets all the fields in the registration form to their default state.
      *
-     * @param event triggers an action, in this case a button click
-     */
-    public void retryShowPassword(ActionEvent event) {
-        if (!repeatpasswordVisible) {
-            repeatbuttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/ViendoContraseña.png")));
-            repeatPasswordPwdf.setVisible(false);
-            repeatPasswordPwdf.setManaged(false);
-            retryPasswordTxf.setVisible(true);
-            retryPasswordTxf.setManaged(true);
-            repeatpasswordVisible = true;
-        } else {
-            repeatbuttonImgView.setImage(new Image(getClass().getResourceAsStream("/resources/SinVerContraseña.png")));
-            retryPasswordTxf.setVisible(false);
-            retryPasswordTxf.setManaged(false);
-            repeatPasswordPwdf.setVisible(true);
-            repeatPasswordPwdf.setManaged(true);
-            repeatpasswordVisible = false;
-        }
-    }
-
-    /**
-     * Method to reset all the fields in the window
-     *
-     * @param event triggers an action, in this case a button click
+     * @param event The event triggered by the reset fields context menu item
+     * click
      */
     public void resetFields(ActionEvent event) {
-        // Limpiar los campos de texto
         emailTxf.clear();
         fullNameTxf.clear();
         passwordTxf.clear();
@@ -450,18 +401,18 @@ public class SignUpViewController {
     }
 
     /**
-     * Gets the stage of the window
+     * Gets the stage for the current window.
      *
-     * @return the stage of the window
+     * @return the stage associated with the current window
      */
     public Stage getStage() {
         return stage;
     }
 
     /**
-     * Set's the window's stage
+     * Sets the stage for the current window.
      *
-     * @param stage represents the changed stage
+     * @param stage the stage to be set
      */
     public void setStage(Stage stage) {
         this.stage = stage;

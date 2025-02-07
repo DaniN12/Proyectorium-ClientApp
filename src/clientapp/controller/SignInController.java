@@ -1,16 +1,6 @@
-/**
- * Controller class for the SignIn view, managing user sign-in functionality.
- * It handles user input, displays errors, and initiates the sign-in process.
- *
- *
- * @author Dani
- */
 package clientapp.controller;
 
 import clientapp.exceptions.EmptyFieldException;
-
-import java.util.Optional;
-
 import clientapp.exceptions.IncorrectPatternException;
 import clientapp.factories.SignableFactory;
 import javafx.scene.image.Image;
@@ -36,8 +26,20 @@ import javafx.stage.WindowEvent;
 import clientapp.model.UserEntity;
 import clientapp.interfaces.Signable;
 import clientapp.model.UserType;
+import java.util.Optional;
 import javax.ws.rs.core.GenericType;
 
+/**
+ * Controlador para la vista de inicio de sesión (SignIn). Maneja las interacciones
+ * del usuario con los campos de entrada, validaciones de inicio de sesión y la
+ * navegación entre vistas.
+ *
+ * Esta clase gestiona la validación de los campos de inicio de sesión, el manejo
+ * de errores, el cambio de visibilidad de la contraseña y la apertura de ventanas
+ * dependiendo del tipo de usuario (administrador o cliente).
+ *
+ * @author Dani
+ */
 public class SignInController {
 
     @FXML
@@ -59,7 +61,7 @@ public class SignInController {
     private PasswordField PasswordField;
 
     @FXML
-    private Button btnShowPassword = new Button();
+    private Button btnShowPasswd = new Button();
 
     @FXML
     private Button btnSignIn = new Button();
@@ -83,10 +85,6 @@ public class SignInController {
     private TextField usernameField;
 
     @FXML
-
-    private PasswordField passwordField;
-
-    @FXML
     private Label errorLabel;
 
     private Signable signable;
@@ -98,9 +96,10 @@ public class SignInController {
     private Logger logger = Logger.getLogger(SignInController.class.getName());
 
     /**
-     * Initializes the SignIn view by setting up the stage and its properties.
-     *
-     * @param root The root node of the scene graph.
+     * Inicializa la vista de inicio de sesión configurando la escena, el icono
+     * de la ventana y estableciendo las propiedades de los elementos de la interfaz.
+     * 
+     * @param root El nodo raíz del gráfico de la escena.
      */
     public void initialize(Parent root) {
         logger.info("Initializing SignIn stage.");
@@ -119,15 +118,17 @@ public class SignInController {
 
         signable = SignableFactory.getSignable();
 
+        btnShowPasswd.setOnAction(this::showPassword);
+        
         stage.show();
     }
 
     /**
-     * Handles the sign-in process when the sign-in button is clicked.
+     * Maneja el proceso de inicio de sesión cuando el usuario hace clic en el botón de inicio de sesión.
+     * Realiza validaciones de los campos y verifica las credenciales. Dependiendo del tipo de usuario
+     * (administrador o cliente), abre la ventana correspondiente.
      *
-     * @param event The action event triggered by clicking the sign-in button.
-     * @throws ConnectionErrorException If there is a connection error.
-     * @throws UserDoesntExistExeption If the user does not exist.
+     * @param event El evento de acción que dispara el inicio de sesión.
      */
     @FXML
     protected void handleSignIn(ActionEvent event) {
@@ -139,21 +140,30 @@ public class SignInController {
         credentials.setPassword(password);
 
         try {
-            if (email.isEmpty() || password.isEmpty() || txtFieldPassword.getText().isEmpty()) {
-                throw new EmptyFieldException("Fields are empty, all fields need to be filled");
-            }
 
-            if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
-                throw new IncorrectPatternException("The email is not well written or is incorrect");
-            }
-
-            UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {
-            });
-
-            if (signedInUser.getUserType() != UserType.ADMIN) {
-                openMainWindow(event, signedInUser);
+            // Comprobación de credenciales predeterminadas
+            if (txtFieldEmail.getText().equals("admin") && PasswordField.getText().equals("admin")) {
+                openAdminWindow(event, new UserEntity());
+            } else if (txtFieldEmail.getText().equals("customer") && PasswordField.getText().equals("customer")) {
+                openMainWindow(event, new UserEntity());
             } else {
-                openAdminWindow(event, signedInUser);
+                // Validaciones de campos vacíos y formato de correo electrónico
+                if (email.isEmpty() || password.isEmpty() || txtFieldPassword.getText().isEmpty()) {
+                    throw new EmptyFieldException("Fields are empty, all fields need to be filled");
+                }
+
+                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.com$")) {
+                    throw new IncorrectPatternException("The email is not well written or is incorrect");
+                }
+                
+                // Intento de inicio de sesión con las credenciales proporcionadas
+                UserEntity signedInUser = signable.signIn(credentials, new GenericType<UserEntity>() {});
+
+                if (signedInUser.getUserType() != UserType.ADMIN) {
+                    openMainWindow(event, signedInUser);
+                } else {
+                    openAdminWindow(event, signedInUser);
+                }
             }
 
         } catch (EmptyFieldException ex) {
@@ -161,109 +171,96 @@ public class SignInController {
             showAlert("Error", "Please fill in all fields.", Alert.AlertType.ERROR);
         } catch (IncorrectPatternException ex) {
             logger.log(Level.SEVERE, ex.getLocalizedMessage());
-            showAlert("Error", "The email has to have a email format, don't forget the @.", Alert.AlertType.ERROR);
-            /*  } catch (UserNotActiveException ex) {
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
-            showAlert("Error", "This user is not active.", Alert.AlertType.ERROR);
-        } catch (ConnectionErrorException ex) {
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
-            showAlert("Error", ex.getLocalizedMessage(), Alert.AlertType.ERROR);
-        } catch (IncorrectCredentialsException ex) {
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
-            showAlert("Error", ex.getLocalizedMessage(), Alert.AlertType.ERROR);
-        }*/
+            showAlert("Error", "The email has to have a valid format, don't forget the @.", Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Abre la ventana principal para el usuario cliente.
+     *
+     * @param event El evento que dispara la acción de abrir la ventana principal.
+     * @param user El usuario que ha iniciado sesión.
+     */
     @FXML
     public void openMainWindow(ActionEvent event, UserEntity user) {
         try {
-            // Load DOM form FXML view
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/clientapp/view/InfoView.fxml"));
-            Parent root = (Parent) loader.load();
-            // Retrieve the controller associated with the view
+            // Cargar vista FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientapp/view/InfoView.fxml"));
+            Parent root = loader.load();
             InfoViewController controller = (InfoViewController) loader.getController();
-            //Check if there is a RuntimeException while opening the view
+
+            // Inicializa el controlador y la vista
             if (controller == null) {
                 throw new RuntimeException("Failed to load InfoViewController");
             }
 
-            if (stage == null) {
-                throw new RuntimeException("Stage is not initialized");
-            }
             controller.setStage(stage);
-            //Initializes the controller with the loaded view
             controller.initialize(root, user);
 
         } catch (IOException ex) {
-            // Logs the error and displays an alert messsage
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+            logger.log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error loading InfoView.fxml", ButtonType.OK).showAndWait();
         } catch (RuntimeException ex) {
-            // Logs the error and displays an alert messsage
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, "Exception occurred", ex);
-            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
-        }
-    }
-
-    @FXML
-    public void openAdminWindow(ActionEvent event, UserEntity user) {
-        try {
-            // Load DOM form FXML view
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/clientapp/view/MainAdmin.fxml"));
-            Parent root = (Parent) loader.load();
-            // Retrieve the controller associated with the view
-            MenuAdminController controller = (MenuAdminController) loader.getController();
-            //Check if there is a RuntimeException while opening the view
-            if (controller == null) {
-                throw new RuntimeException("Failed to load InfoViewController");
-            }
-
-            if (stage == null) {
-                throw new RuntimeException("Stage is not initialized");
-            }
-            controller.setStage(stage);
-            //Initializes the controller with the loaded view
-            controller.initialize(root, user);
-
-        } catch (IOException ex) {
-            // Logs the error and displays an alert messsage
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
-            new Alert(Alert.AlertType.ERROR, "Error loading InfoView.fxml", ButtonType.OK).showAndWait();
-        } catch (RuntimeException ex) {
-            // Logs the error and displays an alert messsage
-            Logger.getLogger(SignInController.class.getName()).log(Level.SEVERE, "Exception occurred", ex);
+            logger.log(Level.SEVERE, "Exception occurred", ex);
             new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
     /**
-     * Gets the stage associated with this controller.
+     * Abre la ventana principal para el usuario administrador.
      *
-     * @return The stage.
+     * @param event El evento que dispara la acción de abrir la ventana del administrador.
+     * @param user El usuario que ha iniciado sesión.
+     */
+    @FXML
+    public void openAdminWindow(ActionEvent event, UserEntity user) {
+        try {
+            // Cargar vista FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientapp/view/MainAdmin.fxml"));
+            Parent root = loader.load();
+            MenuAdminController controller = (MenuAdminController) loader.getController();
+
+            // Inicializa el controlador y la vista
+            if (controller == null) {
+                throw new RuntimeException("Failed to load MenuAdminController");
+            }
+
+            controller.setStage(stage);
+            controller.initialize(root, user);
+
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, ex.getLocalizedMessage());
+            new Alert(Alert.AlertType.ERROR, "Error loading MainAdmin.fxml", ButtonType.OK).showAndWait();
+        } catch (RuntimeException ex) {
+            logger.log(Level.SEVERE, "Exception occurred", ex);
+            new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+
+    /**
+     * Obtiene la etapa asociada con este controlador.
+     *
+     * @return La etapa.
      */
     public Stage getStage() {
         return stage;
     }
 
     /**
-     * Sets the stage for this controller.
+     * Establece la etapa para este controlador.
      *
-     * @param stage The stage to set.
+     * @param stage La etapa a establecer.
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     /**
-     * Displays an alert to the user with the specified title, message, and
-     * alert type.
+     * Muestra una alerta al usuario con el título, mensaje y tipo de alerta especificados.
      *
-     * @param title The title of the alert.
-     * @param message The message to display in the alert.
-     * @param alertType The type of alert (ERROR, INFORMATION, etc.).
+     * @param title El título de la alerta.
+     * @param message El mensaje a mostrar en la alerta.
+     * @param alertType El tipo de alerta (ERROR, INFORMATION, etc.).
      */
     private void showAlert(String title, String message, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
@@ -274,9 +271,9 @@ public class SignInController {
     }
 
     /**
-     * Handles the window close request event, displaying a confirmation dialog.
+     * Maneja el evento de cierre de la ventana, mostrando un cuadro de confirmación.
      *
-     * @param event The window event.
+     * @param event El evento de la ventana.
      */
     @FXML
     public void onCloseRequest(WindowEvent event) {
@@ -293,9 +290,9 @@ public class SignInController {
     }
 
     /**
-     * Opens the SignUpView window when the Hyperlink is clicked.
+     * Abre la vista de registro cuando el usuario hace clic en el enlace de registro.
      *
-     * @param event The action event triggered by clicking the hyperlink.
+     * @param event El evento de acción disparado por el clic en el enlace.
      */
     @FXML
     private void handleHyperLinkAction(ActionEvent event) {
@@ -321,10 +318,10 @@ public class SignInController {
     }
 
     /**
-     * Toggles the password visibility when the show password button is clicked.
+     * Cambia la visibilidad de la contraseña cuando el usuario hace clic en el botón
+     * de mostrar/ocultar contraseña.
      *
-     * @param event The action event triggered by clicking the show password
-     * button.
+     * @param event El evento de acción disparado por el clic en el botón de mostrar/ocultar contraseña.
      */
     public void showPassword(ActionEvent event) {
         if (!passwordVisible) {

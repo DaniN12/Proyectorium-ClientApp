@@ -1,17 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package clientapp.model;
 
 /**
- *
+ * Enum que representa los diferentes tipos de usuarios en el sistema.
+ * <p>
+ * Existen dos tipos de usuario:
+ * <ul>
+ *     <li><strong>ADMIN</strong>: Representa un usuario con privilegios de administrador.</li>
+ *     <li><strong>CUSTOMER</strong>: Representa un usuario normal, generalmente un cliente del sistema.</li>
+ * </ul>
+ * </p>
+ * 
  * @author kbilb
  */
 public enum UserType {
     
+    /**
+     * Representa un usuario con privilegios de administrador.
+     */
     ADMIN,
+
+    /**
+     * Representa un usuario normal, generalmente un cliente del sistema.
+     */
     CUSTOMER
     
 }

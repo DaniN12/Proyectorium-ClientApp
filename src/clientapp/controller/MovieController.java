@@ -58,76 +58,156 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
 /**
+ * Controlador para la gestión de películas en la aplicación. Esta clase maneja
+ * la lógica de la interfaz de usuario relacionada con la visualización,
+ * edición, eliminación y filtrado de películas.
  *
  * @author enzo
  */
 public class MovieController {
 
+    /**
+     * Columna de la tabla que muestra el título de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, String> titleColumn;
 
+    /**
+     * Columna de la tabla que muestra la imagen de la película.
+     */
     @FXML
     private TableColumn imgColumn;
 
+    /**
+     * Columna de la tabla que muestra la duración de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, Integer> durationColumn;
 
+    /**
+     * Columna de la tabla que muestra la sinopsis de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, String> sinopsisColumn;
 
+    /**
+     * Columna de la tabla que muestra la fecha de lanzamiento de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, Date> rDateColumn;
 
+    /**
+     * Columna de la tabla que muestra la hora de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, MovieHour> movieHourClolumn;
 
+    /**
+     * Columna de la tabla que muestra el proveedor de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, Long> providerColumn;
 
+    /**
+     * Columna de la tabla que muestra las categorías de la película.
+     */
     @FXML
     private TableColumn<MovieEntity, ObservableList<CategoryEntity>> categoriesColumn;
 
+    /**
+     * Tabla que muestra la lista de películas.
+     */
     @FXML
     private TableView<MovieEntity> moviesTbv;
 
+    /**
+     * Botón para eliminar una película seleccionada.
+     */
     @FXML
     private Button removeMovieBtn;
 
+    /**
+     * Botón para agregar una nueva película.
+     */
     @FXML
     private Button addMovieBtn;
 
+    /**
+     * Menú para filtrar películas por fecha de lanzamiento.
+     */
     @FXML
     private MenuItem releaseDateMButton;
 
+    /**
+     * Menú para filtrar películas por hora.
+     */
     @FXML
     private MenuItem movieHourMButton;
 
+    /**
+     * Menú para filtrar películas por proveedor.
+     */
     @FXML
     private MenuItem providerMButton;
 
+    /**
+     * ComboBox para seleccionar un proveedor o una hora de película.
+     */
     @FXML
     private ComboBox findProveedorCbox;
 
+    /**
+     * Ventana principal de la aplicación.
+     */
     private Stage stage;
 
+    /**
+     * Interfaz para gestionar las películas.
+     */
     private IMovie movieManager;
 
+    /**
+     * Interfaz para gestionar las categorías.
+     */
     private ICategory categoryManager;
 
+    /**
+     * Interfaz para gestionar los proveedores.
+     */
     private IProvider providerManager;
 
+    /**
+     * Lista observable de películas.
+     */
     private ObservableList<MovieEntity> movies;
 
+    /**
+     * Lista de categorías disponibles.
+     */
     private List<CategoryEntity> availableCategories;
 
+    /**
+     * Lista de proveedores disponibles.
+     */
     private List<ProviderEntity> availableProviders;
 
+    /**
+     * Logger para registrar eventos y errores.
+     */
     private Logger logger = Logger.getLogger(InfoViewController.class.getName());
 
+    /**
+     * Icono de la aplicación.
+     */
     private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
+    /**
+     * Inicializa la ventana y configura los componentes de la interfaz de
+     * usuario.
+     *
+     * @param root El nodo raíz de la interfaz de usuario.
+     */
     public void initialize(Parent root) {
-
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
@@ -148,6 +228,9 @@ public class MovieController {
         stage.show();
     }
 
+    /**
+     * Carga las películas desde el servidor y las muestra en la tabla.
+     */
     public void loadMovies() {
         try {
             movieManager = MovieFactory.getIMovie();
@@ -169,9 +252,11 @@ public class MovieController {
             Logger.getLogger(MovieController.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             new Alert(Alert.AlertType.ERROR, "Error loading movies", ButtonType.OK).showAndWait();
         }
-
     }
 
+    /**
+     * Configura las columnas de la tabla y asigna los valores de las películas.
+     */
     public void setUpMovies() {
         try {
             imgColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<MovieEntity, ImageView>, ObservableValue<ImageView>>() {
@@ -215,6 +300,10 @@ public class MovieController {
         }
     }
 
+    /**
+     * Configura la tabla para permitir la edición de los valores de las
+     * películas.
+     */
     public void setUpEditableTable() {
         try {
             titleColumn.setCellFactory(TextFieldTableCell.<MovieEntity>forTableColumn());
@@ -351,6 +440,11 @@ public class MovieController {
         }
     }
 
+    /**
+     * Maneja la acción de eliminar una película seleccionada.
+     *
+     * @param event El evento de acción que desencadena la eliminación.
+     */
     public void handleRemoveAction(ActionEvent event) {
         try {
             MovieEntity RmMovie = (MovieEntity) moviesTbv.getSelectionModel().getSelectedItem();
@@ -369,6 +463,11 @@ public class MovieController {
         }
     }
 
+    /**
+     * Maneja la acción de agregar una nueva película.
+     *
+     * @param event El evento de acción que desencadena la creación.
+     */
     public void handleCreateAction(ActionEvent event) {
 
         try {
@@ -386,6 +485,9 @@ public class MovieController {
 
     }
 
+    /**
+     * Configura el menú contextual para la tabla de películas.
+     */
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addCategoryMenuItem = new MenuItem("Add category");
@@ -411,6 +513,11 @@ public class MovieController {
         moviesTbv.setContextMenu(contextMenu);
     }
 
+    /**
+     * Muestra un diálogo para seleccionar categorías para una película.
+     *
+     * @param movie La película a la que se le agregarán las categorías.
+     */
     private void showCategorySelectionDialog(MovieEntity movie) {
         Stage categoryStage = new Stage();
         categoryStage.setTitle("Select Categories");
@@ -490,26 +597,37 @@ public class MovieController {
         }
     }
 
+    /**
+     * Filtra la lista de películas por fecha de estreno y actualiza la tabla.
+     *
+     * @param event Evento de acción que activa el filtro.
+     */
     @FXML
     private void filterByReleaseDate(ActionEvent event) {
-
         movies = FXCollections.observableArrayList(movieManager.listByReleaseDate_XML(new GenericType<List<MovieEntity>>() {
         }));
         moviesTbv.setItems(movies);
         moviesTbv.refresh();
     }
 
+    /**
+     * Configura el filtro de películas por horario de emisión, cargando las
+     * opciones disponibles en un ComboBox.
+     *
+     * @param event Evento de acción que activa el filtro.
+     */
     @FXML
     private void filterByMovieHour(ActionEvent event) {
-
         ObservableList<MovieHour> availableHours = FXCollections.observableArrayList(MovieHour.values());
-
         findProveedorCbox.setItems(availableHours);
         findProveedorCbox.setOnAction(e -> applyMovieHourFilter());
     }
 
+    /**
+     * Aplica el filtro de películas según la hora seleccionada en el ComboBox.
+     */
     private void applyMovieHourFilter() {
-        MovieHour selectedHour = (MovieHour) findProveedorCbox.getValue(); // Obtener la hora seleccionada
+        MovieHour selectedHour = (MovieHour) findProveedorCbox.getValue();
 
         if (selectedHour != null) {
             try {
@@ -524,15 +642,23 @@ public class MovieController {
         }
     }
 
+    /**
+     * Configura el filtro de películas por proveedor, cargando las opciones
+     * disponibles en un ComboBox.
+     *
+     * @param event Evento de acción que activa el filtro.
+     */
     @FXML
     private void filterProvider(ActionEvent event) {
         ObservableList<ProviderEntity> providersList = FXCollections.observableArrayList(availableProviders);
-
         findProveedorCbox.setItems(providersList);
-
         findProveedorCbox.setOnAction(e -> applyProviderFilter());
     }
 
+    /**
+     * Aplica el filtro de películas según el proveedor seleccionado en el
+     * ComboBox.
+     */
     private void applyProviderFilter() {
         ProviderEntity selectedProvider = (ProviderEntity) findProveedorCbox.getValue();
 
@@ -549,131 +675,260 @@ public class MovieController {
         }
     }
 
+    /**
+     * Maneja el evento de cierre de la aplicación mostrando un cuadro de
+     * diálogo de confirmación. Si el usuario confirma, la aplicación se cierra;
+     * de lo contrario, la acción se cancela.
+     *
+     * @param event Evento de cierre de la ventana.
+     */
     @FXML
     public void onCloseRequest(WindowEvent event) {
-
-        //Create an alert to make sure that the user wants to close the application
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        //set the alert message and title
         alert.setHeaderText(null);
         alert.setTitle("EXIT");
         alert.setContentText("Are you sure you want to close the application?");
 
-        //create a variable to compare the button type
         Optional<ButtonType> answer = alert.showAndWait();
 
-        //Condition to close the application
-        if (answer.get() == ButtonType.OK) {
-            //if the answer is ok the app will close
+        if (answer.isPresent() && answer.get() == ButtonType.OK) {
             Platform.exit();
         } else {
-            //else the alert will dispose and the user will continue in the app
             event.consume();
         }
     }
 
+    /**
+     * Obtiene la columna del título de la película en la tabla.
+     *
+     * @return La columna del título.
+     */
     public TableColumn getTitleColumn() {
         return titleColumn;
     }
 
+    /**
+     * Establece la columna del título de la película en la tabla.
+     *
+     * @param titleColumn La nueva columna del título.
+     */
     public void setTitleColumn(TableColumn titleColumn) {
         this.titleColumn = titleColumn;
     }
 
+    /**
+     * Obtiene la columna de la duración de la película en la tabla.
+     *
+     * @return La columna de duración.
+     */
     public TableColumn getDurationColumn() {
         return durationColumn;
     }
 
+    /**
+     * Establece la columna de la duración de la película en la tabla.
+     *
+     * @param durationColumn La nueva columna de duración.
+     */
     public void setDurationColumn(TableColumn durationColumn) {
         this.durationColumn = durationColumn;
     }
 
+    /**
+     * Obtiene la columna de la sinopsis de la película en la tabla.
+     *
+     * @return La columna de sinopsis.
+     */
     public TableColumn getSinopsisColumn() {
         return sinopsisColumn;
     }
 
+    /**
+     * Establece la columna de la sinopsis de la película en la tabla.
+     *
+     * @param sinopsisColumn La nueva columna de sinopsis.
+     */
     public void setSinopsisColumn(TableColumn sinopsisColumn) {
         this.sinopsisColumn = sinopsisColumn;
     }
 
+    /**
+     * Obtiene la columna de la hora de emisión de la película en la tabla.
+     *
+     * @return La columna de la hora de emisión.
+     */
     public TableColumn getMovieHourClolumn() {
         return movieHourClolumn;
     }
 
+    /**
+     * Establece la columna de la hora de emisión de la película en la tabla.
+     *
+     * @param movieHourClolumn La nueva columna de la hora de emisión.
+     */
     public void setMovieHourClolumn(TableColumn movieHourClolumn) {
         this.movieHourClolumn = movieHourClolumn;
     }
 
+    /**
+     * Obtiene la columna del proveedor de la película en la tabla.
+     *
+     * @return La columna del proveedor.
+     */
     public TableColumn getProviderColumn() {
         return providerColumn;
     }
 
+    /**
+     * Establece la columna del proveedor de la película en la tabla.
+     *
+     * @param providerColumn La nueva columna del proveedor.
+     */
     public void setProviderColumn(TableColumn providerColumn) {
         this.providerColumn = providerColumn;
     }
 
+    /**
+     * Obtiene la columna de las categorías de la película en la tabla.
+     *
+     * @return La columna de categorías.
+     */
     public TableColumn getCategoriesColumn() {
         return categoriesColumn;
     }
 
+    /**
+     * Establece la columna de las categorías de la película en la tabla.
+     *
+     * @param categoriesColumn La nueva columna de categorías.
+     */
     public void setCategoriesColumn(TableColumn categoriesColumn) {
         this.categoriesColumn = categoriesColumn;
     }
 
+    /**
+     * Obtiene la ventana (Stage) actual de la aplicación.
+     *
+     * @return La ventana de la aplicación.
+     */
     public Stage getStage() {
         return stage;
     }
 
+    /**
+     * Establece la ventana (Stage) de la aplicación.
+     *
+     * @param stage La nueva ventana.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Obtiene el administrador de películas.
+     *
+     * @return El administrador de películas.
+     */
     public IMovie getMovieManager() {
         return movieManager;
     }
 
+    /**
+     * Establece el administrador de películas.
+     *
+     * @param movieManager El nuevo administrador de películas.
+     */
     public void setMovieManager(IMovie movieManager) {
         this.movieManager = movieManager;
     }
 
+    /**
+     * Obtiene la columna de la imagen de la película en la tabla.
+     *
+     * @return La columna de la imagen.
+     */
     public TableColumn getImgColumn() {
         return imgColumn;
     }
 
+    /**
+     * Establece la columna de la imagen de la película en la tabla.
+     *
+     * @param imgColumn La nueva columna de la imagen.
+     */
     public void setImgColumn(TableColumn imgColumn) {
         this.imgColumn = imgColumn;
     }
 
+    /**
+     * Obtiene la columna de la fecha de estreno de la película en la tabla.
+     *
+     * @return La columna de la fecha de estreno.
+     */
     public TableColumn getrDateColumn() {
         return rDateColumn;
     }
 
+    /**
+     * Establece la columna de la fecha de estreno de la película en la tabla.
+     *
+     * @param rDateColumn La nueva columna de la fecha de estreno.
+     */
     public void setrDateColumn(TableColumn rDateColumn) {
         this.rDateColumn = rDateColumn;
     }
 
+    /**
+     * Obtiene la tabla que contiene la lista de películas.
+     *
+     * @return La tabla de películas.
+     */
     public TableView getMoviesTbv() {
         return moviesTbv;
     }
 
+    /**
+     * Establece la tabla que contiene la lista de películas.
+     *
+     * @param moviesTbv La nueva tabla de películas.
+     */
     public void setMoviesTbv(TableView moviesTbv) {
         this.moviesTbv = moviesTbv;
     }
 
+    /**
+     * Obtiene el botón para eliminar una película.
+     *
+     * @return El botón de eliminar película.
+     */
     public Button getRemoveMovieBtn() {
         return removeMovieBtn;
     }
 
+    /**
+     * Establece el botón para eliminar una película.
+     *
+     * @param removeMovieBtn El nuevo botón de eliminar película.
+     */
     public void setRemoveMovieBtn(Button removeMovieBtn) {
         this.removeMovieBtn = removeMovieBtn;
     }
 
+    /**
+     * Obtiene el botón para agregar una nueva película.
+     *
+     * @return El botón de agregar película.
+     */
     public Button getAddMovieBtn() {
         return addMovieBtn;
     }
 
+    /**
+     * Establece el botón para agregar una nueva película.
+     *
+     * @param addMovieBtn El nuevo botón de agregar película.
+     */
     public void setAddMovieBtn(Button addMovieBtn) {
         this.addMovieBtn = addMovieBtn;
     }
-
 }

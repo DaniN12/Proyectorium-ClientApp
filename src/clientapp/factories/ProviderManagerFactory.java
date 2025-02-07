@@ -10,13 +10,25 @@ import clientapp.interfaces.IProvider;
 import clientapp.model.ProviderEntity;
 
 /**
- *
- * @author 2dam
+ * @author Dani
+ * @version 1.0
+ * @see IProvider
+ * @see ProviderRESTClient
  */
 public class ProviderManagerFactory {
     
+    /**
+     * Instancia única de la interfaz {@link IProvider}.
+     */
     private static IProvider providerEntity;
     
+    /**
+     * Obtiene la instancia única de la interfaz {@link IProvider}.
+     * Si la instancia no ha sido creada, se inicializa con una nueva instancia de
+     * {@link ProviderRESTClient}.
+     *
+     * @return Instancia única de {@link IProvider}.
+     */
     public static IProvider getIProvider(){
         if(providerEntity==null)
             providerEntity=new ProviderRESTClient();

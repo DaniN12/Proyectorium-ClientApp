@@ -11,8 +11,12 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
 /**
- *
- * @author 2dam
+ * Controlador para la barra de menú de la aplicación. Esta clase maneja las interacciones
+ * del usuario con los elementos de la barra de menú, como las opciones para cerrar sesión,
+ * mostrar las vistas de películas, categorías y proveedores.
+ * 
+ * La clase se encarga de cargar las vistas correspondientes cuando el usuario selecciona
+ * alguna de las opciones del menú y cerrar la ventana actual.
  */
 public class MenuController {
 
@@ -33,15 +37,24 @@ public class MenuController {
 
     private Logger logger = Logger.getLogger(InfoViewController.class.getName());
 
+    /**
+     * Inicializa la barra de menú, configurando las acciones de cada elemento del menú
+     * para que correspondan con las funciones adecuadas (cerrar sesión, mostrar películas,
+     * categorías y proveedores).
+     */
     public void initialize() {
-
         logOutMItem.setOnAction(this::logOut);
         providerMItem.setOnAction(this::showProviders);
         movieMItem.setOnAction(this::showMovies);
         categoryMItem.setOnAction(this::showCategories);
-
     }
 
+    /**
+     * Cierra la sesión del usuario, abriendo la ventana de inicio de sesión y cerrando
+     * la ventana actual.
+     *
+     * @param event El evento que dispara la acción (clic en el menú de cerrar sesión).
+     */
     @FXML
     public void logOut(Event event) {
         try {
@@ -51,7 +64,7 @@ public class MenuController {
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initialize(root);
-            // Close the current stage (the one with the menu)
+            // Cierra la ventana actual (la que contiene el menú)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
         } catch (IOException ex) {
@@ -59,6 +72,12 @@ public class MenuController {
         }
     }
 
+    /**
+     * Muestra la ventana de películas cargando la vista correspondiente y cerrando
+     * la ventana actual.
+     *
+     * @param event El evento que dispara la acción (clic en el menú de películas).
+     */
     @FXML
     public void showMovies(Event event) {
         try {
@@ -68,7 +87,7 @@ public class MenuController {
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initialize(root);
-            // Close the current stage (the one with the menu)
+            // Cierra la ventana actual (la que contiene el menú)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
         } catch (IOException ex) {
@@ -76,6 +95,12 @@ public class MenuController {
         }
     }
 
+    /**
+     * Muestra la ventana de categorías cargando la vista correspondiente y cerrando
+     * la ventana actual.
+     *
+     * @param event El evento que dispara la acción (clic en el menú de categorías).
+     */
     @FXML
     public void showCategories(Event event) {
         try {
@@ -85,7 +110,7 @@ public class MenuController {
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initialize(root);
-            // Close the current stage (the one with the menu)
+            // Cierra la ventana actual (la que contiene el menú)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
         } catch (IOException ex) {
@@ -93,6 +118,12 @@ public class MenuController {
         }
     }
 
+    /**
+     * Muestra la ventana de proveedores cargando la vista correspondiente y cerrando
+     * la ventana actual.
+     *
+     * @param event El evento que dispara la acción (clic en el menú de proveedores).
+     */
     @FXML
     public void showProviders(Event event) {
         try {
@@ -102,7 +133,7 @@ public class MenuController {
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initialize(root);
-            // Close the current stage (the one with the menu)
+            // Cierra la ventana actual (la que contiene el menú)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
         } catch (IOException ex) {
