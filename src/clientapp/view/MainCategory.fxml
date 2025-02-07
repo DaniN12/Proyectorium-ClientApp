@@ -40,7 +40,6 @@
                 <TableColumn fx:id="tbcolDescription" minWidth="0.0" prefWidth="447.20001220703125" text="Description" />
                 <TableColumn fx:id="tbcolCreationDate" prefWidth="251.20001220703125" text="Creation Date" />
                 <TableColumn fx:id="tbcolPegi" prefWidth="193.60009765625" text="Pegi" />
-           
             </columns>
             <contextMenu>
                 <ContextMenu fx:id="tableMenu">

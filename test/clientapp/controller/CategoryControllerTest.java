@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,12 +8,17 @@ package clientapp.controller;
 
 import clientapp.Main;
 import clientapp.model.CategoryEntity;
-import clientapp.model.MovieEntity;
+import clientapp.model.Pegi;
 import java.rmi.NotBoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Random;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,6 +40,7 @@ import static org.testfx.util.WaitForAsyncUtils.waitForFxEvents;
 public class CategoryControllerTest extends ApplicationTest {
 
     private TableView tbcategory = (TableView) lookup("#tbcategory").queryTableView();
+     private ComboBox<?> comboBoxNode;
 
     public CategoryControllerTest() {
     }
@@ -72,13 +79,12 @@ public class CategoryControllerTest extends ApplicationTest {
 //                    rowCount-1,table.getItems().size());
 //        verifyThat(tfLogin,  (TextField t) -> t.isFocused());
 //    }
-    
-      @Test
+    @Test
     public void listCategory() {
         assertNotNull("Error loading movies", isVisible());
     }
 
-       @Test
+    @Test
     public void createCategory() {
 
         // Obtener el número de filas antes de agregar una nueva
@@ -128,7 +134,7 @@ public class CategoryControllerTest extends ApplicationTest {
      * confirmation dialog.
      */
     @Test
-    public void testB_deleteMovie() throws NotBoundException {
+    public void deleteCategory() throws NotBoundException {
         // Obtener el número de filas antes de eliminar
         int rowCount = tbcategory.getItems().size();
 
@@ -152,4 +158,98 @@ public class CategoryControllerTest extends ApplicationTest {
         assertEquals("The row has not been deleted!!!", rowCount - 1, tbcategory.getItems().size());
     }
 
+    @Test
+    public void testUpdateCategory() {
+        // Contar el número inicial de filas en la tabla
+        int rowCount = tbcategory.getItems().size();
+
+        // Definir los valores que vamos a actualizar en la fila
+        String categoryName = "Test";
+        String categoryDescription = "probando test update";
+        String categoryDate = "05/02/2025";
+        Pegi categoryPegi = Pegi.PEGI_7; // Enum correcto
+        
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+        waitForFxEvents();
+
+        // Seleccionar la última fila de la tabla
+        int lastRowIndex = tbcategory.getItems().size() - 1;
+        interact(() -> tbcategory.getSelectionModel().select(lastRowIndex)); // Selecciona la fila programáticamente
+        waitForFxEvents();
+
+        // =================== EDITAR EL NOMBRE ===================
+        Node nameCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(1) // Suponiendo que la columna "name" es la segunda columna
+                .query();
+        clickOn(nameCell).doubleClickOn(nameCell);
+        waitForFxEvents(); // Esperar a que la celda entre en modo edición
+
+        Node textField = lookup(".text-field").query();
+        clickOn(textField).doubleClickOn(textField); // Asegurar que el foco esté en el campo de edición
+        write(categoryName);  // Escribir el nuevo nombre
+
+        // Confirmar la edición (ENTER)
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+
+        // =================== EDITAR LA DESCRIPCIÓN ===================
+        Node descriptionCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(2) // Suponiendo que la columna "description" es la tercera columna
+                .query();
+        clickOn(descriptionCell).doubleClickOn(descriptionCell);
+        waitForFxEvents(); // Esperar a que la celda entre en modo edición
+
+        Node descriptionField = lookup(".text-field").query();
+        clickOn(descriptionField).doubleClickOn(descriptionField); // Asegurar que el foco esté en el campo de edición
+        write(categoryDescription);  // Escribir la nueva descripción
+
+        // Confirmar la edición (ENTER)
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+
+        // =================== EDITAR LA FECHA ===================
+        Node dateCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(3).query();
+        clickOn(dateCell).doubleClickOn(dateCell);
+        waitForFxEvents();
+
+        // Buscar y hacer clic en el botón del DatePicker para abrir el calendario
+        Node datePickerButton = lookup(".date-picker .arrow-button").query();
+        clickOn(datePickerButton);
+        waitForFxEvents();
+
+        // Buscar el nodo exacto del día dentro del calendario
+        Node dayToSelect = lookup(".date-picker-popup .day-cell").lookup("5").query(); // Ajusta "5" según el día necesario
+        clickOn(dayToSelect);
+        waitForFxEvents();
+
+        // Confirmar la edición con ENTER
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+
+        // =================== EDITAR EL PEGI (COMBOBOX) ===================
+        Node pegiCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(4) // Suponiendo que la columna "pegi" es la quinta columna
+                .query();
+        doubleClickOn(pegiCell); // Activar el ComboBox
+        waitForFxEvents();
+
+// Buscar y seleccionar la opción correcta en la lista desplegable
+        interact(() -> {
+             comboBoxNode = (ComboBox<?>) lookup(".combo-box-base").query();
+            comboBoxNode.getSelectionModel().select(1); // Cambiar la selección al segundo elemento
+        });
+// Confirmar la selección (ENTER)
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+
+        // =================== VERIFICAR QUE LOS CAMBIOS SE HAN GUARDADO ===================
+        List<CategoryEntity> categories = tbcategory.getItems();
+        CategoryEntity updatedCategory = categories.get(lastRowIndex);
+
+        assertEquals("El nombre no se actualizó correctamente", categoryName, updatedCategory.getName());
+        assertEquals("La descripción no se actualizó correctamente", categoryDescription, updatedCategory.getDescription());
+        assertEquals("La fecha no se actualizó correctamente", categoryDate, df.format(updatedCategory.getCreationDate()));
+        assertEquals("El Pegi no se actualizó correctamente", categoryPegi, updatedCategory.getPegi());
+    }
 }
