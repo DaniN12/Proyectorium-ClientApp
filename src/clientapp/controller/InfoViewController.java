@@ -14,6 +14,8 @@ import java.awt.print.Printable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -171,7 +173,7 @@ public class InfoViewController {
             removeMenuItem.setOnAction(this::handleRemoveAction);
             printMenuItem.setOnAction(this::handlePrintAction);
             logOutMenuItem.setOnAction(this::logOutButtonAction);
-            
+
             addTicketButton.setOnAction(this::handleCreateAction);
 
             priceFilter.setOnAction(this::handleFilterByPriceAction);
@@ -199,11 +201,11 @@ public class InfoViewController {
             iTicket = TicketFactory.getITicket();
             listTickets = FXCollections.observableArrayList(
                     iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
-                    })
+                    }));/*
                             .stream()
                             .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                             .collect(Collectors.toList()) // Recoger en una lista estándar
-            );
+            );*/
             listMovies = FXCollections.observableArrayList(MovieFactory.getIMovie().findAll_XML(new GenericType<List<MovieEntity>>() {
             }));
             setupTicketTable();
@@ -287,19 +289,50 @@ public class InfoViewController {
                 editDatabase(ticket);
             }
         });
+
         dateColumn.setOnEditCommit(event -> {
             TicketEntity ticket = event.getRowValue();
-            ticket.setBuyDate(event.getNewValue());
-            editDatabase(ticket);
+            Date newDate = event.getNewValue();
+
+            // Definir el formato esperado
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            formatter.setLenient(false);  // No permite fechas ambiguas
+
+            // Convertir la nueva fecha a un formato String y validarla
+            String formattedDate = formatter.format(newDate);
+
+            try {
+                // Intentar parsear la fecha para validar el formato
+                Date parsedDate = formatter.parse(formattedDate);
+
+                // Si la fecha es válida, la guardamos en el ticket
+                ticket.setBuyDate(new Date(parsedDate.getTime()));  // Asignamos el valor
+                editDatabase(ticket);
+            } catch (ParseException e) {
+                // Si el formato es incorrecto, mostrar un mensaje de error
+                showAlert(Alert.AlertType.ERROR, "Input Error", "Date has to be dd/MM/yyyy.", "/resources/WarningAlert.png");
+            }
         });
+
         peopleColumn.setOnEditCommit(event -> {
             Integer newValue = event.getNewValue(); // Obtener el nuevo valor de la celda
             TicketEntity ticket = event.getRowValue();  // Obtener el ticket editado
 
-            // Actualizar la propiedad correspondiente del ticket
-            ticket.setNumPeople(newValue);
+            try {
+                // Validar que el nuevo valor sea mayor o igual a 0
+                if (newValue >= 0) {
+                    // Actualizar la propiedad correspondiente del ticket
+                    ticket.setNumPeople(newValue);
 
-            editDatabase(ticket);
+                    // Llamar al método para actualizar la base de datos
+                    editDatabase(ticket);
+                } else {
+                    // Mostrar un mensaje o tomar otra acción si el valor no es válido
+                    showAlert(Alert.AlertType.ERROR, "Input Error", "It´s not a number avobe 0.", "/resources/WarningAlert.png");
+                }
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Input Error", "It´s not a number.", "/resources/WarningAlert.png");
+            }
         });
 
         ticketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -318,6 +351,7 @@ public class InfoViewController {
             refreshTickets(); // Actualizar la tabla después de realizar cambios
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error al actualizar el ticket mediante REST: {0}", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Updating Error", "Error updating ticket.", "/resources/WarningAlert.png");
         }
     }
 
@@ -332,11 +366,11 @@ public class InfoViewController {
         listTickets.addAll(
                 iTicket.findAll_XML(new GenericType<List<TicketEntity>>() {
 
-                })
+                }));/*
                         .stream()
                         .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                         .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
-        );
+        );*/
     }
 
     /**
@@ -434,11 +468,11 @@ public class InfoViewController {
      */
     public void handleFilterByMovieAction(ActionEvent event) {
         listTickets = FXCollections.observableArrayList(iTicket.listByMovieASC_XML(new GenericType<List<TicketEntity>>() {
-        })
+        }));/*
                 .stream()
                 .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
                 .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
-        );
+        );*/
         ticketTableView.setItems(listTickets);
         ticketTableView.refresh();
     }
@@ -453,11 +487,11 @@ public class InfoViewController {
     @FXML
     public void handleFilterByPriceAction(ActionEvent event) {
         listTickets = FXCollections.observableArrayList(iTicket.listByPriceASC_XML(new GenericType<List<TicketEntity>>() {
-        })
+        }));/*
                 .stream()
                 .filter(ticket -> ticket.getUser().getId() == user.getId())
                 .collect(Collectors.toList())
-        );
+        );*/
         ticketTableView.setItems(listTickets);
         ticketTableView.refresh();
     }
@@ -472,11 +506,11 @@ public class InfoViewController {
     @FXML
     public void handleFilterByBuyDateAction(ActionEvent event) {
         listTickets = FXCollections.observableArrayList(iTicket.listByBuyDateASC_XML(new GenericType<List<TicketEntity>>() {
-        })
+        }));/*
                 .stream()
                 .filter(ticket -> ticket.getUser().getId() == user.getId())
                 .collect(Collectors.toList())
-        );
+        );*/
         ticketTableView.setItems(listTickets);
         ticketTableView.refresh();
     }

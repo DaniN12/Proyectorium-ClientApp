@@ -33,7 +33,7 @@
 }
 
 /* Estilo minimalista para el botón de inicio de sesión */
-.minimal-button {
+.minimal-button, #btnSignIn {
     -fx-background-color: #34dede; /* Fondo transparente */
     -fx-border-color: black; /* Borde negro minimalista */
     -fx-font-weight: bold;
@@ -147,4 +147,28 @@
 
 #infoViewpanel #usernameLabel {
     -fx-min-width: 150px; /* Ajusta el valor según sea necesario */
+}
+
+
+#btnInterrogation {
+    -fx-background-color: #34dede;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.3s ease;
+}
+
+#btnInterrogation:hover {
+    -fx-background-color: #D8BFD8; 
+    -fx-text-fill: white;
+}
+
+#btnInterrogation:pressed {
+    -fx-background-color: #BA55D3; 
 }

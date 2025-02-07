@@ -6,8 +6,12 @@
 package clientapp.controller;
 
 import clientapp.Main;
+import clientapp.MainMovieView;
 import clientapp.model.MovieEntity;
+import clientapp.model.MovieHour;
+import clientapp.model.ProviderEntity;
 import java.rmi.NotBoundException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -49,7 +54,7 @@ public class MovieControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setUpClass() throws TimeoutException {
         FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(Main.class);
+        FxToolkit.setupApplication(MainMovieView.class);
     }
 
     @Test
@@ -109,8 +114,9 @@ public class MovieControllerTest extends ApplicationTest {
 
         int rowCount = table.getItems().size();
         String movieSinopsis = "sinopsis 1";
-        String movieDate = "31/01/2025";
         Integer movieDuration = 90;
+        MovieHour hour = MovieHour.HOUR_20;
+        String provider = "Warner Bros.";
 
         waitForFxEvents();
 
@@ -132,9 +138,9 @@ public class MovieControllerTest extends ApplicationTest {
         write(movieSinopsis);  // Escribir la sinopsis
 
         // Confirmar la edición (ENTER)
-        type(javafx.scene.input.KeyCode.ENTER);
+        type(KeyCode.ENTER);
         waitForFxEvents();
-        
+
         // Hacer doble clic en la celda "title" de la última fila
         Node DateCell = lookup(".table-row-cell").nth(lastRowIndex)
                 .lookup(".table-cell").nth(3) // Suponiendo que la columna "title" es la segunda columna
@@ -142,15 +148,17 @@ public class MovieControllerTest extends ApplicationTest {
         doubleClickOn(DateCell);
         waitForFxEvents(); // Esperar a que la celda entre en modo edición
 
-        // Buscar el TextField dentro de la celda en modo edición
-        Node DatePicker = lookup(".text-field").query();
-        clickOn(DatePicker); // Asegurar que el foco esté en el campo de edición
-        write(movieDate);  // Escribir la sinopsis
-
-        // Confirmar la edición (ENTER)
-        type(javafx.scene.input.KeyCode.ENTER);
+        Node dateCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(3).query();
+        clickOn(dateCell).doubleClickOn(dateCell);
         waitForFxEvents();
-        
+        clickOn(".date-picker .arrow-button"); // Abre el DatePicker
+        waitForFxEvents();
+        clickOn("10");
+        waitForFxEvents();
+        type(KeyCode.ENTER);
+
+        waitForFxEvents();
+
         // Hacer doble clic en la celda "title" de la última fila
         Node DurationCell = lookup(".table-row-cell").nth(lastRowIndex)
                 .lookup(".table-cell").nth(4) // Suponiendo que la columna "title" es la segunda columna
@@ -164,19 +172,56 @@ public class MovieControllerTest extends ApplicationTest {
         write(String.valueOf(movieDuration));  // Escribir la sinopsis
 
         // Confirmar la edición (ENTER)
-        type(javafx.scene.input.KeyCode.ENTER);
+        type(KeyCode.ENTER);
         waitForFxEvents();
 
-        // Verificar que la fila se haya añadido
-        assertEquals("The row has not been added!!!", rowCount + 1, table.getItems().size());
+        // Seleccionar la celda de la tabla donde está el ComboBox (columna específica)
+        Node comboBoxCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(5) // Reemplaza COLUMN_INDEX con el índice de la columna del ComboBox
+                .query();
 
-        // Comprobar que el título se ha guardado correctamente en la tabla
-        List<MovieEntity> movies = table.getItems();
-        assertEquals("The movie has not been added correctly!!!",
-                movies.stream().filter(m -> m.getSinopsis().equals(movieSinopsis)).count(), 1);
+        // Hacer doble clic para entrar en modo edición (si no se activa automáticamente)
+        doubleClickOn(comboBoxCell);
+        waitForFxEvents();
+
+        // Ahora buscar el ComboBox dentro de la celda activa
+        Node comboBoxProvider = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".combo-box") // Buscar el ComboBox dentro de la celda
+                .query();
+
+        clickOn(provider); // Abrir el ComboBox
+        waitForFxEvents();
+
+        // Seleccionar la celda de la tabla donde está el ComboBox (columna específica)
+        Node movieHourCell = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(7) // Suponiendo que la columna del ComboBox es la séptima
+                .query();
+
+        // Hacer doble clic para entrar en modo edición
+        doubleClickOn(movieHourCell);
+        waitForFxEvents();
+
+        // Buscar el ComboBox dentro de la celda en edición
+        Node comboBox = lookup(".table-row-cell").nth(lastRowIndex)
+                .lookup(".combo-box") // Buscar el ComboBox dentro de la celda activa
+                .query();
+
+        // Seleccionar el valor correcto en el ComboBox
+        clickOn(hour.name());
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+
+        List<MovieEntity> movie = table.getItems();
+        MovieEntity updatedMovie = movie.get(lastRowIndex);
+
+        assertEquals("El nombre no se actualizó correctamente", movieSinopsis, updatedMovie.getSinopsis());
+        assertEquals("La descripción no se actualizó correctamente", movieDuration, updatedMovie.getDuration());
+        assertEquals("El Pegi no se actualizó correctamente", hour, updatedMovie.getMovieHour());
+        assertEquals("Date was not updated correctly!!!", LocalDate.of(2025, 2, 7), updatedMovie.getReleaseDate());
+        assertEquals("El Pegi no se actualizó correctamente", provider, updatedMovie.getProvider());
 
     }
-    
+
     @Test
     public void testD_deleteMovie() throws NotBoundException {
         // Obtener el número de filas antes de eliminar
@@ -198,7 +243,11 @@ public class MovieControllerTest extends ApplicationTest {
         // Confirmar la eliminación haciendo clic en el botón predeterminado (OK)
         clickOn("Aceptar");
 
+        // Esperar que la fila sea eliminada
+        waitForFxEvents();
+
         // Verificar que la fila ha sido eliminada
         assertEquals("The row has not been deleted!!!", rowCount - 1, table.getItems().size());
     }
+
 }

@@ -61,7 +61,7 @@ public class MenuAdminController {
         providersBtn.setOnAction(this::openProvidersWindow);
         categoriesBtn.setOnAction(this::openCategoriesWindow);
         logoutBtn.setOnAction(this::backButtonAction);
-        categoriesImageView.setImage(new Image(getClass().getResourceAsStream("/resources/iconCategory.jpg")));
+        categoriesImageView.setImage(new Image(getClass().getResourceAsStream("/resources/iconCategory.png")));
         moviesImageView.setImage(new Image(getClass().getResourceAsStream("/resources/iconMovie.png")));
         providersImageView.setImage(new Image(getClass().getResourceAsStream("/resources/iconProvider.png")));
 

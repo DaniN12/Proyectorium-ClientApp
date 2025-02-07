@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MenuAdminController">
+<AnchorPane id="adminPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.1" stylesheets="@../../resources/stylesEntities.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientapp.controller.MenuAdminController">
    <children>
        <Label fx:id="categoriesLbl" layoutX="122.0" layoutY="177.0" text="CATEGORIES">
          <font>

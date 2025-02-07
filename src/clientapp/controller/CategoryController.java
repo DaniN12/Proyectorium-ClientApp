@@ -9,8 +9,13 @@ import clientapp.factories.CategoryFactory;
 import clientapp.interfaces.ICategory;
 import clientapp.model.CategoryEntity;
 import clientapp.model.Pegi;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale.Category;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -21,8 +26,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -37,6 +42,12 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -46,7 +57,7 @@ public class CategoryController {
 
     private Stage stage;
 
-    private Logger logger = Logger.getLogger(SignInController.class.getName());
+    private static Logger logger = Logger.getLogger(SignInController.class.getName());
 
     @FXML
     private TableColumn tbcolIcon;
@@ -59,8 +70,6 @@ public class CategoryController {
     @FXML
     private TableColumn<CategoryEntity, Pegi> tbcolPegi;
     @FXML
-    private MenuItem filterPegi;
-    @FXML
     private MenuItem filterDate;
     @FXML
     private MenuItem filterDescription;
@@ -72,17 +81,17 @@ public class CategoryController {
     @FXML
     private TableView tbcategory;
 
-    @FXML
-    private Button removebtn;
+    private Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
     public void initialize(Parent root) {
-        logger.info("Initializing InfoView stage.");
+        logger.info("Initializing Category View.");
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Category");
         stage.setResizable(false);
         tbcategory.setEditable(true);
+        stage.getIcons().add(icon);
 
         categoryManager = CategoryFactory.getICategory();
         try {
@@ -97,7 +106,7 @@ public class CategoryController {
                     byte[] iconBytes = category.getIcon();
 
                     // Convertir el array de bytes a una imagen
-                    Image image = new Image("/resources/iconCategory.jpg");
+                    Image image = new Image("/resources/iconCategory.png");
 
                     // Crear un ImageView y establecer la imagen
                     ImageView imageView = new ImageView(image);
@@ -190,6 +199,106 @@ public class CategoryController {
         tbcategory.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         filterDate.setOnAction(this::listCategoriesbyCreationDate);
         filterDescription.setOnAction(this::listCategoriesByDescriptionAndPegi18);
+        setupContextMenu();
+    }
+
+    private void refreshTable() {
+        // Limpiar la lista actual de tickets
+        categories.clear();
+        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
+        categories.addAll(
+                categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
+                }));/*
+                        .stream()
+                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
+                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
+        );*/
+    }
+
+    public void handleRemoveAction(ActionEvent event) {
+        List<CategoryEntity> removeCategory = tbcategory.getSelectionModel().getSelectedItems();
+        if (removeCategory != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Remove confirmation");
+            alert.setHeaderText("¿Are you sure you want to remove this category?");
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    if (removeCategory.size() > 1) {
+                        for (CategoryEntity categ : removeCategory) {
+                            categoryManager.remove(String.valueOf(categ.getId()));
+                            tbcategory.getItems().remove(removeCategory);
+                        }
+                    } else {
+                        categoryManager.remove(String.valueOf(removeCategory.get(0).getId()));
+                        tbcategory.getItems().remove(removeCategory);
+                    }
+                    refreshTable();
+                }
+            });
+        }
+    }
+
+    public void handleCreateAction(ActionEvent event) {
+        CategoryEntity newCategory = new CategoryEntity();
+        categoryManager.create(newCategory);
+        categories = FXCollections.observableArrayList(categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
+        }));
+        tbcategory.setItems(categories);
+
+    }
+
+    public void listCategoriesbyCreationDate(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesbyCreationDate_XML(new GenericType<List<CategoryEntity>>() {
+            }));
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
+
+    public void listCategoriesByDescriptionAndPegi18(ActionEvent event) {
+        try {
+            categories = FXCollections.observableArrayList(categoryManager.listCategoriesByDescriptionAndPegi18_XML(new GenericType<List<CategoryEntity>>() {
+            }));
+            tbcategory.setItems(categories);
+            tbcategory.refresh();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
+            alert.show();
+        }
+    }
+
+    private void setupContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem add = new MenuItem("Add ");
+        MenuItem remove = new MenuItem("Remove");
+        MenuItem print = new MenuItem("Print table");
+
+        add.setOnAction(this::handleCreateAction);
+        remove.setOnAction(this::handleRemoveAction);
+        print.setOnAction(this::handlePrintAction);
+
+        contextMenu.getItems().add(add);
+        contextMenu.getItems().add(remove);
+
+        tbcategory.setContextMenu(contextMenu);
+    }
+
+    @FXML
+    private void handlePrintAction(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/clientapp/reports/CategoryReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Category>) this.tbcategory.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception error) {
+            //Logger.log(Level.SEVERE, "AccountController(handlePrintReport): Exception while creating the report {0}", error.getMessage());
+        }
     }
 
     public Stage getStage() {
@@ -256,77 +365,4 @@ public class CategoryController {
         this.categoryManager = categoryManager;
     }
 
-    public void removeCategory() {
-        tbcategory.getItems().remove(tbcategory.getSelectionModel().getSelectedItem());
-        tbcategory.refresh();
-    }
-
-    private void refreshTable() {
-        // Limpiar la lista actual de tickets
-        categories.clear();
-        // Obtener todos los tickets y filtrar solo los que pertenecen al usuario logueado
-        categories.addAll(
-                categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
-                }));/*
-                        .stream()
-                        .filter(ticket -> ticket.getUser().getId() == user.getId()) // Filtrar por el ID del usuario
-                        .collect(Collectors.toList()) // Convertir el resultado en una lista estándar
-        );*/
-    }
-
-    public void handleRemoveAction(ActionEvent event) {
-        List<CategoryEntity> removeCategory = tbcategory.getSelectionModel().getSelectedItems();
-        if (removeCategory != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Remove confirmation");
-            alert.setHeaderText("¿Are you sure you want to remove this category?");
-            alert.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    if (removeCategory.size() > 1) {
-                        for (CategoryEntity categ : removeCategory) {
-                            categoryManager.remove(String.valueOf(categ.getId()));
-                            tbcategory.getItems().remove(removeCategory);
-                        }
-                    } else {
-                        categoryManager.remove(String.valueOf(removeCategory.get(0).getId()));
-                        tbcategory.getItems().remove(removeCategory);
-                    }
-                    refreshTable();
-                }
-            });
-        }
-    }
-
-    public void handleCreateAction(ActionEvent event) {
-        CategoryEntity newCategory = new CategoryEntity();
-        categoryManager.create(newCategory);
-        categories = FXCollections.observableArrayList(categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
-        }));
-        tbcategory.setItems(categories);
-
-    }
-
-    public void listCategoriesbyCreationDate(ActionEvent event) {
-        try {
-            categories = FXCollections.observableArrayList(categoryManager.listCategoriesbyCreationDate_XML(new GenericType<List<CategoryEntity>>() {
-            }));
-            tbcategory.setItems(categories);
-            tbcategory.refresh();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
-            alert.show();
-        }
-    }
-    
-     public void listCategoriesByDescriptionAndPegi18(ActionEvent event) {
-        try {
-            categories = FXCollections.observableArrayList(categoryManager.listCategoriesByDescriptionAndPegi18_XML(new GenericType<List<CategoryEntity>>() {
-            }));
-            tbcategory.setItems(categories);
-            tbcategory.refresh();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al filtrar las categorías: " + e.getMessage(), ButtonType.OK);
-            alert.show();
-        }
-    }
 }

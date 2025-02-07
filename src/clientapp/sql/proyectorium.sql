@@ -233,8 +233,8 @@ VALUES
 -- Insertar datos en la tabla "user"
 INSERT INTO proyectorium.user (id, email, fullName, password, street, city, zip, companyId, userType, numTickets, user_type)
 VALUES 
-    (1, 'admin1@example.com', 'Admin One', 'password1', 'Street 1', 'City A', 10001, 1, 'ADMIN', NULL, 'UserEntity'),
-    (2, 'customer1@example.com', 'Customer One', 'password2', 'Street 2', 'City B', 10002, 1, 'CUSTOMER', 5, 'UserEntity');
+    (1, 'admin1@example.com', 'Admin One', 'WuLegi4p5enGK/cX0y9kZA==', 'Street 1', 'City A', 10001, 1, 'ADMIN', NULL, 'UserEntity'),
+    (2, 'customer1@example.com', 'Customer One', 'WuLegi4p5enGK/cX0y9kZA==', 'Street 2', 'City B', 10002, 1, 'CUSTOMER', 5, 'UserEntity');
 
 
 -- Insertar datos en la tabla "ticket"
