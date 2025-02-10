@@ -48,10 +48,13 @@ public class ProviderControllerTest extends ApplicationTest {
     @Test
     public void listProviders() {
         assertNotNull("Error loading providers", isVisible());
+        
+        //preguntar si lositems de la tabla son providers
     }
 
     @Test
     public void testCreateProvider() {
+        
         // Obtener el número de filas antes de agregar una nueva
         int rowCount = tableProviders.getItems().size();
 
@@ -236,28 +239,35 @@ public class ProviderControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testRemoveProvider() {
-// Obtener el número de filas antes de agregar una nueva
-        // Obtener el número de filas antes de eliminar
-        int rowCount = tableProviders.getItems().size();
+public void testRemoveProvider() {
+    // Obtener el número de filas antes de eliminar
+    int rowCount = tableProviders.getItems().size();
 
-        // Verificar que la tabla tiene datos
-        assertNotEquals("Table has no data: Cannot test.", rowCount, 0);
+    // Verificar que la tabla tiene datos
+    assertNotEquals("Table has no data: Cannot test.", rowCount, 0);
 
-        // Seleccionar la última fila en la tabla
-        int lastRowIndex = rowCount - 1;
-        Node row = lookup(".table-row-cell").nth(lastRowIndex).query();
-        assertNotNull("Row is null: table has not that row.", row);
-        clickOn(row);
-        // Hacer clic en el botón de eliminar
-        clickOn("#btnRemoveProvider");
+    // Seleccionar la última fila en la tabla
+    int lastRowIndex = rowCount - 1;
+    Node row = lookup(".table-row-cell").nth(lastRowIndex).query();
+    assertNotNull("Row is null: table has not that row.", row);
+    clickOn(row);
 
-        // Verificar que aparece el cuadro de diálogo de confirmación
-        verifyThat("¿Are you sure you want to remove this provider?", isVisible());
-        // Confirmar la eliminación haciendo clic en el botón predeterminado (OK)
-        clickOn("Aceptar");
+    // Capturar el proveedor seleccionado antes de eliminarlo
+    ProviderEntity selectedProvider = tableProviders.getItems().get(lastRowIndex);
 
-        // Verificar que la fila ha sido eliminada
-        assertEquals("The row has not been deleted!!!", rowCount - 1, tableProviders.getItems().size());
-    }
+    // Hacer clic en el botón de eliminar
+    clickOn("#btnRemoveProvider");
+
+    // Verificar que aparece el cuadro de diálogo de confirmación
+    verifyThat("¿Are you sure you want to remove this provider?", isVisible());
+
+    // Confirmar la eliminación haciendo clic en el botón predeterminado (OK)
+    clickOn("Aceptar");
+
+    // Verificar que la fila ha sido eliminada
+    assertEquals("The row has not been deleted!!!", rowCount - 1, tableProviders.getItems().size());
+
+    // Verificar que el proveedor eliminado ya no está en la tabla
+    assertFalse("The provider is still in the table after deletion.", tableProviders.getItems().contains(selectedProvider));
+}
 }
