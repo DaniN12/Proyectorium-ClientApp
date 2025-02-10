@@ -3,6 +3,8 @@ package clientapp.controller;
 import clientapp.MainInfoView;
 import clientapp.factories.TicketFactory;
 import clientapp.model.TicketEntity;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +14,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javax.ws.rs.core.GenericType;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,9 +33,15 @@ public class InfoViewControllerTest extends ApplicationTest {
 
     private TableView<TicketEntity> ticketTableView;
     private ComboBox<?> comboBoxNode;
+    private ObservableList<TicketEntity> listTickets;
+    private final int lastRowIndex;
+    private Node titleCell;
 
     public InfoViewControllerTest() {
         this.ticketTableView = lookup("#ticketTableView").queryTableView();
+        this.lastRowIndex = FXCollections.observableArrayList(
+                TicketFactory.getITicket().findAll_XML(new GenericType<List<TicketEntity>>() {
+                })).size();
     }
 
     @BeforeClass
@@ -43,7 +52,7 @@ public class InfoViewControllerTest extends ApplicationTest {
 
     @Test
     public void testARead() {
-        ObservableList<TicketEntity> listTickets = FXCollections.observableArrayList(
+        listTickets = FXCollections.observableArrayList(
                 TicketFactory.getITicket().findAll_XML(new GenericType<List<TicketEntity>>() {
                 }));
         List<TicketEntity> newListTickets = ticketTableView.getItems();
@@ -61,15 +70,9 @@ public class InfoViewControllerTest extends ApplicationTest {
         // Esperar a que la fila se agregue
         waitForFxEvents();
 
-        // Seleccionar la última fila de la tabla (la recién añadida)
-        int lastRowIndex = ticketTableView.getItems().size() - 1;
-
-        // Hacer scroll hacia la fila seleccionada
-        ticketTableView.scrollTo(lastRowIndex);
-
         // Hacer doble clic en la celda "title" de la última fila
-        Node titleCell = lookup("#ticketTableView .table-row-cell").nth(lastRowIndex)
-                .lookup(".table-cell").nth(1) // Suponiendo que la columna "title" es la segunda columna
+        titleCell = lookup("#ticketTableView .table-row-cell").nth(lastRowIndex)
+                .lookup(".table-cell").nth(1)
                 .query();
         doubleClickOn(titleCell);
         waitForFxEvents(); // Esperar a que la celda entre en modo edición
@@ -87,40 +90,60 @@ public class InfoViewControllerTest extends ApplicationTest {
 
     @Test
     public void testCUpdate() {
-        int lastRowIndex = ticketTableView.getItems().size() - 1;
+        String date = "20/02/2025";
+        String people = "3";
+
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
         interact(() -> {
-            comboBoxNode = (ComboBox<?>) lookup(".combo-box").query();
-            comboBoxNode.getSelectionModel().select(1); // Cambiar la selección al segundo elemento
+            comboBoxNode = (ComboBox<?>) lookup(".combo-box-base").query();
+            doubleClickOn(comboBoxNode);
+            comboBoxNode.getSelectionModel().select(1);
         });
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+        
+        Node datePickerCell = lookup("#ticketTableView .table-row-cell")
+                .nth(lastRowIndex)
+                .lookup(".table-cell").nth(2).query();
 
-        // Confirmar la edición (ENTER) dentro del hilo de JavaFX
-        interact(() -> {
-            type(javafx.scene.input.KeyCode.ENTER);
-        });
-
+        doubleClickOn(datePickerCell);
+        waitForFxEvents();
+        clickOn(".date-picker .arrow-button");
+        waitForFxEvents();
+        clickOn("20");
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+        
+        Node peopleCell = lookup("#ticketTableView .table-row-cell")
+                .nth(lastRowIndex)
+                .lookup(".table-cell").nth(5)
+                .query();
+        doubleClickOn(peopleCell);
+        waitForFxEvents();
+        write(people);
+        type(KeyCode.ENTER);
         waitForFxEvents();
 
+        TicketEntity updatedTicket = ticketTableView.getItems().get(lastRowIndex);
         String expectedTitle = (String) comboBoxNode.getSelectionModel().getSelectedItem();
-        assertEquals("The ticket has not been updated correctly!!!", expectedTitle, ticketTableView.getItems().get(lastRowIndex).getMovie().getTitle());
+
+        assertEquals("The ticket has not been updated correctly!!!", expectedTitle, updatedTicket.getMovie().getTitle());
+        assertEquals("Buy date was not updated correctly.", date, df.format(updatedTicket.getBuyDate()));
+        assertEquals("People was not updated correctly.", people, String.valueOf(updatedTicket.getNumPeople()));
     }
 
     @Test
     public void testDDelete() {
         int rowCount = ticketTableView.getItems().size();
-        int lastRowIndex = ticketTableView.getItems().size() - 1;
+        listTickets = ticketTableView.getItems();
+        TicketEntity ticket;
 
-        interact(() -> {
-            Node titleCell = lookup("#ticketTableView .table-row-cell").nth(lastRowIndex)
-                    .lookup(".table-cell").nth(1) // Suponiendo que la columna "title" es la segunda columna
-                    .query();
-            rightClickOn(titleCell);
-        });
+        ticket = (TicketEntity) titleCell.getUserData();
+        rightClickOn(titleCell);
         waitForFxEvents();
 
-        interact(() -> {
-            clickOn("#removeMenuItem");
-        });
+        clickOn("#removeMenuItem");
         waitForFxEvents();
 
         interact(() -> {
@@ -133,6 +156,7 @@ public class InfoViewControllerTest extends ApplicationTest {
 
         int newRowCount = ticketTableView.getItems().size();
         assertEquals("The ticket has not been deleted correctly!!!", rowCount - 1, newRowCount);
+        assertFalse(listTickets.contains(ticket));
     }
 
 }
