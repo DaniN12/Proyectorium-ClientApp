@@ -3,6 +3,8 @@ package clientapp.controller;
 import clientapp.MainInfoView;
 import clientapp.factories.TicketFactory;
 import clientapp.model.TicketEntity;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +14,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javax.ws.rs.core.GenericType;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -87,6 +90,12 @@ public class InfoViewControllerTest extends ApplicationTest {
 
     @Test
     public void testCUpdate() {
+        String title = "UpdateTitle";
+        String date = "15/02/2025"; 
+        String people="3";
+        
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        
         int lastRowIndex = ticketTableView.getItems().size() - 1;
 
         interact(() -> {
@@ -98,11 +107,46 @@ public class InfoViewControllerTest extends ApplicationTest {
         interact(() -> {
             type(javafx.scene.input.KeyCode.ENTER);
         });
-
+        
         waitForFxEvents();
+        
+        
+        // *** Editar el campo "title" ***
+        Node titleCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(0).query();
+        clickOn(titleCell).doubleClickOn(titleCell);
+        waitForFxEvents();
+        write(title);
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+        
+        
+        // *** Editar el campo "Date" usando DatePicker ***
+        Node dateCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(2).query();
+        clickOn(dateCell).doubleClickOn(dateCell);
+        waitForFxEvents();
+        clickOn(".date-picker .arrow-button"); // Abre el DatePicker
+        waitForFxEvents();
+        clickOn("15"); // Selecciona el día 15
+        waitForFxEvents();
+        type(KeyCode.ENTER);
+        
+         // *** Editar el campo "People" ***
+        Node peopleCell = lookup(".table-row-cell").nth(lastRowIndex).lookup(".table-cell").nth(5).query();
+        clickOn(peopleCell).doubleClickOn(peopleCell);
+        waitForFxEvents();
+        write(people);
+        type(KeyCode.ENTER);
+        waitForFxEvents();
+        
+        
 
+        
+        TicketEntity updatedTicket = ticketTableView.getItems().get(lastRowIndex);
         String expectedTitle = (String) comboBoxNode.getSelectionModel().getSelectedItem();
         assertEquals("The ticket has not been updated correctly!!!", expectedTitle, ticketTableView.getItems().get(lastRowIndex).getMovie().getTitle());
+        assertEquals("Provider name was not updated correctly.", title, updatedTicket.getMovieTitle());
+        assertEquals("People  was not updated correctly.", people, updatedTicket.getNumPeople().toString());
+        assertEquals("Buy date was not updated correctly.", date, df.format(updatedTicket.getBuyDate()));
     }
 
     @Test

@@ -240,6 +240,9 @@ public class CategoryController {
 
     public void handleCreateAction(ActionEvent event) {
         CategoryEntity newCategory = new CategoryEntity();
+        newCategory.setName("Write category name");
+        newCategory.setDescription("Write category description");
+
         categoryManager.create(newCategory);
         categories = FXCollections.observableArrayList(categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
         }));
