@@ -5,7 +5,7 @@
  */
 package clientapp.controller;
 
-import clientapp.factories.DatePickerCellEditer;
+import clientapp.controller.DatePickerCellEditer;
 import clientapp.factories.CategoryFactory;
 import clientapp.factories.MovieFactory;
 import clientapp.factories.ProviderManagerFactory;
@@ -160,6 +160,8 @@ public class MovieController {
         movieHourMButton.setOnAction(this::filterByMovieHour);
         providerMButton.setOnAction(this::filterProvider);
         moviesTbv.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        imgColumn.setVisible(false);
+        categoriesColumn.setVisible(false);
         
         loadMovies();
         setupContextMenu();
@@ -173,7 +175,7 @@ public class MovieController {
             categoryManager = CategoryFactory.getICategory();
             providerManager = ProviderManagerFactory.getIProvider();
             ticketManager = TicketFactory.getITicket();
-
+            
             availableCategories = categoryManager.findAll_XML(new GenericType<List<CategoryEntity>>() {
             });
             

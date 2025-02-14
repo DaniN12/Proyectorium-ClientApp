@@ -116,7 +116,7 @@ public class MovieControllerTest extends ApplicationTest {
         Integer movieDuration = 90;
         MovieHour hour = MovieHour.HOUR_20;
         ProviderEntity provider = availableProviders.get(0);
-        Date newDate = Date.from(Instant.parse("2025-02-10T00:00:00.Z"));
+        Date newDate = Date.from(Instant.parse("2025-02-13T00:00:00.Z"));
         newDate.setHours(0);
         waitForFxEvents();
 

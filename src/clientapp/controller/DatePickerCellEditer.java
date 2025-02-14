@@ -1,9 +1,14 @@
 package clientapp.controller;
 
 import clientapp.model.MovieEntity;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -69,7 +74,6 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
         datePicker = new DatePicker(convertToLocalDate(getItem()));
         datePicker.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 
-        // Disable future dates
         final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(final DatePicker datePicker) {
@@ -77,10 +81,6 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
                     @Override
                     public void updateItem(LocalDate item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (item.isAfter(LocalDate.now())) {
-                            setDisable(true);
-                            setStyle("-fx-background-color: #ffc0cb;");
-                        }
                     }
                 };
             }
@@ -98,8 +98,9 @@ public class DatePickerCellEditer<S> extends TableCell<S, Date> {
         datePicker.setOnAction(e -> commitEdit(convertToDate(datePicker.getValue())));
     }
 
-    private String formatDate(Date date) {
-        return date == null ? "" : java.text.DateFormat.getDateInstance().format(date);
+    private String formatDate(Date date) {       
+        
+        return date == null ? "" : java.text.SimpleDateFormat.getDateInstance(DateFormat.SHORT, Locale.US).format(date);
     }
 
     private LocalDate convertToLocalDate(Date date) {
