@@ -54,6 +54,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -311,27 +312,34 @@ public class InfoViewController {
             } catch (ParseException e) {
                 // Si el formato es incorrecto, mostrar un mensaje de error
                 showAlert(Alert.AlertType.ERROR, "Input Error", "Date has to be dd/MM/yyyy.", "/resources/WarningAlert.png");
+                logger.log(Level.SEVERE, "Input Error: {0}", e.getMessage());
             }
         });
 
         peopleColumn.setOnEditCommit(event -> {
             Integer newValue = event.getNewValue(); // Obtener el nuevo valor de la celda
-            TicketEntity ticket = event.getRowValue();  // Obtener el ticket editado
+            Integer oldValue = event.getOldValue();
+            TicketEntity ticket = event.getRowValue();
+            TablePosition<TicketEntity, Integer> pos = event.getTablePosition();
 
             try {
                 // Validar que el nuevo valor sea mayor o igual a 0
-                if (newValue >= 0) {
-                    // Actualizar la propiedad correspondiente del ticket
-                    ticket.setNumPeople(newValue);
-
-                    // Llamar al método para actualizar la base de datos
-                    editDatabase(ticket);
-                } else {
-                    // Mostrar un mensaje o tomar otra acción si el valor no es válido
-                    showAlert(Alert.AlertType.ERROR, "Input Error", "It´s not a number avobe 0.", "/resources/WarningAlert.png");
+                if (newValue < 0) {
+                    throw new IllegalArgumentException("The number of people cannot be negative.");
                 }
+                // Actualizar la propiedad correspondiente del ticket
+                ticket.setNumPeople(newValue);
+
+                // Llamar al método para actualizar la base de datos
+                editDatabase(ticket);
             } catch (NumberFormatException e) {
                 showAlert(Alert.AlertType.ERROR, "Input Error", "It´s not a number.", "/resources/WarningAlert.png");
+                logger.log(Level.SEVERE, "Input Error: {0}", e.getMessage());
+            } catch (IllegalArgumentException ex) {
+                showAlert(Alert.AlertType.ERROR, "Input Error", "Number must be above 0.", "/resources/WarningAlert.png");
+                logger.log(Level.SEVERE, "Input Error: {0}", ex.getMessage());
+                ticketTableView.getItems().get(pos.getRow()).setNumPeople(oldValue);
+                ticketTableView.refresh();
             }
         });
 
@@ -441,7 +449,7 @@ public class InfoViewController {
         if (showAlert(Alert.AlertType.CONFIRMATION, "Confirm", "Are you sure you want to delete?", "/resources/DeleteAlert.png")) {
             for (TicketEntity ticket : removeTicket) {
                 iTicket.remove(String.valueOf(ticket.getId()));
-                ticketTableView.getItems().remove(removeTicket);
+                ticketTableView.getItems().remove(ticket);
             }
         }
 
