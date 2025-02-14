@@ -5,6 +5,7 @@
  */
 package clientapp.controller;
 
+import clientapp.exceptions.ValidationException;
 import clientapp.factories.DatePickerCellEditer;
 import clientapp.factories.ProviderManagerFactory;
 import clientapp.interfaces.IProvider;
@@ -138,7 +139,7 @@ public class ProviderController {
      * Interfaz para gestionar las operaciones de proveedores.
      */
     private IProvider iProvider;
-    
+
     private final Image icon = new Image(getClass().getResourceAsStream("/resources/icon.png"));
 
     /**
@@ -157,7 +158,6 @@ public class ProviderController {
 
         try {
             iProvider = ProviderManagerFactory.getIProvider();
-
             provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
             }));
 
@@ -170,23 +170,25 @@ public class ProviderController {
 
             tableProviders.setItems(provider);
         } catch (Exception ex) {
-            logger.severe("Error initializing provider data: " + ex.getMessage());
-            new Alert(Alert.AlertType.ERROR, "Error loading providers", ButtonType.OK).showAndWait();
+            handleException(ex);
         }
 
         tbcolumnEmail.setCellFactory(TextFieldTableCell.<ProviderEntity>forTableColumn());
         tbcolumnEmail.setOnEditCommit(t -> {
             ProviderEntity provider = t.getRowValue();
             String newEmail = t.getNewValue();
-            if (!newEmail.endsWith("@gmail.com")) {
-                showAlert("Invalid Email", "Email must end with @gmail.com.");
-                tableProviders.refresh();
-            } else if (newEmail.length() > 50) {
-                showAlert("Email Too Long", "Email cannot exceed 50 characters.");
-                tableProviders.refresh();
-            } else {
-                provider.setEmail(newEmail);
-                iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+
+            try {
+                if (!newEmail.contains("@") || !newEmail.contains(".")) {
+                    throw new ValidationException("Email must contain '@' and '.'.");
+                } else if (newEmail.length() > 50) {
+                    throw new ValidationException("Email cannot exceed 50 characters.");
+                } else {
+                    provider.setEmail(newEmail);
+                    iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+                }
+            } catch (ValidationException e) {
+                handleException(e);
             }
         });
 
@@ -206,15 +208,37 @@ public class ProviderController {
         tbcolumnConInit.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConInit.setOnEditCommit(event -> {
             ProviderEntity provider = event.getRowValue();
-            provider.setContractIni(event.getNewValue());
-            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            Date newInitDate = event.getNewValue();
+            Date endDate = provider.getContractEnd();
+
+            try {
+                if (endDate != null && newInitDate.after(endDate)) {
+                    throw new ValidationException("Contract Init Date cannot be after Contract End Date.");
+                } else {
+                    provider.setContractIni(newInitDate);
+                    iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+                }
+            } catch (ValidationException e) {
+                handleException(e);
+            }
         });
 
         tbcolumnConEnd.setCellFactory(column -> new DatePickerCellEditer());
         tbcolumnConEnd.setOnEditCommit(event -> {
             ProviderEntity provider = event.getRowValue();
-            provider.setContractEnd(event.getNewValue());
-            iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+            Date newEndDate = event.getNewValue();
+            Date initDate = provider.getContractIni();
+
+            try {
+                if (initDate != null && newEndDate.before(initDate)) {
+                    throw new ValidationException("Contract End Date cannot be before Contract Init Date.");
+                } else {
+                    provider.setContractEnd(newEndDate);
+                    iProvider.edit_XML(provider, String.valueOf(provider.getId()));
+                }
+            } catch (ValidationException e) {
+                handleException(e);
+            }
         });
 
         tbcolumnPhone.setCellFactory(TextFieldTableCell.<ProviderEntity, Integer>forTableColumn(new StringConverter<Integer>() {
@@ -283,7 +307,7 @@ public class ProviderController {
      * @param message Mensaje de la alerta.
      */
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -338,6 +362,12 @@ public class ProviderController {
     public void handleCreateAction(ActionEvent event) {
         ProviderEntity newProvider = new ProviderEntity();
 
+        // Inicializar valores predeterminados
+        newProvider.setName("XXXXX");
+        newProvider.setContractIni(new Date());
+        newProvider.setContractEnd(new Date());
+        newProvider.setPrice(0.0f);
+
         iProvider.create_XML(newProvider);
         provider = FXCollections.observableArrayList(iProvider.findAll_XML(new GenericType<List<ProviderEntity>>() {
         }));
@@ -359,9 +389,8 @@ public class ProviderController {
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
         } catch (Exception error) {
-            //Logger.log(Level.SEVERE, "AccountController(handlePrintReport): Exception while creating the report {0}", error.getMessage());
+            handleException(error);
         }
-
     }
 
     public static String introducirCadena() {
@@ -497,6 +526,12 @@ public class ProviderController {
         );*/
         tableProviders.setItems(provider);
         tableProviders.refresh();
+    }
+
+    private void handleException(Exception e) {
+        logger.severe(e.getMessage()); // Registra la excepción en el log
+        showAlert("Validation Error", e.getMessage()); // Muestra un Alert con el mensaje de la excepción
+        tableProviders.refresh(); // Refresca la tabla para revertir cambios no válidos
     }
 
 // Getters y Setters 
